@@ -1,7 +1,9 @@
 #include "GraphicsClass.h"
 
 GraphicsClass::GraphicsClass():
-mDirect(nullptr)
+mDirect(nullptr),
+mFbxLoader(nullptr),
+mMesh(nullptr)
 {
 }
 
@@ -29,6 +31,19 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     {
 		MessageBox(hwnd, L"Could not initialize Direct3D.", L"Error", MB_OK);
 		return false;
+    }
+
+    mFbxLoader = new FBXLoader;
+    if (mFbxLoader == nullptr)
+    {
+        return false;
+    }
+
+    mMesh = mFbxLoader->LoadFbx("Model\\character.fbx");
+    result = mMesh->Initialize(mDirect->GetDevice());
+    if (result == false)
+    {
+        return false;
     }
 
     return true;

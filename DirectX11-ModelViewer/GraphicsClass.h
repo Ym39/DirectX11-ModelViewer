@@ -1,5 +1,7 @@
 #pragma once
 #include "D3DClass.h"
+#include "FBXLoader.h"
+#include "Mesh.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = false;
@@ -20,5 +22,7 @@ public:
 
 private:
     D3DClass* mDirect;
+	FBXLoader* mFbxLoader;
+	Mesh* mMesh;
 };
 
