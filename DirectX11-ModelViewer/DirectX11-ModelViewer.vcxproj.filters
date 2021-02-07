@@ -16,6 +16,9 @@
     <Filter Include="헤더 파일\DirectXTex">
       <UniqueIdentifier>{50fe6247-4fa2-4706-9cf6-92aede2b7fec}</UniqueIdentifier>
     </Filter>
+    <Filter Include="셰이더">
+      <UniqueIdentifier>{fe7fb099-04cd-4d54-9448-3a04f1984d30}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -57,6 +60,18 @@
     <ClInclude Include="FBXLoader.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="SkinnedMeshShader.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Time.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX11-ModelViewer.rc">
@@ -96,10 +111,28 @@
     <ClCompile Include="FBXLoader.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="SkinnedMeshShader.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Time.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="DirectXTex\DirectXTex.inl">
       <Filter>헤더 파일\DirectXTex</Filter>
+    </None>
+    <None Include="SkinnedMeshVertexShader.vs">
+      <Filter>셰이더</Filter>
+    </None>
+    <None Include="SkinnedMeshPixelShader.ps">
+      <Filter>셰이더</Filter>
     </None>
   </ItemGroup>
 </Project>

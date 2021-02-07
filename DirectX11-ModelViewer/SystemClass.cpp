@@ -1,6 +1,10 @@
 #include "SystemClass.h"
 
-SystemClass::SystemClass()
+SystemClass* ApplicationHandle = 0;
+
+SystemClass::SystemClass():
+	mGraphics(nullptr),
+	mTime(nullptr)
 {
 }
 
@@ -30,6 +34,18 @@ bool SystemClass::Initialize()
 	}
 
 	result = mGraphics->Initialize(screenWidth,screenHeight,mHwnd);
+	if (result == false)
+	{
+		return false;
+	}
+
+	mTime = new Time;
+	if (mTime == nullptr)
+	{
+		return false;
+	}
+
+	result = mTime->Initialize();
 	if (result == false)
 	{
 		return false;
@@ -84,6 +100,8 @@ bool SystemClass::Frame()
 {
     bool result;
 	int mouseX, mouseY;
+
+	mTime->Frame();
 
 	result = mGraphics->Frame();
 	if (result == false)

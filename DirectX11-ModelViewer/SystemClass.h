@@ -3,6 +3,7 @@
 #include<windows.h>
 
 #include "GraphicsClass.h"
+#include "Time.h"
 
 class SystemClass
 {
@@ -14,6 +15,8 @@ public:
 	bool Initialize();
 	void Shutdown();
 	void Run();
+
+	float DeltaTime() const { return mTime->GetTime(); }
 
 	LRESULT CALLBACK MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam);
 
@@ -28,9 +31,8 @@ private:
 	HWND mHwnd;
 
 	GraphicsClass* mGraphics;
+	Time* mTime;
 };
 
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-
-static SystemClass* ApplicationHandle = 0;
 

@@ -1,4 +1,7 @@
 #include "GraphicsClass.h"
+#include"SystemClass.h"
+
+extern SystemClass* ApplicationHandle;
 
 GraphicsClass::GraphicsClass():
 mDirect(nullptr),
@@ -93,6 +96,6 @@ bool GraphicsClass::Render()
     //2D ·»´õ¸µ ³¡
 
     mDirect->EndScene();
-
+    ApplicationHandle->DeltaTime();
     return true;
 }
