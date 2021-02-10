@@ -3,7 +3,9 @@
 Mesh::Mesh():
 mVertexBuffer(nullptr),
 mIndexBuffer(nullptr),
-mIsSkinnedMesh(false)
+mIsSkinnedMesh(false),
+mCurrentFrame(0),
+mAnimationLength(0)
 {
 
 }
@@ -26,6 +28,11 @@ bool Mesh::Initialize(ID3D11Device* device)
     {
         return false;
     }
+
+	for(auto matrix : mUpdateBoneTransfroms)
+	{
+	    matrix = XMMatrixIdentity();
+	}
 
 	return true;
 }
@@ -50,6 +57,44 @@ void Mesh::Render(ID3D11DeviceContext* deviceContext)
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	return;
+}
+
+void Mesh::UpdateAnimation(float time)
+{
+
+	static float lateTime = 0.0f;
+	lateTime += time;
+
+	if (lateTime >= 1000.0f / 30.0f)
+	{
+		for (int i = 0; i < mSkeleton->joints.size(); i++)
+		{
+			const Keyframe* curKey = mSkeleton->joints[i].animation;
+
+			for (int keyCount = 0; keyCount < mCurrentFrame; keyCount++)
+			{
+				curKey = curKey->next;
+			}
+
+			XMMATRIX boneOffset = XMLoadFloat4x4(&mSkeleton->joints[i].globalBindposeInverse);
+			XMMATRIX toParent = XMLoadFloat4x4(&curKey->globalTransfrom);
+			XMMATRIX finalTransform = XMMatrixMultiply(boneOffset, toParent);
+			//finalTransform *= XMMatrixScaling(0.01f, 0.01f, 0.01f);
+			finalTransform *= XMMatrixScaling(1.0f, 1.0f, 1.0f);
+
+
+			mUpdateBoneTransfroms[i] = XMMatrixTranspose(finalTransform);
+		}
+
+		mCurrentFrame++;
+		lateTime = 0.0f;
+
+		if (mCurrentFrame == mAnimationLength - 1)
+		{
+			mCurrentFrame = 0;
+			lateTime = 0.0f;
+		}
+	}
 }
 
 bool Mesh::InitializeBuffer(ID3D11Device* device)
@@ -119,20 +164,24 @@ void Mesh::SetMeshData(const vector<VertexType>& vertex, const vector<unsigned i
 {
     vertices.resize(vertex.size());
     for (int i = 0; i < vertices.size(); i++)
-    {
+    { 
+	    vertices[i].position = vertex[i].position;
+		vertices[i].normal = vertex[i].normal;
+		vertices[i].texture = vertex[i].texture;
+	    
         for (int j = 0; j < vertex[i].blendingInfo.size(); ++j)
         {
             vertices[i].boneIndices[j] = vertex[i].blendingInfo[j].blendingIndex;
             switch (j)
             {
              case 0:
-                 vertices[i].weight.x = vertex[i].blendingInfo[j].blendingIndex;
+                 vertices[i].weight.x = vertex[i].blendingInfo[j].blendingWeight;
                  break;
 			 case 1:
-				 vertices[i].weight.y = vertex[i].blendingInfo[j].blendingIndex;
+				 vertices[i].weight.y = vertex[i].blendingInfo[j].blendingWeight;
 				 break;
 			 case 2:
-				 vertices[i].weight.z = vertex[i].blendingInfo[j].blendingIndex;
+				 vertices[i].weight.z = vertex[i].blendingInfo[j].blendingWeight;
 				 break;
             }
         }
@@ -146,4 +195,10 @@ void Mesh::SetSkeleton(Skeleton* skeleton)
 {
     mSkeleton = skeleton;
 	mIsSkinnedMesh=true;
+	mUpdateBoneTransfroms.resize(mSkeleton->joints.size());
+}
+
+void Mesh::SetAnimationLength(FbxLongLong length)
+{
+    mAnimationLength = length;
 }

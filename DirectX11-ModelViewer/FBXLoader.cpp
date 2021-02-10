@@ -18,7 +18,7 @@ Mesh* FBXLoader::LoadFbx(char* fbxFilename)
     bool status = mImporter->Initialize(fbxFilename, -1,mFbxManager->GetIOSettings());
     if (status == false)
     {
-        return false;
+        return nullptr;
     }
 
 	mFbxScene = FbxScene::Create(mFbxManager,"scene");
@@ -44,9 +44,47 @@ Mesh* FBXLoader::LoadFbx(char* fbxFilename)
 
 	LoadNode(rootNode);
 
+	finalMesh->SetAnimationLength(mAnimationLength);
 	finalMesh->SetMeshData(vertices,indices);
+
+	mFbxScene->Destroy();
     
 	return finalMesh;
+}
+
+Skeleton* FBXLoader::LoadAnimation(char* fbxFilename)
+{
+	mImporter = FbxImporter::Create(mFbxManager, "");
+	bool status = mImporter->Initialize(fbxFilename, -1, mFbxManager->GetIOSettings());
+	if (status == false)
+	{
+		return nullptr;
+	}
+
+	mFbxScene = FbxScene::Create(mFbxManager, "scene");
+	mImporter->Import(mFbxScene);
+	mImporter->Destroy();
+
+	FbxNode* rootNode = mFbxScene->GetRootNode();
+
+	FbxAxisSystem sceneAxisSystem = mFbxScene->GetGlobalSettings().GetAxisSystem();
+	FbxAxisSystem::DirectX.ConvertScene(mFbxScene);
+
+	FbxGeometryConverter geometryConverter(mFbxManager);
+	geometryConverter.Triangulate(mFbxScene, true);
+
+	mSkeleton = new Skeleton;
+	ProcessSkeletonHierarchy(rootNode);
+	if (mSkeleton->joints.empty() == true)
+	{
+	    return nullptr;
+	}
+
+	LoadNodeJointAndAnimation(rootNode);
+
+	mFbxScene->Destroy();
+
+	return mSkeleton;
 }
 
 void FBXLoader::ProcessSkeletonHierarchy(FbxNode* inRootNode)
@@ -97,6 +135,22 @@ void FBXLoader::LoadNode(FbxNode* node)
 	for (unsigned i = 0; i < childCount; ++i)
 	{
 		LoadNode(node->GetChild(i));
+	}
+}
+
+void FBXLoader::LoadNodeJointAndAnimation(FbxNode* node)
+{
+	FbxNodeAttribute* nodeAttribute = node->GetNodeAttribute();
+
+	if (nodeAttribute != nullptr)
+	{
+	    ProcessJointsAndAnmations(node);
+	}
+
+	const int childCount = node->GetChildCount();
+	for (unsigned i = 0; i < childCount; ++i)
+	{
+		LoadNodeJointAndAnimation(node->GetChild(i));
 	}
 }
 
@@ -359,7 +413,7 @@ void FBXLoader::ProcessJointsAndAnmations(FbxNode* inNode)
 			FbxTakeInfo* takeInfo = mFbxScene->GetTakeInfo(animStackName);
 			FbxTime start = takeInfo->mLocalTimeSpan.GetStart();
 			FbxTime end = takeInfo->mLocalTimeSpan.GetStop();
-			FbxLongLong animationLength = end.GetFrameCount(FbxTime::eFrames30) - start.GetFrameCount(FbxTime::eFrames30) + 1;
+			mAnimationLength = end.GetFrameCount(FbxTime::eFrames30) - start.GetFrameCount(FbxTime::eFrames30) + 1;
 			Keyframe** currAnim = &mSkeleton->joints[currJointIndex].animation;
 
 			for (FbxLongLong i = start.GetFrameCount(FbxTime::eFrames30); i < end.GetFrameCount(FbxTime::eFrames30); ++i)
@@ -406,6 +460,7 @@ void FBXLoader::ProcessJointsAndAnmations(FbxNode* inNode)
 			itr->second->blendingInfo.push_back(currBlendingIndexWeightPair);
 		}
 	}
+
 }
 
 unsigned int FBXLoader::FindJointIndexUsingName(const std::string& inJointName)

@@ -12,8 +12,16 @@ public:
     void Shutdown();
     void Render(ID3D11DeviceContext* deviceContext);
 
+    void UpdateAnimation(float time);
+
 	void SetMeshData(const vector<VertexType>& vertex, const vector<unsigned int>& index);
 	void SetSkeleton(Skeleton* skeleton);
+
+    void SetAnimationLength(FbxLongLong length);
+
+    int GetIndexCount() const {return indices.size();}
+
+    const vector<XMMATRIX>& GetBoneTransform(){return mUpdateBoneTransfroms;}
 private:
     bool InitializeBuffer(ID3D11Device* device);
     void ShutdownBuffers();
@@ -29,6 +37,9 @@ private:
     vector<unsigned int> indices;
 
     Skeleton* mSkeleton;
+	vector<XMMATRIX> mUpdateBoneTransfroms;
+    unsigned int mCurrentFrame;
+	FbxLongLong mAnimationLength;
 
     bool mIsSkinnedMesh;
 };

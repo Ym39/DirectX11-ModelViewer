@@ -42,8 +42,39 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
         return false;
     }
 
-    mMesh = mFbxLoader->LoadFbx("Model\\character.fbx");
+    //mFbxLoader->LoadAnimation("Model\\Capoeira.fbx");
+    mMesh = mFbxLoader->LoadFbx("Model\\Capoeira (1).fbx");
     result = mMesh->Initialize(mDirect->GetDevice());
+    if (result == false)
+    {
+        return false;
+    }
+
+    mLight = new Light;
+    if (mLight == nullptr)
+    {
+        return false;
+    }
+
+    mLight->SetAmbientColor(0.1f,0.1f,0.1f,1.0f);
+    mLight->SetDiffuseColor(1.0f,1.0f,1.0f,1.0f);
+    mLight->SetPosition(-5.0f,0.0f,-200.0f);
+    mLight->SetSpecularColor(1.0f,1.0f,1.0f,1.0f);
+    mLight->SetSpecularPower(50.0f);
+
+    mCamera = new Camera;
+    mCamera->SetPosition(0.0f,0.0f,-300.0f);
+    mCamera->Render();
+
+    mShader = new SkinnedMeshShader;
+    result = mShader->Initialize(mDirect->GetDevice(),hwnd);
+    if (result == false)
+    {
+        return false;
+    }
+
+    mTexture = new Texture;
+    result = mTexture->Initialize(mDirect->GetDevice(),mDirect->GetDeviceContext(),"Texture\\CharacterTexture.dds");
     if (result == false)
     {
         return false;
@@ -59,6 +90,39 @@ void GraphicsClass::Shutdown()
         mDirect->Shutdown();
         delete mDirect;
         mDirect = nullptr;
+    }
+
+    if (mFbxLoader)
+    {
+        delete mFbxLoader;
+        mFbxLoader = nullptr;
+    }
+
+    if (mMesh)
+    {
+        mMesh->Shutdown();
+        delete mMesh;
+        mMesh = nullptr;
+    }
+
+    if (mCamera)
+    {
+        delete mCamera;
+        mCamera = nullptr;
+    }
+
+    if (mShader)
+    {
+        mShader->Shutdown();
+        delete mShader;
+        mShader = nullptr;
+    }
+
+    if (mTexture)
+    {
+        mTexture->Shutdown();
+        delete mTexture;
+        mTexture = nullptr;
     }
 }
 
@@ -82,10 +146,19 @@ bool GraphicsClass::Render()
 
     mDirect->BeginScene(0.0f,0.0f,0.0f,1.0f);
 
+	mCamera->Render();
+
     mDirect->GetWorldMatrix(worldMatrix);
     mDirect->GetWorldMatrix(worldMatrix_2D);
     mDirect->GetProjectionMatrix(projectionMatrix);
     mDirect->GetOrthoMatrix(orthoMatrix);
+    mCamera->GetViewMatrix(viewMatrix);
+
+    mMesh->UpdateAnimation(ApplicationHandle->DeltaTime());
+    mMesh->Render(mDirect->GetDeviceContext());
+
+    mShader->Render(mDirect->GetDeviceContext(),mMesh->GetIndexCount(),worldMatrix,viewMatrix,projectionMatrix,mTexture->GetTexture(),mLight->GetPosition(),mLight->GetDiffuseColor(),mLight->GetAmbientColor(),mCamera->GetPosition(),mLight->GetSpecularColor(),mLight->GetSpecularPower(),mMesh->GetBoneTransform());
+    
 
     //2D ·»´õ¸µ
     mDirect->TurnZBufferOff();
@@ -96,6 +169,6 @@ bool GraphicsClass::Render()
     //2D ·»´õ¸µ ³¡
 
     mDirect->EndScene();
-    ApplicationHandle->DeltaTime();
+    
     return true;
 }
