@@ -29,9 +29,9 @@ bool Mesh::Initialize(ID3D11Device* device)
         return false;
     }
 
-	for(auto matrix : mUpdateBoneTransfroms)
+	for(auto& matrix : mUpdateBoneTransfroms)
 	{
-	    matrix = XMMatrixIdentity();
+	    matrix = XMMatrixTranspose(XMMatrixIdentity());
 	}
 
 	return true;
@@ -44,6 +44,7 @@ void Mesh::Shutdown()
 
 void Mesh::Render(ID3D11DeviceContext* deviceContext)
 {
+
     unsigned int stride;
 	unsigned int offset;
 
@@ -82,8 +83,8 @@ void Mesh::UpdateAnimation(float time)
 			//finalTransform *= XMMatrixScaling(0.01f, 0.01f, 0.01f);
 			finalTransform *= XMMatrixScaling(1.0f, 1.0f, 1.0f);
 
-
 			mUpdateBoneTransfroms[i] = XMMatrixTranspose(finalTransform);
+			//mUpdateBoneTransfroms[i] = XMMatrixTranspose(XMMatrixIdentity());
 		}
 
 		mCurrentFrame++;

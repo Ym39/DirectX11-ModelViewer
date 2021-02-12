@@ -6,6 +6,7 @@
 #include "Camera.h"
 #include "SkinnedMeshShader.h"
 #include "Texture.h"
+#include "GameObject.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = false;
@@ -32,5 +33,6 @@ private:
 	Camera* mCamera;
 	SkinnedMeshShader* mShader;
 	Texture* mTexture;
+	GameObject* mObject;
 };
 

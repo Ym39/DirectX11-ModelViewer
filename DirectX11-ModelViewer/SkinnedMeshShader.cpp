@@ -24,7 +24,7 @@ bool SkinnedMeshShader::Initialize(ID3D11Device* device, HWND hwnd)
 {
 	bool result;
 
-	result = InitializeShader(device, hwnd, L"SkinnedMeshVertexShader.vs", L"SkinnedMeshPixelShader.ps");
+	result = InitializeShader(device, hwnd, L"SkinnedMeshVertexShader.HLSL", L"SkinnedMeshPixelShader.HLSL");
 	if (!result)
 	{
 		return false;

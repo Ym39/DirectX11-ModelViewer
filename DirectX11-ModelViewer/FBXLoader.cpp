@@ -49,6 +49,7 @@ Mesh* FBXLoader::LoadFbx(char* fbxFilename)
 
 	mFbxScene->Destroy();
     
+
 	return finalMesh;
 }
 

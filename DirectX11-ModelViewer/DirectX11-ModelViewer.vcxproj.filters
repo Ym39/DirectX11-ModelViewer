@@ -140,10 +140,10 @@
     <None Include="DirectXTex\DirectXTex.inl">
       <Filter>헤더 파일\DirectXTex</Filter>
     </None>
-    <None Include="SkinnedMeshVertexShader.vs">
+    <None Include="SkinnedMeshPixelShader.HLSL">
       <Filter>셰이더</Filter>
     </None>
-    <None Include="SkinnedMeshPixelShader.ps">
+    <None Include="SkinnedMeshVertexShader.HLSL">
       <Filter>셰이더</Filter>
     </None>
   </ItemGroup>

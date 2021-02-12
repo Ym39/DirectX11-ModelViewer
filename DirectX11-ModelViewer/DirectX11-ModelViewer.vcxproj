@@ -93,7 +93,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.2\lib\vs2019\x86\debug;F:\VisualStudio Project\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;G:\ModelViewer\DirectX11-ModelViewer\DirectXTex;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>DirectXTex.lib;libfbxsdk-md.lib;libxml2-md.lib;zlib-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
@@ -195,8 +195,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="DirectXTex\DirectXTex.inl" />
-    <None Include="SkinnedMeshPixelShader.ps" />
-    <None Include="SkinnedMeshVertexShader.vs" />
+    <None Include="SkinnedMeshPixelShader.HLSL" />
+    <None Include="SkinnedMeshVertexShader.HLSL" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

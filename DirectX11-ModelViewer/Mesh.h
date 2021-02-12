@@ -22,6 +22,8 @@ public:
     int GetIndexCount() const {return indices.size();}
 
     const vector<XMMATRIX>& GetBoneTransform(){return mUpdateBoneTransfroms;}
+
+    bool IsSkinned() const { return mIsSkinnedMesh; }
 private:
     bool InitializeBuffer(ID3D11Device* device);
     void ShutdownBuffers();
