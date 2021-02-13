@@ -7,6 +7,7 @@
 #include "SkinnedMeshShader.h"
 #include "Texture.h"
 #include "GameObject.h"
+#include "ImguiClass.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = false;
@@ -34,5 +35,9 @@ private:
 	SkinnedMeshShader* mShader;
 	Texture* mTexture;
 	GameObject* mObject;
+	ImguiClass* mImgui;
+
+	std::unordered_map<std::string,GameObject> meshMap;
+	std::string mCurrentRenderMesh;
 };
 

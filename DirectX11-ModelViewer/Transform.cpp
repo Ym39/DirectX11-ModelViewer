@@ -26,7 +26,7 @@ DirectX::XMMATRIX Transform::GetTransform() const
 {
     XMMATRIX transform;
     transform = XMMatrixIdentity();
-    transform*= XMMatrixScaling(mScale.x,mScale.y,mScale.z) * XMMatrixRotationRollPitchYaw(mRotation.x,mRotation.y,mRotation.z) * XMMatrixTranslation(mPosition.x,mPosition.y,mPosition.z);
+    transform*= XMMatrixScaling(mScale.x,mScale.y,mScale.z) * XMMatrixRotationRollPitchYaw(XMConvertToRadians(mRotation.x), XMConvertToRadians(mRotation.y), XMConvertToRadians(mRotation.z)) * XMMatrixTranslation(mPosition.x,mPosition.y,mPosition.z);
     return transform;
 }
 

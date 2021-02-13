@@ -6,7 +6,9 @@ extern SystemClass* ApplicationHandle;
 GraphicsClass::GraphicsClass():
 mDirect(nullptr),
 mFbxLoader(nullptr),
-mMesh(nullptr)
+mMesh(nullptr),
+mTexture(nullptr),
+mCurrentRenderMesh("")
 {
 }
 
@@ -44,8 +46,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
     
 
-    mMesh = mFbxLoader->LoadFbx("Model\\character.fbx");
-    result = mMesh->Initialize(mDirect->GetDevice());
+    Mesh* mesh = mFbxLoader->LoadFbx("Model\\character.fbx");
+    result = mesh->Initialize(mDirect->GetDevice());
     if (result == false)
     {
         return false;
@@ -74,21 +76,23 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
         return false;
     }
 
+    Texture* texture = new Texture;
+    result = texture->Initialize(mDirect->GetDevice(),mDirect->GetDeviceContext(),"Texture\\CharacterTexture.dds");
+    if (result == false)
+    {
+        return false;
+    }
+
     mTexture = new Texture;
-    result = mTexture->Initialize(mDirect->GetDevice(),mDirect->GetDeviceContext(),"Texture\\CharacterTexture.dds");
+    result = texture->Initialize(mDirect->GetDevice(), mDirect->GetDeviceContext(), "Texture\\CharacterTexture.dds");
     if (result == false)
     {
         return false;
     }
 
     mObject = new GameObject;
-    result = mObject->Initailize(mDirect->GetDevice(), hwnd);
-    if (result == false)
-    {
-        return false;
-    }
-    mObject->SetMesh(mMesh);
-    mObject->SetTexture(mTexture);
+    mObject->SetMesh(mesh);
+    mObject->SetTexture(texture);
     /*Mesh* mesh = mFbxLoader->LoadFbx("Model\\character.fbx");
     mesh->Initialize(mDirect->GetDevice());
     mObject->SetMesh(mesh);
@@ -99,7 +103,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
         return false;
     }
     mObject->SetTexture(texture);*/
-
+    mImgui = new ImguiClass;
+    mImgui->Initialize(hwnd, mDirect->GetDevice(), mDirect->GetDeviceContext());
 
     return true;
 }
@@ -160,6 +165,11 @@ bool GraphicsClass::Frame()
 
     //mObject->Update(ApplicationHandle->DeltaTime());
 
+    if (mCurrentRenderMesh != "")
+    {
+        meshMap[mCurrentRenderMesh].Update(ApplicationHandle->DeltaTime());
+    }
+
     result = Render();
     if (result == false)
     {
@@ -184,20 +194,14 @@ bool GraphicsClass::Render()
     mDirect->GetOrthoMatrix(orthoMatrix);
     mCamera->GetViewMatrix(viewMatrix);
 
-    //mMesh->UpdateAnimation(ApplicationHandle->DeltaTime());
-    //mMesh->Render(mDirect->GetDeviceContext());
-    mObject->Update(ApplicationHandle->DeltaTime());
-    //mObject->Render(mDirect->GetDeviceContext());
-
-    //mShader->Render(mDirect->GetDeviceContext(), mObject->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, mObject->GetTexture(),mLight->GetPosition(),mLight->GetDiffuseColor(),mLight->GetAmbientColor(),mCamera->GetPosition(),mLight->GetSpecularColor(),mLight->GetSpecularPower(), mObject->GetBoneTransform());
-   
-    mObject->Render(mDirect->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, mTexture->GetTexture(), mLight->GetPosition(), mLight->GetDiffuseColor(), mLight->GetAmbientColor(), mCamera->GetPosition(), mLight->GetSpecularColor(), mLight->GetSpecularPower());
-
-    //mMesh->UpdateAnimation(ApplicationHandle->DeltaTime());
-    //mMesh->Render(mDirect->GetDeviceContext());
-    
-    //mShader->Render(mDirect->GetDeviceContext(), mMesh->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, mTexture->GetTexture(), mLight->GetPosition(), mLight->GetDiffuseColor(), mLight->GetAmbientColor(), mCamera->GetPosition(), mLight->GetSpecularColor(), mLight->GetSpecularPower(), mMesh->GetBoneTransform());
-
+    if (mCurrentRenderMesh != "")
+    {
+        GameObject& renderObject = meshMap[mCurrentRenderMesh];
+        renderObject.Render(mDirect->GetDeviceContext());
+        mShader->Render(mDirect->GetDeviceContext(), renderObject.GetIndexCount(), renderObject.Transfrom().GetTransform(), viewMatrix, projectionMatrix, mObject->GetTexture(), mLight->GetPosition(), mLight->GetDiffuseColor(), mLight->GetAmbientColor(), mCamera->GetPosition(), mLight->GetSpecularColor(), mLight->GetSpecularPower(), renderObject.GetBoneTransform());
+    }
+   /* mObject->Render(mDirect->GetDeviceContext());
+    mShader->Render(mDirect->GetDeviceContext(), mObject->GetIndexCount(), mObject->Transfrom().GetTransform(), viewMatrix, projectionMatrix, mObject->GetTexture(), mLight->GetPosition(), mLight->GetDiffuseColor(), mLight->GetAmbientColor(), mCamera->GetPosition(), mLight->GetSpecularColor(), mLight->GetSpecularPower(), mObject->GetBoneTransform());*/
 
     //2D ·»´õ¸µ
     mDirect->TurnZBufferOff();
@@ -206,6 +210,26 @@ bool GraphicsClass::Render()
     mDirect->TurnOffAlphaBlending();
     mDirect->TurnZBufferOn();
     //2D ·»´õ¸µ ³¡
+
+    bool loadFbx = false;
+    string loadPath;
+    //IMGUI ·»´õ¸µ
+    mImgui->Render(&loadFbx,loadPath,mObject->Transfrom());
+
+    if (loadFbx == true)
+    {
+        mCurrentRenderMesh = loadPath;
+        GameObject loadObject;
+        Mesh* loadMesh = mFbxLoader->LoadFbx(const_cast<char*>(mCurrentRenderMesh.c_str()));
+        bool result = loadMesh->Initialize(mDirect->GetDevice());
+        if (result == false)
+        {
+            return false;
+        }
+        loadObject.SetMesh(loadMesh);
+        loadObject.SetTexture(mTexture);
+        meshMap.insert(std::pair<std::string, GameObject>(loadPath, loadObject));
+    }
 
     mDirect->EndScene();
     

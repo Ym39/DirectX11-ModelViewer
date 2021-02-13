@@ -4,6 +4,7 @@
 
 #include "GraphicsClass.h"
 #include "Time.h"
+#include "InputClass.h"
 
 class SystemClass
 {
@@ -32,6 +33,7 @@ private:
 
 	GraphicsClass* mGraphics;
 	Time* mTime;
+	InputClass* mInput;
 };
 
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);

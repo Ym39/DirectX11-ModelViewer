@@ -9,15 +9,12 @@ public:
     GameObject();
     ~GameObject();
 
-    bool Initailize(ID3D11Device* device,HWND hwnd);
-
     void SetMesh(Mesh* mesh);
     void SetTexture(Texture* texture);
     Transform& Transfrom();
 
     void Update(float deltaTime);
     void Render(ID3D11DeviceContext* deviceContext);
-    bool Render(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, XMFLOAT3 lightPosition, XMFLOAT4 diffuseColor, XMFLOAT4 ambientColor, XMFLOAT3 cameraPosition, XMFLOAT4 specularColor, float specularPower);
 
     void Shutdown();
 

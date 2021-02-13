@@ -27,6 +27,18 @@ bool SystemClass::Initialize()
 	// Win API ÃÊ±âÈ­
 	InitializeWindows(screenWidth, screenHeight);
 
+	mInput = new InputClass;
+	if (mInput == nullptr)
+	{
+		return false;
+	}
+
+	result = mInput->Initialize(mHinstance, mHwnd, screenWidth, screenHeight);
+	if (result == false)
+	{
+		return false;
+	}
+
 	mGraphics = new GraphicsClass;
 	if (mGraphics == nullptr)
 	{
@@ -51,11 +63,32 @@ bool SystemClass::Initialize()
 		return false;
 	}
 
+
+
 	return true;
 }
 
 void SystemClass::Shutdown()
 {
+	if (mGraphics)
+	{
+		mGraphics->Shutdown();
+		delete mGraphics;
+		mGraphics = nullptr;
+	}
+
+	if (mTime)
+	{
+		delete mTime;
+		mTime = nullptr;
+	}
+
+	if (mInput)
+	{
+		mInput->Shutdown();
+		delete mInput;
+		mInput = nullptr;
+	}
 }
 
 void SystemClass::Run()
@@ -86,6 +119,11 @@ void SystemClass::Run()
 				done = true;
 			}
 		}
+
+		if (mInput->IsEscapePressed())
+		{
+			done = true;
+		}
 	}
 
 	return;
@@ -102,6 +140,12 @@ bool SystemClass::Frame()
 	int mouseX, mouseY;
 
 	mTime->Frame();
+
+	result = mInput->Frame();
+	if (result == false)
+	{
+		return false;
+	}
 
 	result = mGraphics->Frame();
 	if (result == false)
@@ -179,7 +223,7 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 
 	// Create the window with the screen settings and get the handle to it.
 	mHwnd = CreateWindowEx(WS_EX_APPWINDOW, mApplicationName, mApplicationName,
-		WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP | WS_CAPTION | WS_SYSMENU,
+		WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP,
 		posX, posY, screenWidth, screenHeight, NULL, NULL, mHinstance, NULL);
 
 	// Bring the window up on the screen and set it as main focus.
@@ -218,8 +262,14 @@ void SystemClass::ShutdownWindows()
 	return;
 }
 
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 {
+	 if(ImGui_ImplWin32_WndProcHandler(hwnd,umessage,wparam,lparam))
+	{
+	    return true;
+	}
+
 	switch (umessage)
 	{
 	case WM_DESTROY:
