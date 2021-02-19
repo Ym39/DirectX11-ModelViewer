@@ -18,6 +18,7 @@ public:
 
     void Shutdown();
 
+    void PlayAnimation(bool result){mIsAnimationPlay = result; }
 public:
     ID3D11ShaderResourceView* GetTexture() const;
     int GetIndexCount() const;

@@ -16,21 +16,16 @@ void ImguiClass::Initialize(HWND hwnd, ID3D11Device* device, ID3D11DeviceContext
 	ImGui::StyleColorsDark();
 }
 
-void ImguiClass::Render(bool* loadFbx, std::string& filePath,Transform& transform)
+void ImguiClass::Render(bool* loadFbx, fs::path& filePath,Transform& transform, std::unordered_map<std::string, GameObject>& meshMap, string& renderKey)
 {
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	mMain.Render(&mActiveModelBrowser);
+	mMain.Render(&mActiveModelBrowser,meshMap,renderKey);
 
-	if (mActiveModelBrowser == true)
-	{
-		if(mFileBrowser.Render(loadFbx,filePath) == true)
-		{
-			mActiveModelBrowser = false;
-		}
-	}
+    mFileBrowser.Render(loadFbx,filePath,&mActiveModelBrowser);
+	
 	mTransformInspector.Render(transform);
 
 	ImGui::Render();

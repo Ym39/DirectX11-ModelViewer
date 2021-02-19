@@ -16,7 +16,7 @@ public:
 	FileBrowser();
 	~FileBrowser() = default;
 
-	bool Render(bool* loadFbx, std::string& filePath);
+	bool Render(bool* loadFbx, fs::path& filePath, bool* active);
 
 private:
 	fs::path mRootPath;
@@ -25,6 +25,7 @@ private:
 	std::vector<fs::path> mPopup;
 
 	std::string mSelectFilePath;
+	fs::path mSelectPath;
 	char* mSeletFilePathCstr;
 
 	int mCurrentItemNumber;

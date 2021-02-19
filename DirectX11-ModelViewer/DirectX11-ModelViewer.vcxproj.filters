@@ -25,6 +25,12 @@
     <Filter Include="소스 파일\IMGUI">
       <UniqueIdentifier>{6ddd3c78-daf3-4f2d-bca3-249554937da2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\UI">
+      <UniqueIdentifier>{d36a9dfb-cf3a-40bb-abe4-b1c5a583d34f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\UI">
+      <UniqueIdentifier>{8cd86e3e-27cc-41b6-b4a3-50a258ac0057}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -108,20 +114,20 @@
     <ClInclude Include="IMGUI\imstb_truetype.h">
       <Filter>헤더 파일\IMGUI</Filter>
     </ClInclude>
-    <ClInclude Include="ImguiClass.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="FileBrowser.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="TransformInspector.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="InputClass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="TransformInspector.h">
+      <Filter>헤더 파일\UI</Filter>
+    </ClInclude>
     <ClInclude Include="MainInspector.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>헤더 파일\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="FileBrowser.h">
+      <Filter>헤더 파일\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ImguiClass.h">
+      <Filter>헤더 파일\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -198,20 +204,20 @@
     <ClCompile Include="IMGUI\imgui_widgets.cpp">
       <Filter>소스 파일\IMGUI</Filter>
     </ClCompile>
-    <ClCompile Include="ImguiClass.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="FileBrowser.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="TransformInspector.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="InputClass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="ImguiClass.cpp">
+      <Filter>소스 파일\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="TransformInspector.cpp">
+      <Filter>소스 파일\UI</Filter>
+    </ClCompile>
     <ClCompile Include="MainInspector.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="FileBrowser.cpp">
+      <Filter>소스 파일\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

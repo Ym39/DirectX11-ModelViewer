@@ -212,15 +212,15 @@ bool GraphicsClass::Render()
     //2D ·»´õ¸µ ³¡
 
     bool loadFbx = false;
-    string loadPath;
+    fs::path loadPath;
     //IMGUI ·»´õ¸µ
-    mImgui->Render(&loadFbx,loadPath,mObject->Transfrom());
+    mImgui->Render(&loadFbx,loadPath, meshMap[mCurrentRenderMesh].Transfrom(),meshMap,mCurrentRenderMesh);
 
     if (loadFbx == true)
     {
-        mCurrentRenderMesh = loadPath;
+        std::string meshKey = loadPath.filename().string();
         GameObject loadObject;
-        Mesh* loadMesh = mFbxLoader->LoadFbx(const_cast<char*>(mCurrentRenderMesh.c_str()));
+        Mesh* loadMesh = mFbxLoader->LoadFbx(const_cast<char*>(loadPath.string().c_str()));
         bool result = loadMesh->Initialize(mDirect->GetDevice());
         if (result == false)
         {
@@ -228,7 +228,8 @@ bool GraphicsClass::Render()
         }
         loadObject.SetMesh(loadMesh);
         loadObject.SetTexture(mTexture);
-        meshMap.insert(std::pair<std::string, GameObject>(loadPath, loadObject));
+        meshMap.insert(std::pair<std::string, GameObject>(meshKey, loadObject));
+
     }
 
     mDirect->EndScene();

@@ -28,20 +28,44 @@ FileBrowser::FileBrowser() :
 	mSelectFilePath = "";
 }
 
-bool FileBrowser::Render(bool* loadFbx, std::string& filePath)
+bool FileBrowser::Render(bool* loadFbx, fs::path& filePath,bool* active)
 {
+	if (*active == false)
+	{
+		return false;
+	}
+
 	if (mIsLatest == false)
 	{
 		mCurrentDirectoryFileNames.clear();
 		for (const auto entry : std::filesystem::directory_iterator(mCurrentPath))
 		{
-			mCurrentDirectoryFileNames.push_back(entry.path().filename().string());
+			if (entry.is_directory() || entry.path().extension() == ".fbx")
+			{
+				mCurrentDirectoryFileNames.push_back(entry.path().filename().string());
+			}
+
+			//mCurrentDirectoryFileNames.push_back(entry.path().filename().string());
 		}
 		mIsLatest = true;
 	}
 
-	ImGui::Begin("File");
+	ImGui::Begin("File",active,ImGuiWindowFlags_MenuBar);
+	/*if (ImGui::BeginMenuBar())
+	{
+		if (ImGui::BeginMenu("Close"))
+		{
+			if (ImGui::MenuItem("Close"))
+			{
+			    *active = false;
+			}
+			ImGui::EndMenu();
+		}
+		ImGui::EndMenuBar();
+	}*/
+
 	ImGui::Text((mCurrentPath.string()).c_str());
+	
 	if (ImGui::Button("Root"))
 	{
 		mCurrentPath = mRootPath;
@@ -77,19 +101,22 @@ bool FileBrowser::Render(bool* loadFbx, std::string& filePath)
 		}
 		else
 		{
+			mSelectPath = selectPath;
 			mSelectFilePath = selectPath.string();
 			mSeletFilePathCstr = const_cast<char*>(mSelectFilePath.c_str());
 
 		}
 	}
 
+	ImGui::Text(mSelectFilePath.c_str());
+
 	if (ImGui::Button("Load"))
 	{
 		*loadFbx = true;
-		filePath = mSelectFilePath;
+		filePath = mSelectPath;
+		*active = false;
 	}
-	
-	ImGui::Text(mSelectFilePath.c_str());
+
 	ImGui::End();
 
 	return *loadFbx;
