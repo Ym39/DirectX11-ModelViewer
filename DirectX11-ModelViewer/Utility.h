@@ -71,6 +71,11 @@ struct VertexType
 	{
 		bool sameBlendingInfo = true;
 
+		if (blendingInfo.size() != rhs.blendingInfo.size())
+		{
+			return false;
+		}
+
 		if (!(blendingInfo.empty() && rhs.blendingInfo.empty()))
 		{
 			// Each vertex should only have 4 index-weight blending info pairs

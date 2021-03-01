@@ -175,6 +175,7 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SkinnedMeshShader.h" />
+    <ClInclude Include="SpecularShaderClass.h" />
     <ClInclude Include="SystemClass.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Texture.h" />
@@ -204,6 +205,7 @@
     <ClCompile Include="MathHelper.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="SkinnedMeshShader.cpp" />
+    <ClCompile Include="SpecularShaderClass.cpp" />
     <ClCompile Include="SystemClass.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Time.cpp" />
@@ -221,6 +223,24 @@
     <None Include="DirectXTex\DirectXTex.inl" />
     <None Include="SkinnedMeshPixelShader.HLSL" />
     <None Include="SkinnedMeshVertexShader.HLSL" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SpecularVertexShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SpecularPixelShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

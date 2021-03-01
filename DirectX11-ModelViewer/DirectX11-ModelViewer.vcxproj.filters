@@ -129,6 +129,9 @@
     <ClInclude Include="ImguiClass.h">
       <Filter>헤더 파일\UI</Filter>
     </ClInclude>
+    <ClInclude Include="SpecularShaderClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX11-ModelViewer.rc">
@@ -219,6 +222,9 @@
     <ClCompile Include="FileBrowser.cpp">
       <Filter>소스 파일\UI</Filter>
     </ClCompile>
+    <ClCompile Include="SpecularShaderClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="DirectXTex\DirectXTex.inl">
@@ -228,6 +234,12 @@
       <Filter>셰이더</Filter>
     </None>
     <None Include="SkinnedMeshVertexShader.HLSL">
+      <Filter>셰이더</Filter>
+    </None>
+    <None Include="SpecularVertexShader.hlsl">
+      <Filter>셰이더</Filter>
+    </None>
+    <None Include="SpecularPixelShader.hlsl">
       <Filter>셰이더</Filter>
     </None>
   </ItemGroup>

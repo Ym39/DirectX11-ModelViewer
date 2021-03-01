@@ -14,6 +14,7 @@ FBXLoader::~FBXLoader()
 
 Mesh* FBXLoader::LoadFbx(char* fbxFilename)
 {
+
     mImporter = FbxImporter::Create(mFbxManager,"");
     bool status = mImporter->Initialize(fbxFilename, -1,mFbxManager->GetIOSettings());
     if (status == false)
@@ -49,7 +50,6 @@ Mesh* FBXLoader::LoadFbx(char* fbxFilename)
 
 	mFbxScene->Destroy();
     
-
 	return finalMesh;
 }
 
@@ -305,23 +305,17 @@ XMFLOAT2 FBXLoader::ReadUV(const FbxMesh* mesh, int controlPointIndex, int uvInd
 		}
 	}
 	break;
-	case FbxGeometryElement::eByPolygonVertex:
+	case FbxGeometryElement::eByPolygonVertex:                                                             
 	{
 		switch (vertexUV->GetReferenceMode())
 		{
 		case FbxGeometryElement::eDirect:
-		{
-			result.x = static_cast<float>(vertexUV->GetDirectArray().GetAt(uvIndex).mData[0]);
-			result.y = static_cast<float>(vertexUV->GetDirectArray().GetAt(uvIndex).mData[1]);
-		}
-		break;
 		case FbxGeometryElement::eIndexToDirect:
 		{
-			int index = vertexUV->GetIndexArray().GetAt(uvIndex);
-			result.x = static_cast<float>(vertexUV->GetDirectArray().GetAt(index).mData[0]);
-			result.y = static_cast<float>(vertexUV->GetDirectArray().GetAt(index).mData[1]);
+			result.x = static_cast<float>(vertexUV->GetDirectArray().GetAt(uvIndex).mData[0]);
+			result.y = 1.0f - static_cast<float>(vertexUV->GetDirectArray().GetAt(uvIndex).mData[1]);
 		}
-		break;
+		break;		
 		}
 	}
 	break;

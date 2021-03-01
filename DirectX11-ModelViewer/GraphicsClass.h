@@ -5,6 +5,7 @@
 #include "Light.h"
 #include "Camera.h"
 #include "SkinnedMeshShader.h"
+#include "SpecularShaderClass.h"
 #include "Texture.h"
 #include "GameObject.h"
 #include "ImguiClass.h"
@@ -33,6 +34,7 @@ private:
 	Light* mLight;
 	Camera* mCamera;
 	SkinnedMeshShader* mShader;
+	SpecularShaderClass* mSpecularShader;
 	Texture* mTexture;
 	GameObject* mObject;
 	ImguiClass* mImgui;

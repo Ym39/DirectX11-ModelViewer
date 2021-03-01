@@ -23,6 +23,7 @@ public:
     ID3D11ShaderResourceView* GetTexture() const;
     int GetIndexCount() const;
     const vector<XMMATRIX>& GetBoneTransform() { return mMesh->GetBoneTransform(); }
+    bool IsHasAnimation() const { return mIsHasAnimation; }
 
 private:
     Mesh* mMesh;
