@@ -1,5 +1,7 @@
 #include "InputClass.h"
 
+InputClass* InputClass::instance = nullptr;
+
 InputClass::InputClass() :m_directInput(nullptr), m_keyboard(nullptr), m_mouse(nullptr)
 {
 }
@@ -62,6 +64,11 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 	result = m_mouse->Acquire();
 	if (FAILED(result))
 		return false;
+
+	if (instance == nullptr)
+	{
+		instance = this;
+	}
 
 	return true;
 }
@@ -135,6 +142,66 @@ bool InputClass::IsLeftArrowPressed()
 bool InputClass::IsRightArrowPressed()
 {
 	if (m_keyboardState[DIK_RIGHT] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool InputClass::IsUpArrowPressed()
+{
+	if (m_keyboardState[DIK_UP] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool InputClass::IsDownArrowPressed()
+{
+	if (m_keyboardState[DIK_DOWN] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool InputClass::IsWPressed()
+{
+	if (m_keyboardState[DIK_W] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool InputClass::IsAPressed()
+{
+	if (m_keyboardState[DIK_A] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool InputClass::IsSPressed()
+{
+	if (m_keyboardState[DIK_S] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool InputClass::IsDPressed()
+{
+	if (m_keyboardState[DIK_D] & 0x80)
 	{
 		return true;
 	}

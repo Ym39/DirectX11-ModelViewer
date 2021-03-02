@@ -6,9 +6,11 @@
 #include "Camera.h"
 #include "SkinnedMeshShader.h"
 #include "SpecularShaderClass.h"
+#include "ColorShader.h"
 #include "Texture.h"
 #include "GameObject.h"
 #include "ImguiClass.h"
+#include "GridClass.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = false;
@@ -33,8 +35,10 @@ private:
 	Mesh* mMesh;
 	Light* mLight;
 	Camera* mCamera;
+	GridClass* mGrid;
 	SkinnedMeshShader* mShader;
 	SpecularShaderClass* mSpecularShader;
+	ColorShader* mColorShader;
 	Texture* mTexture;
 	GameObject* mObject;
 	ImguiClass* mImgui;

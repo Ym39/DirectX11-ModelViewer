@@ -132,6 +132,12 @@
     <ClInclude Include="SpecularShaderClass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="GridClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorShader.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX11-ModelViewer.rc">
@@ -225,6 +231,12 @@
     <ClCompile Include="SpecularShaderClass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="GridClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorShader.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="DirectXTex\DirectXTex.inl">
@@ -240,6 +252,9 @@
       <Filter>셰이더</Filter>
     </None>
     <None Include="SpecularPixelShader.hlsl">
+      <Filter>셰이더</Filter>
+    </None>
+    <None Include="ColorShader.hlsl">
       <Filter>셰이더</Filter>
     </None>
   </ItemGroup>

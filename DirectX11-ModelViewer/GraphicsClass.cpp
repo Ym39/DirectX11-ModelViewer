@@ -84,6 +84,20 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
         return false;
     }
 
+    mGrid = new GridClass;
+    result = mGrid->Initialize(mDirect->GetDevice());
+    if (result == false)
+    {
+        return false;
+    }
+
+    mColorShader = new ColorShader;
+    result = mColorShader->Initialize(mDirect->GetDevice(), hwnd);
+    if (result == false)
+    {
+        return false;
+    }
+
     /*Texture* texture = new Texture;
     result = texture->Initialize(mDirect->GetDevice(),mDirect->GetDeviceContext(),"Texture\\map.dds");
     if (result == false)
@@ -172,6 +186,20 @@ void GraphicsClass::Shutdown()
         delete mObject;
         mObject = nullptr;
     }
+
+    if (mGrid)
+    {
+        mGrid->Shutdown();
+        delete mGrid;
+        mGrid = nullptr;
+    }
+
+    if (mColorShader)
+    {
+        mColorShader->Shutdown();
+        delete mColorShader;
+        mColorShader = nullptr;
+    }
 }
 
 bool GraphicsClass::Frame()
@@ -179,6 +207,8 @@ bool GraphicsClass::Frame()
     bool result;
 
     //mObject->Update(ApplicationHandle->DeltaTime());
+    InputClass::GetInstance()->IsDownArrowPressed();
+
 
     if (mCurrentRenderMesh != "")
     {
@@ -199,7 +229,7 @@ bool GraphicsClass::Render()
     bool result;
 	XMMATRIX worldMatrix, worldMatrix_2D, viewMatrix, projectionMatrix, orthoMatrix;
 
-    mDirect->BeginScene(0.0f,1.0f,0.0f,1.0f);
+    mDirect->BeginScene(0.0f,0.0f,0.0f,1.0f);
 
 	mCamera->Render();
 
@@ -208,6 +238,10 @@ bool GraphicsClass::Render()
     mDirect->GetProjectionMatrix(projectionMatrix);
     mDirect->GetOrthoMatrix(orthoMatrix);
     mCamera->GetViewMatrix(viewMatrix);
+
+    //그리드 렌더링
+    mGrid->Render(mDirect->GetDeviceContext());
+    mColorShader->Render(mDirect->GetDeviceContext(), mGrid->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
 
     if (mCurrentRenderMesh != "")
     {

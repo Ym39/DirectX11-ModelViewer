@@ -20,13 +20,29 @@ public:
 	bool IsEscapePressed();
 	bool IsLeftArrowPressed();
 	bool IsRightArrowPressed();
+	bool IsUpArrowPressed();
+	bool IsDownArrowPressed();
+
+	bool IsWPressed();
+	bool IsAPressed();
+	bool IsSPressed();
+	bool IsDPressed();
+
 	void GetMouseLocation(int&, int&);
+
+public:
+	static InputClass* GetInstance()
+	{
+		return instance;
+	}
 
 private:
 	bool ReadKeyboard();
 	bool ReadMouse();
 	void ProcessInput();
 private:
+	static InputClass* InputClass::instance;
+
 	IDirectInput8* m_directInput;
 	IDirectInputDevice8* m_keyboard;
 	IDirectInputDevice8* m_mouse;
@@ -37,4 +53,5 @@ private:
 	int m_screenWidth, m_screenHeight;
 	int m_mouseX, m_mouseY;
 };
+
 
