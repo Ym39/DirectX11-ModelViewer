@@ -1,5 +1,6 @@
 #pragma once
 #include <directxmath.h>
+#include"Transform.h"
 using namespace DirectX;
 
 class Camera
@@ -17,10 +18,12 @@ public:
 
 	void Render();
 	void GetViewMatrix(XMMATRIX&);
+	Transform& GetTransform() { return mTransform; }
 
 private:
 	float mPositionX, mPositionY, mPositionZ;
 	float mRotationX, mRotationY, mRotationZ;
+	Transform mTransform;
 	XMMATRIX mViewMatrix;
 };
 

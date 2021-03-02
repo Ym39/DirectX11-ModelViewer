@@ -21,26 +21,30 @@ Camera::~Camera()
 
 void Camera::SetPosition(float x, float y, float z)
 {
-	mPositionX = x;
+	/*mPositionX = x;
 	mPositionY = y;
-	mPositionZ = z;
+	mPositionZ = z;*/
+	mTransform.SetPosition(XMFLOAT3(x,y,z));
 }
 
 void Camera::SetRotation(float x, float y, float z)
 {
-	mRotationX = x;
+	/*mRotationX = x;
 	mRotationY = y;
-	mRotationZ = z;
+	mRotationZ = z;*/
+	mTransform.SetRotation(XMFLOAT3(x, y, z));
 }
 
 XMFLOAT3 Camera::GetPosition()
 {
-	return XMFLOAT3(mPositionX,mPositionY,mPositionZ);
+	//return XMFLOAT3(mPositionX,mPositionY,mPositionZ);
+	return mTransform.GetRotation();
 }
 
 XMFLOAT3 Camera::GetRotation()
 {
-	return XMFLOAT3(mRotationX,mRotationY,mRotationZ);
+	//return XMFLOAT3(mRotationX,mRotationY,mRotationZ);
+	return mTransform.GetPosition();
 }
 
 void Camera::Render()
@@ -65,7 +69,7 @@ void Camera::Render()
 	position.z = mPositionZ;
 
 	// Load it into a XMVECTOR structure.
-	positionVector = XMLoadFloat3(&position);
+	positionVector = XMLoadFloat3(&mTransform.GetPosition());
 
 	// Setup where the camera is looking by default.
 	lookAt.x = 0.0f;
@@ -76,9 +80,9 @@ void Camera::Render()
 	lookAtVector = XMLoadFloat3(&lookAt);
 
 	// Set the yaw (Y axis), pitch (X axis), and roll (Z axis) rotations in radians.
-	pitch = mRotationX * 0.0174532925f;
-	yaw = mRotationY * 0.0174532925f;
-	roll = mRotationZ * 0.0174532925f;
+	pitch = mTransform.GetRotation().x * 0.0174532925f;
+	yaw = mTransform.GetRotation().y * 0.0174532925f;
+	roll = mTransform.GetRotation().z * 0.0174532925f;
 
 	// Create the rotation matrix from the yaw, pitch, and roll values.
 	rotationMatrix = XMMatrixRotationRollPitchYaw(pitch, yaw, roll);

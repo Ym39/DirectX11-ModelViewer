@@ -205,10 +205,54 @@ void GraphicsClass::Shutdown()
 bool GraphicsClass::Frame()
 {
     bool result;
+    static float speed = 0.2f;
 
     //mObject->Update(ApplicationHandle->DeltaTime());
-    InputClass::GetInstance()->IsDownArrowPressed();
+    if (InputClass::GetInstance()->IsWPressed() == true)
+    {
+        XMVECTOR forward = XMLoadFloat3(&mCamera->GetTransform().Forward());
+        XMFLOAT3 delta;
+        XMStoreFloat3(&delta , forward * speed * ApplicationHandle->DeltaTime());
+        mCamera->GetTransform().Translate(delta);
+    }
+    if (InputClass::GetInstance()->IsSPressed() == true)
+    {
+        XMVECTOR back = -XMLoadFloat3(&mCamera->GetTransform().Forward());
+        XMFLOAT3 delta;
+        XMStoreFloat3(&delta, back * speed * ApplicationHandle->DeltaTime());
+        mCamera->GetTransform().Translate(delta);
+    }
+    if (InputClass::GetInstance()->IsAPressed() == true)
+    {
+        XMVECTOR left = -XMLoadFloat3(&mCamera->GetTransform().Right());
+        XMFLOAT3 delta;
+        XMStoreFloat3(&delta, left * speed * ApplicationHandle->DeltaTime());
+        mCamera->GetTransform().Translate(delta);
+    }
+    if (InputClass::GetInstance()->IsDPressed() == true)
+    {
+        XMVECTOR right = XMLoadFloat3(&mCamera->GetTransform().Right());
+        XMFLOAT3 delta;
+        XMStoreFloat3(&delta, right * speed * ApplicationHandle->DeltaTime());
+        mCamera->GetTransform().Translate(delta);
+    }
 
+    if (InputClass::GetInstance()->IsUpArrowPressed() == true)
+    {
+        mCamera->GetTransform().Rotate(-speed * ApplicationHandle->DeltaTime(), Axis::Xaxis);
+    }
+    if (InputClass::GetInstance()->IsDownArrowPressed() == true)
+    {
+        mCamera->GetTransform().Rotate(speed * ApplicationHandle->DeltaTime(), Axis::Xaxis);
+    }
+    if (InputClass::GetInstance()->IsRightArrowPressed() == true)
+    {
+        mCamera->GetTransform().Rotate(speed * ApplicationHandle->DeltaTime(), Axis::Yaxis);
+    }
+    if (InputClass::GetInstance()->IsLeftArrowPressed() == true)
+    {
+        mCamera->GetTransform().Rotate(-speed * ApplicationHandle->DeltaTime(), Axis::Yaxis);
+    }
 
     if (mCurrentRenderMesh != "")
     {
