@@ -216,6 +216,36 @@ void InputClass::GetMouseLocation(int& mouseX, int& mouseY)
 	return;
 }
 
+bool InputClass::IsMouse0Pressed()
+{
+	if (m_mouseState.rgbButtons[0] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool InputClass::IsMouse1Pressed()
+{
+	if (m_mouseState.rgbButtons[1] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+float InputClass::GetMouseX()
+{
+	return static_cast<float>(m_mouseState.lX);
+}
+
+float InputClass::GetMouseY()
+{
+	return static_cast<float>(m_mouseState.lY);
+}
+
 bool InputClass::ReadKeyboard()
 {
 	HRESULT result;

@@ -29,6 +29,12 @@ public:
 	bool IsDPressed();
 
 	void GetMouseLocation(int&, int&);
+	bool IsMouse0Pressed();
+	bool IsMouse1Pressed();
+
+	float GetMouseX();
+	float GetMouseY();
+	
 
 public:
 	static InputClass* GetInstance()
