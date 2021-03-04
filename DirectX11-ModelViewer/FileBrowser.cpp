@@ -28,6 +28,8 @@ FileBrowser::FileBrowser() :
 	mSelectFilePath = "";
 }
 
+
+
 bool FileBrowser::Render(bool* loadFbx, fs::path& filePath,bool* active)
 {
 	if (*active == false)

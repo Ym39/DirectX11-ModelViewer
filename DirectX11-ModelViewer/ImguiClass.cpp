@@ -16,13 +16,15 @@ void ImguiClass::Initialize(HWND hwnd, ID3D11Device* device, ID3D11DeviceContext
 	ImGui::StyleColorsDark();
 }
 
-void ImguiClass::Render(bool* loadFbx, fs::path& filePath,Transform& transform, std::unordered_map<std::string, GameObject>& meshMap, string& renderKey)
+void ImguiClass::Render(bool* loadFbx, fs::path& filePath,Transform& transform, std::unordered_map<std::string, GameObject>& meshMap, string& renderKey, Camera& camera)
 {
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
 	mMain.Render(&mActiveModelBrowser,meshMap,renderKey);
+
+	mCamerUi.Render(camera);
 
     mFileBrowser.Render(loadFbx,filePath,&mActiveModelBrowser);
 	

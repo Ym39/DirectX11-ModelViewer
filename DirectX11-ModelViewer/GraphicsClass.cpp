@@ -290,9 +290,11 @@ bool GraphicsClass::Render()
     mDirect->GetOrthoMatrix(orthoMatrix);
     mCamera->GetViewMatrix(viewMatrix);
 
+    static XMMATRIX gridWorldMatrix = XMMatrixScaling(50.0f, 50.0f, 50.0f);
+
     //±×¸®µå ·»´õ¸µ
     mGrid->Render(mDirect->GetDeviceContext());
-    mColorShader->Render(mDirect->GetDeviceContext(), mGrid->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
+    mColorShader->Render(mDirect->GetDeviceContext(), mGrid->GetIndexCount(), gridWorldMatrix, viewMatrix, projectionMatrix);
 
     if (mCurrentRenderMesh != "")
     {
@@ -317,7 +319,7 @@ bool GraphicsClass::Render()
     bool loadFbx = false;
     fs::path loadPath;
     //IMGUI ·»´õ¸µ
-    mImgui->Render(&loadFbx,loadPath, meshMap[mCurrentRenderMesh].Transfrom(),meshMap,mCurrentRenderMesh);
+    mImgui->Render(&loadFbx,loadPath, meshMap[mCurrentRenderMesh].Transfrom(),meshMap,mCurrentRenderMesh,*mCamera);
 
     if (loadFbx == true)
     {

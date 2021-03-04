@@ -151,6 +151,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CameraTransform.h" />
     <ClInclude Include="ColorShader.h" />
     <ClInclude Include="D3DClass.h" />
     <ClInclude Include="DirectX11-ModelViewer.h" />
@@ -188,6 +189,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CameraTransform.cpp" />
     <ClCompile Include="ColorShader.cpp" />
     <ClCompile Include="D3DClass.cpp" />
     <ClCompile Include="FBXLoader.cpp" />

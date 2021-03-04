@@ -38,13 +38,13 @@ void Camera::SetRotation(float x, float y, float z)
 XMFLOAT3 Camera::GetPosition()
 {
 	//return XMFLOAT3(mPositionX,mPositionY,mPositionZ);
-	return mTransform.GetRotation();
+	return mTransform.GetPosition();
 }
 
 XMFLOAT3 Camera::GetRotation()
 {
 	//return XMFLOAT3(mRotationX,mRotationY,mRotationZ);
-	return mTransform.GetPosition();
+	return mTransform.GetRotation();
 }
 
 void Camera::Render()

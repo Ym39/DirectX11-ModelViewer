@@ -43,7 +43,7 @@ public:
 	}
 
 private:
-	bool ReadKeyboard();
+	bool ReadKeyboard(); 
 	bool ReadMouse();
 	void ProcessInput();
 private:

@@ -69,8 +69,8 @@ bool GridClass::InitializeBuffers(ID3D11Device* device)
 		for (int i = 0; i < (gridWidth - 1); i++)
 		{
 			//Line1-Upper left
-			positionX = static_cast<float>(i);
-			positionZ = static_cast<float>(j + 1);
+			positionX = static_cast<float>(i) - gridWidth/2;
+			positionZ = static_cast<float>(j + 1) - gridHeight / 2;
 
 			vertices[index].position = XMFLOAT3(positionX, 0.0f, positionZ);
 			vertices[index].color = color;
@@ -78,8 +78,8 @@ bool GridClass::InitializeBuffers(ID3D11Device* device)
 			index++;
 
 			//Line1-Upper right
-			positionX = static_cast<float>(i + 1);
-			positionZ = static_cast<float>(j + 1);
+			positionX = static_cast<float>(i + 1) - gridWidth / 2;
+			positionZ = static_cast<float>(j + 1) - gridHeight / 2;
 
 			vertices[index].position = XMFLOAT3(positionX, 0.0f, positionZ);
 			vertices[index].color = color;
@@ -87,8 +87,8 @@ bool GridClass::InitializeBuffers(ID3D11Device* device)
 			index++;
 
 			//Line2-Upper right
-			positionX = static_cast<float>(i + 1);
-			positionZ = static_cast<float>(j + 1);
+			positionX = static_cast<float>(i + 1) - gridWidth / 2;
+			positionZ = static_cast<float>(j + 1) - gridHeight / 2;
 
 			vertices[index].position = XMFLOAT3(positionX, 0.0f, positionZ);
 			vertices[index].color = color;
@@ -96,8 +96,8 @@ bool GridClass::InitializeBuffers(ID3D11Device* device)
 			index++;
 
 			//Line2-Bottom right
-			positionX = static_cast<float>(i + 1);
-			positionZ = static_cast<float>(j);
+			positionX = static_cast<float>(i + 1) - gridWidth / 2;
+			positionZ = static_cast<float>(j) - gridHeight / 2;
 
 			vertices[index].position = XMFLOAT3(positionX, 0.0f, positionZ);
 			vertices[index].color = color;
@@ -105,8 +105,8 @@ bool GridClass::InitializeBuffers(ID3D11Device* device)
 			index++;
 
 			//Line3-Bottom right
-			positionX = static_cast<float>(i + 1);
-			positionZ = static_cast<float>(j);
+			positionX = static_cast<float>(i + 1) - gridWidth / 2;
+			positionZ = static_cast<float>(j) - gridHeight / 2;
 
 			vertices[index].position = XMFLOAT3(positionX, 0.0f, positionZ);
 			vertices[index].color = color;
@@ -114,8 +114,8 @@ bool GridClass::InitializeBuffers(ID3D11Device* device)
 			index++;
 
 			//Line3-Bottom Left
-			positionX = static_cast<float>(i);
-			positionZ = static_cast<float>(j);
+			positionX = static_cast<float>(i) - gridWidth / 2;
+			positionZ = static_cast<float>(j) - gridHeight / 2;
 
 			vertices[index].position = XMFLOAT3(positionX, 0.0f, positionZ);
 			vertices[index].color = color;
@@ -123,8 +123,8 @@ bool GridClass::InitializeBuffers(ID3D11Device* device)
 			index++;
 
 			//Line4-Bottom left
-			positionX = static_cast<float>(i);
-			positionZ = static_cast<float>(j);
+			positionX = static_cast<float>(i) - gridWidth / 2;
+			positionZ = static_cast<float>(j) - gridHeight / 2;
 
 			vertices[index].position = XMFLOAT3(positionX, 0.0f, positionZ);
 			vertices[index].color = color;
@@ -132,8 +132,8 @@ bool GridClass::InitializeBuffers(ID3D11Device* device)
 			index++;
 
 			//Line4-Bottom right
-			positionX = static_cast<float>(i);
-			positionZ = static_cast<float>(j + 1);
+			positionX = static_cast<float>(i) - gridWidth / 2;
+			positionZ = static_cast<float>(j + 1) - gridHeight / 2;
 
 			vertices[index].position = XMFLOAT3(positionX, 0.0f, positionZ);
 			vertices[index].color = color;
