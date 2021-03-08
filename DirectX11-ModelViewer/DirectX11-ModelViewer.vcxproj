@@ -88,13 +88,13 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.2\include;F:\VisualStudio Project\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;G:\ModelViewer\DirectX11-ModelViewer\DirectXTex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.2\include;F:\VisualStudio Project\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;G:\ModelViewer\DirectX11-ModelViewer\DirectXTex;C:\Users\변예민\Desktop\VSProject\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.2\lib\vs2019\x86\debug;F:\VisualStudio Project\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;G:\ModelViewer\DirectX11-ModelViewer\DirectXTex;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.2\lib\vs2019\x86\debug;F:\VisualStudio Project\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;G:\ModelViewer\DirectX11-ModelViewer\DirectXTex;C:\Users\변예민\Desktop\VSProject\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>DirectXTex.lib;libfbxsdk-md.lib;libxml2-md.lib;zlib-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -123,14 +123,14 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.2\include;F:\VisualStudio Project\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.2\include;F:\VisualStudio Project\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;C:\Users\변예민\Desktop\VSProject\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>DirectXTex.lib;libfbxsdk-md.lib;libxml2-md.lib;zlib-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>G:\ModelViewer\DirectX11-ModelViewer\DirectXTex;C:\Program Files\Autodesk\FBX\FBX SDK\2020.2\lib\vs2019\x86\debug;F:\VisualStudio Project\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>G:\ModelViewer\DirectX11-ModelViewer\DirectXTex;C:\Program Files\Autodesk\FBX\FBX SDK\2020.2\lib\vs2019\x86\debug;F:\VisualStudio Project\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;C:\Users\변예민\Desktop\VSProject\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
