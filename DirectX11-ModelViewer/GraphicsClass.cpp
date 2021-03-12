@@ -319,7 +319,7 @@ bool GraphicsClass::Render()
     bool loadFbx = false;
     fs::path loadPath;
     //IMGUI ·»´õ¸µ
-    mImgui->Render(&loadFbx,loadPath, meshMap[mCurrentRenderMesh].Transfrom(),meshMap,mCurrentRenderMesh,*mCamera);
+    mImgui->Render(&loadFbx,loadPath, meshMap[mCurrentRenderMesh].Transfrom(),meshMap,mCurrentRenderMesh,*mCamera,mLight);
 
     if (loadFbx == true)
     {

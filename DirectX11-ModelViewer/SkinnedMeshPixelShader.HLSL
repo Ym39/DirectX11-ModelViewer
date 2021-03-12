@@ -45,7 +45,9 @@ float4 PS(PixelInputType input) : SV_TARGET
 	   outputColor += diffuse * diffuseColor;
 
 	   specular = saturate(dot(input.reflection, -input.viewDirection));
+	   //specular += specularColor;
 	   specular = pow(specular, specularPower);
+	   specular *= specularColor;
 	}
 	//Determine the final amount of diffuse color based on the diffuse color combine with the light intensity.
 	outputColor = outputColor * textureColor;

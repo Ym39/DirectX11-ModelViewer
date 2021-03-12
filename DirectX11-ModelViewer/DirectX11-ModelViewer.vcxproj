@@ -173,6 +173,7 @@
     <ClInclude Include="IMGUI\imstb_truetype.h" />
     <ClInclude Include="InputClass.h" />
     <ClInclude Include="Light.h" />
+    <ClInclude Include="LightState.h" />
     <ClInclude Include="MainInspector.h" />
     <ClInclude Include="MathHelper.h" />
     <ClInclude Include="Mesh.h" />
@@ -206,6 +207,7 @@
     <ClCompile Include="IMGUI\imgui_widgets.cpp" />
     <ClCompile Include="InputClass.cpp" />
     <ClCompile Include="Light.cpp" />
+    <ClCompile Include="LightState.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainInspector.cpp" />
     <ClCompile Include="MathHelper.cpp" />

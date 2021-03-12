@@ -141,6 +141,9 @@
     <ClInclude Include="CameraTransform.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="LightState.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX11-ModelViewer.rc">
@@ -241,6 +244,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="CameraTransform.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="LightState.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
