@@ -48,6 +48,7 @@ PixelInputType VS(VertexInputType input)
 {
 	PixelInputType output;
 
+	input.position.w = 1.0f;
 	// Calculate the position of the vertex against the world, view, and projection matrices.
 	output.position = mul(input.position, worldMatrix);
 

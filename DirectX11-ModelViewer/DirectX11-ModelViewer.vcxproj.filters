@@ -144,6 +144,18 @@
     <ClInclude Include="LightState.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="DepthShaderClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTextureClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowShaderClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX11-ModelViewer.rc">
@@ -249,6 +261,18 @@
     <ClCompile Include="LightState.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="DepthShaderClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTextureClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowShaderClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="DirectXTex\DirectXTex.inl">
@@ -267,6 +291,18 @@
       <Filter>셰이더</Filter>
     </None>
     <None Include="ColorShader.hlsl">
+      <Filter>셰이더</Filter>
+    </None>
+    <None Include="DepthVertex.hlsl">
+      <Filter>셰이더</Filter>
+    </None>
+    <None Include="DepthPixel.hlsl">
+      <Filter>셰이더</Filter>
+    </None>
+    <None Include="ShadowVertexShader.hlsl">
+      <Filter>셰이더</Filter>
+    </None>
+    <None Include="ShadowPixelShader.hlsl">
       <Filter>셰이더</Filter>
     </None>
   </ItemGroup>

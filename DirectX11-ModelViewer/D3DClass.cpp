@@ -43,7 +43,6 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 	D3D11_RASTERIZER_DESC rasterDesc;
-	D3D11_VIEWPORT viewport;
 	float fieldOfView, screenAspect;
 
 	mVsyncEnabled = vsync;
@@ -271,14 +270,14 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 
 	mDeviceContext->RSSetState(mRasterState);
 
-	viewport.Width = (float)screenWidth;
-	viewport.Height = (float)screenHeight;
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
-	viewport.TopLeftX = 0.0f;
-	viewport.TopLeftY = 0.0f;
+	mViewPort.Width = (float)screenWidth;
+	mViewPort.Height = (float)screenHeight;
+	mViewPort.MinDepth = 0.0f;
+	mViewPort.MaxDepth = 1.0f;
+	mViewPort.TopLeftX = 0.0f;
+	mViewPort.TopLeftY = 0.0f;
 
-	mDeviceContext->RSSetViewports(1, &viewport);
+	mDeviceContext->RSSetViewports(1, &mViewPort);
 
 	fieldOfView = 3.141592654f / 4.0f;
 	screenAspect = (float)screenWidth / (float)screenHeight;
@@ -491,4 +490,9 @@ void D3DClass::TurnOffAlphaBlending()
 void D3DClass::SetBackBufferRenderTarget()
 {
 	mDeviceContext->OMSetRenderTargets(1, &mRenderTargetView, mDepthStencilView);
+}
+
+void D3DClass::ResetViewport()
+{
+	mDeviceContext->RSSetViewports(1, &mViewPort);
 }

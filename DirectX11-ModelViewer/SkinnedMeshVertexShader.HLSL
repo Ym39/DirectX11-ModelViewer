@@ -45,6 +45,7 @@ struct PixelInputType
 	float3 diffuse : TEXCOORD1;
 	float3 viewDirection : TEXCOORD2;
 	float3 reflection : TEXCOORD3;
+	float4 depthPosition : TEXTURE0;
 };
 
 
@@ -56,8 +57,6 @@ PixelInputType VS(VertexInputType input)
     PixelInputType output;
 
 	// Change the position vector to be 4 units for proper matrix calculations.
-    input.position.w = 1.0f;
-
 	float weights[4] = { 0.0f, 0.0f, 0.0f, 0.0f};
 	weights[0] = input.weight.x;
 	weights[1] = input.weight.y;
@@ -84,6 +83,8 @@ PixelInputType VS(VertexInputType input)
 	//뷰, 투영 매트릭스에 대한 정점 위치 계산
     output.position = mul(output.position, viewMatrix);
     output.position = mul(output.position, projectionMatrix);
+
+	output.depthPosition = output.position;
 
 	//법선 벡터 계산
 	float3 worldNormal = mul(input.normal, (float3x3)worldMatrix);

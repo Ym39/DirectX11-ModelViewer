@@ -88,13 +88,13 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.2\include;F:\VisualStudio Project\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;G:\ModelViewer\DirectX11-ModelViewer\DirectXTex;C:\Users\변예민\Desktop\VSProject\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.2\include;F:\VisualStudio Project\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;G:\ModelViewer\DirectX11-ModelViewer\DirectXTex;C:\Users\vinoo\Desktop\VSProject\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.2\lib\vs2019\x86\debug;F:\VisualStudio Project\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;G:\ModelViewer\DirectX11-ModelViewer\DirectXTex;C:\Users\변예민\Desktop\VSProject\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.2\lib\vs2019\x86\debug;F:\VisualStudio Project\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;G:\ModelViewer\DirectX11-ModelViewer\DirectXTex;C:\Users\vinoo\Desktop\VSProject\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>DirectXTex.lib;libfbxsdk-md.lib;libxml2-md.lib;zlib-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -154,6 +154,7 @@
     <ClInclude Include="CameraTransform.h" />
     <ClInclude Include="ColorShader.h" />
     <ClInclude Include="D3DClass.h" />
+    <ClInclude Include="DepthShaderClass.h" />
     <ClInclude Include="DirectX11-ModelViewer.h" />
     <ClInclude Include="DirectXTex\DirectXTex.h" />
     <ClInclude Include="FBXLoader.h" />
@@ -177,7 +178,10 @@
     <ClInclude Include="MainInspector.h" />
     <ClInclude Include="MathHelper.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="ModelClass.h" />
+    <ClInclude Include="RenderTextureClass.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="ShadowShaderClass.h" />
     <ClInclude Include="SkinnedMeshShader.h" />
     <ClInclude Include="SpecularShaderClass.h" />
     <ClInclude Include="SystemClass.h" />
@@ -193,6 +197,7 @@
     <ClCompile Include="CameraTransform.cpp" />
     <ClCompile Include="ColorShader.cpp" />
     <ClCompile Include="D3DClass.cpp" />
+    <ClCompile Include="DepthShaderClass.cpp" />
     <ClCompile Include="FBXLoader.cpp" />
     <ClCompile Include="FileBrowser.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -212,6 +217,9 @@
     <ClCompile Include="MainInspector.cpp" />
     <ClCompile Include="MathHelper.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="ModelClass.cpp" />
+    <ClCompile Include="RenderTextureClass.cpp" />
+    <ClCompile Include="ShadowShaderClass.cpp" />
     <ClCompile Include="SkinnedMeshShader.cpp" />
     <ClCompile Include="SpecularShaderClass.cpp" />
     <ClCompile Include="SystemClass.cpp" />
@@ -256,6 +264,42 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DepthVertex.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DepthPixel.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ShadowVertexShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ShadowPixelShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

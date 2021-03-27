@@ -23,6 +23,8 @@ struct PixelInputType
 	float3 diffuse : TEXCOORD1;
 	float3 viewDirection : TEXCOORD2;
 	float3 reflection : TEXCOORD3;
+	float4 depthPosition : TEXTURE0;
+
 };
 
 
@@ -31,6 +33,13 @@ struct PixelInputType
 ////////////////////////////////////////////////////////////////////////////////
 float4 PS(PixelInputType input) : SV_TARGET
 {
+	//float depthValue;
+	//float4 color;
+
+	//depthValue = input.depthPosition.z / input.depthPosition.w;
+
+	//color = float4(depthValue, depthValue, depthValue,1.0f);
+
     // Sample the pixel color from the texture using the sampler at this texture coordinate location.
     float4 textureColor = shaderTexture.Sample(SampleType, input.tex);
 
@@ -56,4 +65,5 @@ float4 PS(PixelInputType input) : SV_TARGET
 	outputColor = saturate(outputColor + specular);
 
     return outputColor;
+	//return color;
 }

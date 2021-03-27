@@ -11,11 +11,17 @@
 #include "GameObject.h"
 #include "ImguiClass.h"
 #include "GridClass.h"
+#include "RenderTextureClass.h"
+#include "DepthShaderClass.h"
+#include "ShadowShaderClass.h"
+#include "ModelClass.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = false;
 const float SCREEN_DEPTH = 10000.0f;
-const float SCREEN_NEAR = 0.1f;
+const float SCREEN_NEAR = 1.0f;
+const int SHADOWMAP_WIDTH = 1024;
+const int SHADOWMAP_HEIGHT = 1024;
 
 class GraphicsClass
 {
@@ -28,6 +34,7 @@ public:
 	void Shutdown();
 	bool Frame();
 	bool Render();
+	bool RenderSceneToTexture();
 
 private:
     D3DClass* mDirect;
@@ -42,6 +49,10 @@ private:
 	Texture* mTexture;
 	GameObject* mObject;
 	ImguiClass* mImgui;
+	RenderTextureClass* mRenderTexture;
+	DepthShaderClass* mDepthShader;
+	ShadowShaderClass* mShadowShader;
+	ModelClass* mGroundModel;
 
 	std::unordered_map<std::string,GameObject> meshMap;
 	std::string mCurrentRenderMesh;

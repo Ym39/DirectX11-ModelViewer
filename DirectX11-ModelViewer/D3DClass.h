@@ -39,6 +39,7 @@ public:
 	void TurnOffAlphaBlending();
 
 	void SetBackBufferRenderTarget();
+	void ResetViewport();
 
 private:
 	bool mVsyncEnabled;
@@ -61,5 +62,7 @@ private:
 
 	ID3D11BlendState* mAlphaEnableBlendingState;
 	ID3D11BlendState* mAlphaDisableBlendingState;
+
+	D3D11_VIEWPORT mViewPort;
 };
 
