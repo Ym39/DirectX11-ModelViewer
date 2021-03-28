@@ -104,7 +104,7 @@ struct InputVertex
 	XMFLOAT2 texture;
 	XMFLOAT3 normal;
 	XMFLOAT3 weight;
-	unsigned int boneIndices[4];
+	unsigned int boneIndices[4] = {0,};
 };
 
 struct CtrlPoint

@@ -98,6 +98,7 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 		vertices[i].position = XMFLOAT3(mModel[i].x, mModel[i].y, mModel[i].z);
 		vertices[i].texture = XMFLOAT2(mModel[i].tu, mModel[i].tv);
 		vertices[i].normal = XMFLOAT3(mModel[i].nx, mModel[i].ny, mModel[i].nz);
+		vertices[i].weight = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 		indices[i] = i;
 	}
@@ -173,7 +174,7 @@ void ModelClass::ShutdownBuffers()
 void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 {
 	// 정점 버퍼의 단위와 오프셋을 설정합니다.
-	UINT stride = sizeof(VertexType);
+	UINT stride = sizeof(InputVertex);
 	UINT offset = 0;
 
 	// 렌더링 할 수 있도록 입력 어셈블러에서 정점 버퍼를 활성으로 설정합니다.

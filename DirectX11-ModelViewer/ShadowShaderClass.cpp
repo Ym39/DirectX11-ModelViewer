@@ -350,6 +350,7 @@ bool ShadowShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, 
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &mMatrixBuffer);
 
 	deviceContext->PSSetShaderResources(0, 1, &texture);
+	deviceContext->PSSetShaderResources(1, 1, &depthMapTexture);
 
 	result = deviceContext->Map(mLightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))

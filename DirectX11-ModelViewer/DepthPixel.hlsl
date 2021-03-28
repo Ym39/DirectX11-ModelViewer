@@ -11,20 +11,7 @@ float4 PS(PixelInputType input) : SV_TARGET
 
 	depthValue = input.depthPosition.z / input.depthPosition.w;
 
-	if (depthValue < 0.9f)
-	{
-		color = float4(1.0f, 0.0f, 0.0f, 1.0f);
-	}
-
-	if (depthValue > 0.9f)
-	{
-		color = float4(0.0f, 1.0f, 0.0f, 1.0f);
-	}
-
-	if (depthValue > 0.925f)
-	{
-		color = float4(0.0f, 0.0f, 1.0f, 1.0f);
-	}
+	color = float4(depthValue, depthValue, depthValue,1.0f);
 
 	return color;
 }

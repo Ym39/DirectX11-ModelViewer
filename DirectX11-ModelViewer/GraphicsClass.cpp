@@ -66,9 +66,10 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
     mLight->SetAmbientColor(0.1f,0.1f,0.1f,1.0f);
     mLight->SetDiffuseColor(1.0f,1.0f,1.0f,1.0f);
-    mLight->SetPosition(-5.0f,0.0f,-200.0f);
+    mLight->SetPosition(-5.0f,10.0f,-200.0f);
     mLight->SetSpecularColor(1.0f,1.0f,1.0f,1.0f);
     mLight->SetSpecularPower(50.0f);
+    mLight->GenerateProjectionMatrix(SCREEN_DEPTH, SCREEN_NEAR);
 
     mCamera = new Camera;
     mCamera->SetPosition(0.0f,0.0f,-300.0f);
@@ -159,10 +160,17 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     {
         return false;
     }
-    Texture* groundTexture = new Texture;
-    groundTexture->Initialize(mDirect->GetDevice(), mDirect->GetDeviceContext(), "Texture\\CharacterTexture.dds");
-    mGroundModel->SetTexture(groundTexture);
+    mGroundTexture = new Texture;
+    mGroundTexture->Initialize(mDirect->GetDevice(), mDirect->GetDeviceContext(), "Texture\\White.dds");
+    mGroundModel->SetTexture(mGroundTexture);
     mGroundModel->SetPosition(0.f, 0.f, 0.f);
+
+    mGroundMesh = mFbxLoader->LoadFbx("Model\\TsBox.fbx");
+    result = mGroundMesh->Initialize(mDirect->GetDevice());
+    if (result == false)
+    {
+        return false;
+    }
 
     return true;
 }
@@ -373,6 +381,7 @@ bool GraphicsClass::Render()
         {
             mShader->Render(mDirect->GetDeviceContext(), renderObject.GetIndexCount(), renderObject.Transfrom().GetTransform(), viewMatrix, projectionMatrix, renderObject.GetTexture(), mLight->GetPosition(), mLight->GetDiffuseColor(), mLight->GetAmbientColor(), mCamera->GetPosition(), mLight->GetSpecularColor(), mLight->GetSpecularPower(), renderObject.GetBoneTransform());
             //mShadowShader->Render(mDirect->GetDeviceContext(), renderObject.GetIndexCount(), renderObject.Transfrom().GetTransform(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, renderObject.GetTexture(), mRenderTexture->GetShaderResourceView(), mLight->GetPosition(), mLight->GetAmbientColor(), mLight->GetDiffuseColor());
+            //mDepthShader->Render(mDirect->GetDeviceContext(), renderObject.GetIndexCount(), renderObject.Transfrom().GetTransform(), viewMatrix, projectionMatrix);
         }
         else
         {
@@ -385,10 +394,15 @@ bool GraphicsClass::Render()
     /*float posX, posY, posZ;
     mDirect->GetWorldMatrix(worldMatrix);
     mGroundModel->GetPosition(posX, posY, posZ);
-    worldMatrix = XMMatrixTranslation(posX, posY, posZ);
+    worldMatrix = XMMatrixScaling(100.f, 0.0f, 100.f) * XMMatrixTranslation(posX, posY, posZ);
 
     mGroundModel->Render(mDirect->GetDeviceContext());
-    result = mShadowShader->Render(mDirect->GetDeviceContext(), mGroundModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, mGroundModel->GetTexture(), mRenderTexture->GetShaderResourceView(), mLight->GetPosition(), mLight->GetAmbientColor(), mLight->GetDiffuseColor());*/
+    mShadowShader->Render(mDirect->GetDeviceContext(), mGroundModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, mGroundModel->GetTexture(), mRenderTexture->GetShaderResourceView(), mLight->GetPosition(), mLight->GetAmbientColor(), mLight->GetDiffuseColor());*/
+    //mDepthShader->Render(mDirect->GetDeviceContext(), mGroundModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
+
+    mDirect->GetWorldMatrix(worldMatrix);
+    mGroundMesh->Render(mDirect->GetDeviceContext());
+    mShadowShader->Render(mDirect->GetDeviceContext(), mGroundMesh->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix,mGroundTexture->GetTexture(), mRenderTexture->GetShaderResourceView(), mLight->GetPosition(), mLight->GetAmbientColor(), mLight->GetDiffuseColor());
 
     //2D ·»´õ¸µ
     mDirect->TurnZBufferOff();
@@ -454,8 +468,7 @@ bool GraphicsClass::RenderSceneToTexture()
     if (mCurrentRenderMesh != "")
     {
         GameObject& renderObject = meshMap[mCurrentRenderMesh];
-        XMFLOAT3 position = renderObject.Transfrom().GetPosition();
-        worldMatrix = XMMatrixTranslation(position.x, position.y, position.z);
+        worldMatrix = renderObject.Transfrom().GetTransform();
 
         renderObject.Render(mDirect->GetDeviceContext());
         result = mDepthShader->Render(mDirect->GetDeviceContext(), renderObject.GetIndexCount(), worldMatrix, lightViewMatrix, lightProjectionMatrix);
@@ -467,11 +480,18 @@ bool GraphicsClass::RenderSceneToTexture()
 
     mDirect->GetWorldMatrix(worldMatrix);
 
-    mGroundModel->GetPosition(posX, posY, posZ);
-    worldMatrix = XMMatrixTranslation(posX, posY, posZ);
+    /*mGroundModel->GetPosition(posX, posY, posZ);
+    worldMatrix = XMMatrixScaling(100.f, 0.0f, 100.f) * XMMatrixTranslation(posX, posY, posZ);
 
     mGroundModel->Render(mDirect->GetDeviceContext());
     result = mDepthShader->Render(mDirect->GetDeviceContext(), mGroundModel->GetIndexCount(), worldMatrix, lightViewMatrix, lightProjectionMatrix);
+    if (result == false)
+    {
+        return false;
+    }*/
+
+    mGroundMesh->Render(mDirect->GetDeviceContext());
+    result = mDepthShader->Render(mDirect->GetDeviceContext(), mGroundMesh->GetIndexCount(), worldMatrix, lightViewMatrix, lightProjectionMatrix);
     if (result == false)
     {
         return false;

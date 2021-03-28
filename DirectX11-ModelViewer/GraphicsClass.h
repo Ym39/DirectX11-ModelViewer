@@ -53,6 +53,8 @@ private:
 	DepthShaderClass* mDepthShader;
 	ShadowShaderClass* mShadowShader;
 	ModelClass* mGroundModel;
+	Mesh* mGroundMesh;
+	Texture* mGroundTexture;
 
 	std::unordered_map<std::string,GameObject> meshMap;
 	std::string mCurrentRenderMesh;

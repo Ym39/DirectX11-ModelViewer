@@ -48,6 +48,9 @@ Mesh* FBXLoader::LoadFbx(char* fbxFilename)
 	finalMesh->SetAnimationLength(mAnimationLength);
 	finalMesh->SetMeshData(vertices,indices);
 
+	vertices.clear();
+	indices.clear();
+
 	mFbxScene->Destroy();
     
 	return finalMesh;
