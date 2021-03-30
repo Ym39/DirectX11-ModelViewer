@@ -165,12 +165,15 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     mGroundModel->SetTexture(mGroundTexture);
     mGroundModel->SetPosition(0.f, 0.f, 0.f);
 
-    mGroundMesh = mFbxLoader->LoadFbx("Model\\TsBox.fbx");
+    mGroundMesh = mFbxLoader->LoadFbx("Model\\floor.fbx");
     result = mGroundMesh->Initialize(mDirect->GetDevice());
     if (result == false)
     {
         return false;
     }
+
+    mDirect->GetWorldMatrix(floorWorld);
+    floorWorld *= XMMatrixRotationRollPitchYaw(XMConvertToRadians(90.0f), 0.0f, 0.0f);
 
     return true;
 }
@@ -402,7 +405,7 @@ bool GraphicsClass::Render()
 
     mDirect->GetWorldMatrix(worldMatrix);
     mGroundMesh->Render(mDirect->GetDeviceContext());
-    mShadowShader->Render(mDirect->GetDeviceContext(), mGroundMesh->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix,mGroundTexture->GetTexture(), mRenderTexture->GetShaderResourceView(), mLight->GetPosition(), mLight->GetAmbientColor(), mLight->GetDiffuseColor());
+    mShadowShader->Render(mDirect->GetDeviceContext(), mGroundMesh->GetIndexCount(), floorWorld, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix,mGroundTexture->GetTexture(), mRenderTexture->GetShaderResourceView(), mLight->GetPosition(), mLight->GetAmbientColor(), mLight->GetDiffuseColor());
 
     //2D ·»´õ¸µ
     mDirect->TurnZBufferOff();
@@ -491,7 +494,7 @@ bool GraphicsClass::RenderSceneToTexture()
     }*/
 
     mGroundMesh->Render(mDirect->GetDeviceContext());
-    result = mDepthShader->Render(mDirect->GetDeviceContext(), mGroundMesh->GetIndexCount(), worldMatrix, lightViewMatrix, lightProjectionMatrix);
+    result = mDepthShader->Render(mDirect->GetDeviceContext(), mGroundMesh->GetIndexCount(), floorWorld, lightViewMatrix, lightProjectionMatrix);
     if (result == false)
     {
         return false;

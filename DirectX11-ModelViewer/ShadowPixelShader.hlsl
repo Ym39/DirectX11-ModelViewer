@@ -29,20 +29,20 @@ float4 PS(PixelInputType input) : SV_TARGET
 	float lightIntensity;
 	float4 textureColor;
 
-	bias = 0.001f;
+	bias = 0.0000125f;
 
 	color = ambientColor;
 
 	projectTexCoord.x = input.lightViewPosition.x / input.lightViewPosition.w / 2.0f + 0.5f;
 	projectTexCoord.y = -input.lightViewPosition.y / input.lightViewPosition.w / 2.0f + 0.5f;
 
-	if ((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y))
-	{
+	/*if ((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y))
+	{*/
 		depthValue = depthMapTexture.Sample(SampleTypeClamp, projectTexCoord).r;
 		lightDepthValue = input.lightViewPosition.z / input.lightViewPosition.w;
 		lightDepthValue = lightDepthValue - bias;
 
-		if (lightDepthValue < depthValue)
+		if (lightDepthValue <= depthValue)
 		{
 			lightIntensity = saturate(dot(input.normal, input.lightDir));
 
@@ -52,7 +52,7 @@ float4 PS(PixelInputType input) : SV_TARGET
 				color = saturate(color);
 			}
 		}
-	}
+	//}
 
 	textureColor = shaderTexture.Sample(SampleTypeWrap, input.tex);
 	color = color * textureColor;

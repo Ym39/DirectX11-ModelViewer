@@ -36,7 +36,7 @@ void Light::GenerateViewMatrix()
 
 	XMVECTOR upVector = XMLoadFloat3(&up);
 	XMVECTOR position = XMLoadFloat3(&mPosition);
-	XMVECTOR lookAt = XMLoadFloat3(new XMFLOAT3(0.0f, 0.0f, 1.0f));
+	XMVECTOR lookAt = XMLoadFloat3(new XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 	mViewMatrix = XMMatrixLookAtLH(position, lookAt, upVector);
 }

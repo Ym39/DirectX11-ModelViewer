@@ -56,6 +56,8 @@ private:
 	Mesh* mGroundMesh;
 	Texture* mGroundTexture;
 
+	XMMATRIX floorWorld;
+
 	std::unordered_map<std::string,GameObject> meshMap;
 	std::string mCurrentRenderMesh;
 };
