@@ -15,6 +15,7 @@
 #include "DepthShaderClass.h"
 #include "ShadowShaderClass.h"
 #include "ModelClass.h"
+#include "SkinnedDepthShaderClass.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = false;
@@ -52,6 +53,7 @@ private:
 	RenderTextureClass* mRenderTexture;
 	DepthShaderClass* mDepthShader;
 	ShadowShaderClass* mShadowShader;
+	SkinnedDepthShaderClass* mSkinnedDepthShader;
 	ModelClass* mGroundModel;
 	Mesh* mGroundMesh;
 	Texture* mGroundTexture;

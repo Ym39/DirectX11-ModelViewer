@@ -32,12 +32,6 @@ bool ModelClass::Initialize(ID3D11Device* device, const char* modelFilename)
 
 void ModelClass::Shutdown()
 {
-	if (mTexture)
-	{
-		mTexture->Shutdown();
-		delete mTexture;
-		mTexture = nullptr;
-	}
 
 	// 버텍스 및 인덱스 버퍼를 종료합니다.
 	ShutdownBuffers();

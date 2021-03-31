@@ -175,6 +175,13 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     mDirect->GetWorldMatrix(floorWorld);
     floorWorld *= XMMatrixRotationRollPitchYaw(XMConvertToRadians(90.0f), 0.0f, 0.0f);
 
+    mSkinnedDepthShader = new SkinnedDepthShaderClass;
+    result = mSkinnedDepthShader->Initialize(mDirect->GetDevice(), hwnd);
+    if (result == false)
+    {
+        return false;
+    }
+
     return true;
 }
 
@@ -267,6 +274,34 @@ void GraphicsClass::Shutdown()
         mShadowShader->Shutdown();
         delete mShadowShader;
         mShadowShader = nullptr;
+    }
+
+    if (mGroundModel)
+    {
+        mGroundModel->Shutdown();
+        delete mGroundModel;
+        mGroundModel = nullptr;
+    }
+
+    if (mGroundMesh)
+    {
+        mGroundMesh->Shutdown();
+        delete mGroundMesh;
+        mGroundMesh = nullptr;
+    }
+
+    if (mGroundTexture)
+    {
+        mGroundTexture->Shutdown();
+        delete mGroundTexture;
+        mGroundTexture = nullptr;
+    }
+
+    if (mSkinnedDepthShader)
+    {
+        mSkinnedDepthShader->Shutdown();
+        delete mSkinnedDepthShader;
+        mSkinnedDepthShader = nullptr;
     }
 }
 
@@ -474,10 +509,21 @@ bool GraphicsClass::RenderSceneToTexture()
         worldMatrix = renderObject.Transfrom().GetTransform();
 
         renderObject.Render(mDirect->GetDeviceContext());
-        result = mDepthShader->Render(mDirect->GetDeviceContext(), renderObject.GetIndexCount(), worldMatrix, lightViewMatrix, lightProjectionMatrix);
-        if (result == false)
+        if (renderObject.IsHasAnimation())
         {
-            return false;
+            result = mSkinnedDepthShader->Render(mDirect->GetDeviceContext(), renderObject.GetIndexCount(), worldMatrix, lightViewMatrix, lightProjectionMatrix,renderObject.GetBoneTransform());
+            if (result == false)
+            {
+                return false;
+            }
+        }
+        else
+        {
+            result = mDepthShader->Render(mDirect->GetDeviceContext(), renderObject.GetIndexCount(), worldMatrix, lightViewMatrix, lightProjectionMatrix);
+            if (result == false)
+            {
+                return false;
+            }
         }
     }
 

@@ -156,6 +156,9 @@
     <ClInclude Include="ModelClass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="SkinnedDepthShaderClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX11-ModelViewer.rc">
@@ -273,6 +276,9 @@
     <ClCompile Include="ModelClass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="SkinnedDepthShaderClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="DirectXTex\DirectXTex.inl">
@@ -303,6 +309,9 @@
       <Filter>셰이더</Filter>
     </None>
     <None Include="ShadowPixelShader.hlsl">
+      <Filter>셰이더</Filter>
+    </None>
+    <None Include="SkinnedDepthVertexShader.hlsl">
       <Filter>셰이더</Filter>
     </None>
   </ItemGroup>

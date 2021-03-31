@@ -182,6 +182,7 @@
     <ClInclude Include="RenderTextureClass.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ShadowShaderClass.h" />
+    <ClInclude Include="SkinnedDepthShaderClass.h" />
     <ClInclude Include="SkinnedMeshShader.h" />
     <ClInclude Include="SpecularShaderClass.h" />
     <ClInclude Include="SystemClass.h" />
@@ -220,6 +221,7 @@
     <ClCompile Include="ModelClass.cpp" />
     <ClCompile Include="RenderTextureClass.cpp" />
     <ClCompile Include="ShadowShaderClass.cpp" />
+    <ClCompile Include="SkinnedDepthShaderClass.cpp" />
     <ClCompile Include="SkinnedMeshShader.cpp" />
     <ClCompile Include="SpecularShaderClass.cpp" />
     <ClCompile Include="SystemClass.cpp" />
@@ -300,6 +302,15 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SkinnedDepthVertexShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <FileType>Document</FileType>
     </None>
   </ItemGroup>
