@@ -16,7 +16,7 @@ void ImguiClass::Initialize(HWND hwnd, ID3D11Device* device, ID3D11DeviceContext
 	ImGui::StyleColorsDark();
 }
 
-void ImguiClass::Render(bool* loadFbx, fs::path& filePath,Transform& transform, std::unordered_map<std::string, GameObject>& meshMap, string& renderKey, Camera& camera, Light* light)
+void ImguiClass::Render(bool* loadFbx, fs::path& filePath,Transform& transform, std::unordered_map<std::string, GameObject>& meshMap, string& renderKey, Camera& camera, Light* light, GameObject* currentRenderingObject)
 {
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
@@ -31,6 +31,8 @@ void ImguiClass::Render(bool* loadFbx, fs::path& filePath,Transform& transform, 
 	mTransformInspector.Render(transform);
 
 	mLightState.Render(light);
+
+	mBoneTransform.Render(currentRenderingObject);
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

@@ -13,7 +13,9 @@ mObject(nullptr),
 mRenderTexture(nullptr),
 mDepthShader(nullptr),
 mShadowShader(nullptr),
-mGroundModel(nullptr)
+mGroundModel(nullptr),
+mSolidShader(nullptr),
+mArrowModel(nullptr)
 {
 }
 
@@ -182,6 +184,16 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
         return false;
     }
 
+    mSolidShader = new SolidColorShader;
+    result = mSolidShader->Initialize(mDirect->GetDevice(), hwnd, XMFLOAT4(1.0f,0.0f,0.0f,1.0f));
+    if (result == false)
+        return false;
+
+    mArrowModel = new ArrowModel;
+    result = mArrowModel->Initialize(mDirect->GetDevice());
+    if (result == false)
+        return false;
+
     return true;
 }
 
@@ -302,6 +314,20 @@ void GraphicsClass::Shutdown()
         mSkinnedDepthShader->Shutdown();
         delete mSkinnedDepthShader;
         mSkinnedDepthShader = nullptr;
+    }
+
+    if (mSolidShader)
+    {
+        mSolidShader->Shutdown();
+        delete mSolidShader;
+        mSolidShader = nullptr;
+    }
+
+    if (mArrowModel)
+    {
+        mArrowModel->Shutdown();
+        delete mArrowModel;
+        mArrowModel = nullptr;
     }
 }
 
@@ -425,6 +451,9 @@ bool GraphicsClass::Render()
         {
             mSpecularShader->Render(mDirect->GetDeviceContext(), renderObject.GetIndexCount(), renderObject.Transfrom().GetTransform(), viewMatrix, projectionMatrix, renderObject.GetTexture(), mLight->GetPosition(), mLight->GetDiffuseColor(), mLight->GetAmbientColor(), mCamera->GetPosition(), mLight->GetSpecularColor(), mLight->GetSpecularPower());
         }
+
+        mArrowModel->Render(mDirect->GetDeviceContext());
+        mSolidShader->Render(mDirect->GetDeviceContext(), mArrowModel->GetIndexCount(), renderObject.Transfrom().GetTransform() * XMMatrixScaling(100.0f,100.0f,100.0f), viewMatrix, projectionMatrix);
     }
    /* mObject->Render(mDirect->GetDeviceContext());
     mShader->Render(mDirect->GetDeviceContext(), mObject->GetIndexCount(), mObject->Transfrom().GetTransform(), viewMatrix, projectionMatrix, mObject->GetTexture(), mLight->GetPosition(), mLight->GetDiffuseColor(), mLight->GetAmbientColor(), mCamera->GetPosition(), mLight->GetSpecularColor(), mLight->GetSpecularPower(), mObject->GetBoneTransform());*/
@@ -453,7 +482,7 @@ bool GraphicsClass::Render()
     bool loadFbx = false;
     fs::path loadPath;
     //IMGUI ·»´õ¸µ
-    mImgui->Render(&loadFbx,loadPath, meshMap[mCurrentRenderMesh].Transfrom(),meshMap,mCurrentRenderMesh,*mCamera,mLight);
+    mImgui->Render(&loadFbx,loadPath, meshMap[mCurrentRenderMesh].Transfrom(),meshMap,mCurrentRenderMesh,*mCamera,mLight,mCurrentRenderMesh == "" ? nullptr : &(meshMap[mCurrentRenderMesh]));
 
     if (loadFbx == true)
     {

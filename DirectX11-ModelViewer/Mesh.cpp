@@ -82,7 +82,6 @@ void Mesh::UpdateAnimation(float time)
 			XMMATRIX finalTransform = XMMatrixMultiply(boneOffset, toParent);
 			//finalTransform *= XMMatrixScaling(0.01f, 0.01f, 0.01f);
 			finalTransform *= XMMatrixScaling(1.0f, 1.0f, 1.0f);
-
 			mUpdateBoneTransfroms[i] = XMMatrixTranspose(finalTransform);
 			//mUpdateBoneTransfroms[i] = XMMatrixTranspose(XMMatrixIdentity());
 		}

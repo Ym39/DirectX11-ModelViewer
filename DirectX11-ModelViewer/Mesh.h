@@ -23,6 +23,8 @@ public:
 
     const vector<XMMATRIX>& GetBoneTransform(){return mUpdateBoneTransfroms;}
 
+    const Skeleton& GetSkeleton() const { return *mSkeleton; }
+
     bool IsSkinned() const { return mIsSkinnedMesh; }
 private:
     bool InitializeBuffer(ID3D11Device* device);

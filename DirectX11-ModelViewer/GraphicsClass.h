@@ -16,6 +16,8 @@
 #include "ShadowShaderClass.h"
 #include "ModelClass.h"
 #include "SkinnedDepthShaderClass.h"
+#include "SolidColorShader.h"
+#include "ArrowModel.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = false;
@@ -57,6 +59,8 @@ private:
 	ModelClass* mGroundModel;
 	Mesh* mGroundMesh;
 	Texture* mGroundTexture;
+	SolidColorShader* mSolidShader;
+	ArrowModel* mArrowModel;
 
 	XMMATRIX floorWorld;
 
