@@ -2,6 +2,7 @@
 #include<array>
 #include <d3d11.h>
 #include <directxmath.h>
+#include "Bounds.h"
 using namespace DirectX;
 
 constexpr static std::array<XMFLOAT3, 29> arrowPositions = {
@@ -43,15 +44,21 @@ public:
 
 	int GetIndexCount() const { return mIndexCount; }
 
+	bool RayIntersect(XMFLOAT3 rayOrigin, XMFLOAT3 rayDirection, XMFLOAT3 position , XMFLOAT3 arrowScale);
+
 private:
 	bool InitializeBuffers(ID3D11Device* device);
 	void ShutdownBuffers();
 	void RenderBuffers(ID3D11DeviceContext* deviceContext);
+
+	void ComputeBounds();
 
 private:
 	ID3D11Buffer* mVertexBuffer;
 	ID3D11Buffer* mIndexBuffer;
 	int mVertexCount = 0;
 	int mIndexCount = 0;
+
+	Bounds mBounds;
 };
 

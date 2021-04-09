@@ -152,6 +152,7 @@
   <ItemGroup>
     <ClInclude Include="ArrowModel.h" />
     <ClInclude Include="BoneTransformInspector.h" />
+    <ClInclude Include="Bounds.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraTransform.h" />
     <ClInclude Include="ColorShader.h" />
@@ -199,6 +200,7 @@
   <ItemGroup>
     <ClCompile Include="ArrowModel.cpp" />
     <ClCompile Include="BoneTransformInspector.cpp" />
+    <ClCompile Include="Bounds.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraTransform.cpp" />
     <ClCompile Include="ColorShader.cpp" />

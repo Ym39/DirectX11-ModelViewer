@@ -32,6 +32,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
     bool result;
 
+    mScreenWidth = screenWidth;
+    mScreenHeight = screenHeight;
+
     mDirect = new D3DClass;
     if (mDirect == nullptr)
     {
@@ -335,6 +338,8 @@ bool GraphicsClass::Frame()
 {
     bool result;
     static float speed = 0.2f;
+    int mouseX = 0;
+    int mouseY = 0;
 
     if (InputClass::GetInstance()->IsMouse1Pressed() == true)
     {
@@ -393,6 +398,12 @@ bool GraphicsClass::Frame()
     if (mCurrentRenderMesh != "")
     {
         meshMap[mCurrentRenderMesh].Update(ApplicationHandle->DeltaTime());
+
+        if (InputClass::GetInstance()->IsMouse0Pressed())
+        {
+            InputClass::GetInstance()->GetMouseLocation(mouseX, mouseY);
+            TestIntersection(mouseX, mouseY, meshMap[mCurrentRenderMesh].Transfrom().GetPosition());
+        }
     }
 
     result = Render();
@@ -453,7 +464,7 @@ bool GraphicsClass::Render()
         }
 
         mArrowModel->Render(mDirect->GetDeviceContext());
-        mSolidShader->Render(mDirect->GetDeviceContext(), mArrowModel->GetIndexCount(), renderObject.Transfrom().GetTransform() * XMMatrixScaling(100.0f,100.0f,100.0f), viewMatrix, projectionMatrix);
+        mSolidShader->Render(mDirect->GetDeviceContext(), mArrowModel->GetIndexCount(),   XMMatrixScaling(20.0f,20.0f,100.0f) , viewMatrix, projectionMatrix);
     }
    /* mObject->Render(mDirect->GetDeviceContext());
     mShader->Render(mDirect->GetDeviceContext(), mObject->GetIndexCount(), mObject->Transfrom().GetTransform(), viewMatrix, projectionMatrix, mObject->GetTexture(), mLight->GetPosition(), mLight->GetDiffuseColor(), mLight->GetAmbientColor(), mCamera->GetPosition(), mLight->GetSpecularColor(), mLight->GetSpecularPower(), mObject->GetBoneTransform());*/
@@ -580,4 +591,49 @@ bool GraphicsClass::RenderSceneToTexture()
     mDirect->ResetViewport();
 
     return true;
+}
+
+void GraphicsClass::TestIntersection(int mouseX, int mouseY, XMFLOAT3 position)
+{
+    XMMATRIX projectionMatrix, viewMatrix, inverseViewMatrix, inverseWorldMatrix , worldMatrix;
+    XMFLOAT3 direction, origin, rayOrigin, rayDirection;
+
+    float pointX = ((2.0f * (float)mouseX) / (float)mScreenWidth) - 1.0f;
+    float pointY = ((2.0f * (float)mouseY) / (float)mScreenHeight) - 1.0f;
+
+    mDirect->GetProjectionMatrix(projectionMatrix);
+
+    XMFLOAT3X3 projectionMatrix4;
+    XMStoreFloat3x3(&projectionMatrix4, projectionMatrix);
+
+    pointX = pointX / projectionMatrix4._11;
+    pointY = pointY / projectionMatrix4._22;
+
+    mCamera->GetViewMatrix(viewMatrix);
+    inverseViewMatrix = XMMatrixInverse(nullptr, viewMatrix);
+
+    XMFLOAT3X3 inverseViewMatrix4;
+    XMStoreFloat3x3(&inverseViewMatrix4, inverseViewMatrix);
+
+    direction.x = (pointX * inverseViewMatrix4._11) + (pointY * inverseViewMatrix4._21) + inverseViewMatrix4._31;
+    direction.y = (pointX * inverseViewMatrix4._12) + (pointY * inverseViewMatrix4._22) + inverseViewMatrix4._32;
+    direction.z = (pointX * inverseViewMatrix4._13) + (pointY * inverseViewMatrix4._23) + inverseViewMatrix4._33;
+
+    origin = mCamera->GetPosition();
+
+    mDirect->GetWorldMatrix(worldMatrix);
+    worldMatrix *= XMMatrixTranslation(position.x, position.y, position.z);
+
+    inverseWorldMatrix = XMMatrixInverse(nullptr, worldMatrix);
+
+    XMStoreFloat3(&rayOrigin, XMVector3TransformCoord(XMVectorSet(origin.x, origin.y, origin.z, 0.f),inverseViewMatrix));
+    XMStoreFloat3(&direction, XMVector3TransformNormal(XMVectorSet(direction.x, direction.y, direction.z, 0.f), inverseViewMatrix));
+
+    XMStoreFloat3(&rayDirection, XMVector3Normalize(XMVectorSet(direction.x, direction.y, direction.z, 0.f)));
+
+    bool result = mArrowModel->RayIntersect(rayOrigin, rayDirection, position, XMFLOAT3(20.0f, 20.0f, 100.0f));
+    if (result == true)
+    {
+        result = true;
+    }
 }

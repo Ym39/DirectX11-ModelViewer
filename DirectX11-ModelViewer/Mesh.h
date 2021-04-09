@@ -29,7 +29,6 @@ public:
 private:
     bool InitializeBuffer(ID3D11Device* device);
     void ShutdownBuffers();
-   
 
     vector<InputVertex>& GetVertices() { return vertices;}
     vector<unsigned int>& GetIndices() {return indices;}

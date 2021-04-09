@@ -40,6 +40,9 @@ public:
 	bool RenderSceneToTexture();
 
 private:
+	void TestIntersection(int mouseX, int mouseY, XMFLOAT3 position);
+
+private:
     D3DClass* mDirect;
 	FBXLoader* mFbxLoader;
 	Mesh* mMesh;
@@ -66,5 +69,8 @@ private:
 
 	std::unordered_map<std::string,GameObject> meshMap;
 	std::string mCurrentRenderMesh;
+
+	int mScreenWidth;
+	int mScreenHeight;
 };
 
