@@ -599,7 +599,7 @@ void GraphicsClass::TestIntersection(int mouseX, int mouseY, XMFLOAT3 position)
     XMFLOAT3 direction, origin, rayOrigin, rayDirection;
 
     float pointX = ((2.0f * (float)mouseX) / (float)mScreenWidth) - 1.0f;
-    float pointY = ((2.0f * (float)mouseY) / (float)mScreenHeight) - 1.0f;
+    float pointY = (((2.0f * (float)mouseY) / (float)mScreenHeight) - 1.0f) * -1.0f;
 
     mDirect->GetProjectionMatrix(projectionMatrix);
 
@@ -622,12 +622,13 @@ void GraphicsClass::TestIntersection(int mouseX, int mouseY, XMFLOAT3 position)
     origin = mCamera->GetPosition();
 
     mDirect->GetWorldMatrix(worldMatrix);
-    worldMatrix *= XMMatrixTranslation(position.x, position.y, position.z);
+    XMMATRIX translateMatrix = XMMatrixTranslation(position.x, position.y, position.z);
+    worldMatrix = XMMatrixMultiply(worldMatrix,translateMatrix);
 
     inverseWorldMatrix = XMMatrixInverse(nullptr, worldMatrix);
 
-    XMStoreFloat3(&rayOrigin, XMVector3TransformCoord(XMVectorSet(origin.x, origin.y, origin.z, 0.f),inverseViewMatrix));
-    XMStoreFloat3(&direction, XMVector3TransformNormal(XMVectorSet(direction.x, direction.y, direction.z, 0.f), inverseViewMatrix));
+    XMStoreFloat3(&rayOrigin, XMVector3TransformCoord(XMVectorSet(origin.x, origin.y, origin.z, 0.f),inverseWorldMatrix));
+    XMStoreFloat3(&direction, XMVector3TransformNormal(XMVectorSet(direction.x, direction.y, direction.z, 0.f), inverseWorldMatrix));
 
     XMStoreFloat3(&rayDirection, XMVector3Normalize(XMVectorSet(direction.x, direction.y, direction.z, 0.f)));
 

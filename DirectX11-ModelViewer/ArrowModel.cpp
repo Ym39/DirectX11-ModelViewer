@@ -36,9 +36,9 @@ void ArrowModel::Render(ID3D11DeviceContext* deviceContext)
 bool ArrowModel::RayIntersect(XMFLOAT3 rayOrigin, XMFLOAT3 rayDirection, XMFLOAT3 position, XMFLOAT3 arrowScale)
 {
 	XMFLOAT3 center = mBounds.Center();
-	center.x += position.x;
+	/*center.x += position.x;
 	center.y += position.y;
-	center.z += position.z;
+	center.z += position.z;*/
 
 	XMFLOAT3 extens = mBounds.Exents();
 	XMFLOAT3 min;
@@ -75,7 +75,7 @@ bool ArrowModel::RayIntersect(XMFLOAT3 rayOrigin, XMFLOAT3 rayDirection, XMFLOAT
 
 	if (tzmin > tzmax)swap(tzmin, tzmax);
 	
-	if ((tmin > tzmax) || (tzmin > tmax))
+	if ((tmin < tzmax) || (tzmin < tmax))
 		return false;
 
 	if (tzmin > tmin)
@@ -85,6 +85,34 @@ bool ArrowModel::RayIntersect(XMFLOAT3 rayOrigin, XMFLOAT3 rayDirection, XMFLOAT
 		tmax = tzmax;
  
 	return true;
+
+	/*XMFLOAT3 dirfrac(1.f / rayDirection.x, 1.f / rayDirection.y, 1.f / rayDirection.z);
+
+	float t1 = (min.x - rayOrigin.x) * dirfrac.x;
+	float t2 = (max.x - rayOrigin.x) * dirfrac.x;
+	float t3 = (min.y - rayOrigin.y) * dirfrac.y;
+	float t4 = (max.y - rayOrigin.y) * dirfrac.y;
+	float t5 = (min.z - rayOrigin.z) * dirfrac.z;
+	float t6 = (max.z - rayOrigin.z) * dirfrac.z;
+
+	float tmin = max(max(min(t1, t2), min(t3, t4)), min(t5, t6));
+	float tmax = min(min(max(t1, t2), max(t3, t4)), max(t5, t6));
+
+	float t;
+	if (tmax < 0)
+	{
+		t = tmax;
+		return false;
+	}
+
+	if (tmin > tmax)
+	{
+		t = tmax;
+		return false;
+	}
+
+	t = tmin;
+	return true;*/
 }
 
 bool ArrowModel::InitializeBuffers(ID3D11Device* device)
