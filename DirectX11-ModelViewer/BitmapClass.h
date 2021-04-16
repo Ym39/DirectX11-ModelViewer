@@ -43,6 +43,7 @@ private:
 	int mBitmapWidth, mBitmapHeight;
 	int mPreviousPosX, mPreviousPosY;
 
+	
 public:
 	BitmapClass();
 	BitmapClass(const BitmapClass&);

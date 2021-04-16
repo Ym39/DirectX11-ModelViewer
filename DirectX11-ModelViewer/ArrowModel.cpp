@@ -51,42 +51,42 @@ bool ArrowModel::RayIntersect(XMFLOAT3 rayOrigin, XMFLOAT3 rayDirection, XMFLOAT
 	max.y = center.y + extens.y * arrowScale.y;
 	max.z = center.z + extens.z * arrowScale.z;
 
-	//float tmin = (min.x - rayOrigin.x) / rayDirection.x;
-	//float tmax = (max.x - rayOrigin.x) / rayDirection.x;
+	/*float tmin = (min.x - rayOrigin.x) / rayDirection.x;
+	float tmax = (max.x - rayOrigin.x) / rayDirection.x;
 
-	//if (tmin > tmax) swap(tmin, tmax);
+	if (tmin > tmax) swap(tmin, tmax);
 
-	//float tymin = (min.y - rayOrigin.y) / rayDirection.y;
-	//float tymax = (max.y - rayOrigin.y) / rayDirection.y;
+	float tymin = (min.y - rayOrigin.y) / rayDirection.y;
+	float tymax = (max.y - rayOrigin.y) / rayDirection.y;
 
-	//if (tymin > tymax) swap(tymin, tymax);
+	if (tymin > tymax) swap(tymin, tymax);
 
-	//if ((tmin > tymax) || (tymin > tmax))
-	//	return false;
+	if ((tmin > tymax) || (tymin > tmax))
+		return false;
 
-	//if (tymin > tmin)
-	//	tmin = tymin;
+	if (tymin > tmin)
+		tmin = tymin;
 
-	//if (tymax < tmax)
-	//	tmax = tymax;
+	if (tymax < tmax)
+		tmax = tymax;
 
-	//float tzmin = (min.z - rayOrigin.z) / rayDirection.z;
-	//float tzmax = (max.z - rayOrigin.z) / rayDirection.z;
+	float tzmin = (min.z - rayOrigin.z) / rayDirection.z;
+	float tzmax = (max.z - rayOrigin.z) / rayDirection.z;
 
-	//if (tzmin > tzmax)swap(tzmin, tzmax);
-	//
-	//if ((tmin < tzmax) || (tzmin < tmax))
-	//	return false;
+	if (tzmin > tzmax)swap(tzmin, tzmax);
+	
+	if ((tmin < tzmax) || (tzmin < tmax))
+		return false;
 
-	//if (tzmin > tmin)
-	//	tmin = tzmin;
+	if (tzmin > tmin)
+		tmin = tzmin;
 
-	//if (tzmax < tmax)
-	//	tmax = tzmax;
- //
-	//return true;
+	if (tzmax < tmax)
+		tmax = tzmax;
+ 
+	return true;*/
 
-	/*XMFLOAT3 dirfrac(1.f / rayDirection.x, 1.f / rayDirection.y, 1.f / rayDirection.z);
+	XMFLOAT3 dirfrac(1.f / rayDirection.x, 1.f / rayDirection.y, 1.f / rayDirection.z);
 
 	float t1 = (min.x - rayOrigin.x) * dirfrac.x;
 	float t2 = (max.x - rayOrigin.x) * dirfrac.x;
@@ -112,9 +112,9 @@ bool ArrowModel::RayIntersect(XMFLOAT3 rayOrigin, XMFLOAT3 rayDirection, XMFLOAT
 	}
 
 	t = tmin;
-	return true;*/
+	return true;
 
-	float a = (rayDirection.x * rayDirection.x) + (rayDirection.y + rayDirection.y) + (rayDirection.z * rayDirection.z);
+	/*float a = (rayDirection.x * rayDirection.x) + (rayDirection.y + rayDirection.y) + (rayDirection.z * rayDirection.z);
 	float b = ((rayDirection.x * rayOrigin.x) + (rayDirection.y * rayOrigin.y) + (rayDirection.z * rayOrigin.z)) * 2.0f;
 	float c = ((rayOrigin.x * rayOrigin.x) + (rayOrigin.y * rayOrigin.y) + (rayOrigin.z * rayOrigin.z)) - ((extens.z * arrowScale.z) * (extens.z * arrowScale.z));
 
@@ -125,7 +125,7 @@ bool ArrowModel::RayIntersect(XMFLOAT3 rayOrigin, XMFLOAT3 rayDirection, XMFLOAT
 		return false;
 	}
 
-	return true;
+	return true;*/
 }
 
 bool ArrowModel::InitializeBuffers(ID3D11Device* device)

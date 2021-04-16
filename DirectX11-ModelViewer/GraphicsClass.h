@@ -69,6 +69,7 @@ private:
 	BitmapClass* mMouseBitmap = nullptr;
 	TextureShaderClass* mTextureShader = nullptr;
 
+	XMMATRIX mBaseViewMatrix;
 
 	XMMATRIX floorWorld;
 

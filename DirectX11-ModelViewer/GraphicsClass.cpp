@@ -79,6 +79,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     mCamera = new Camera;
     mCamera->SetPosition(0.0f,0.0f,-300.0f);
     mCamera->Render();
+    mCamera->GetViewMatrix(mBaseViewMatrix);
 
     mShader = new SkinnedMeshShader;
     result = mShader->Initialize(mDirect->GetDevice(),hwnd);
@@ -519,7 +520,7 @@ bool GraphicsClass::Render()
         return false;
     }
 
-    if (mTextureShader->Render(mDirect->GetDeviceContext(), mMouseBitmap->GetIndexCount(), worldMatrix, viewMatrix, orthoMatrix, mMouseBitmap->GetTexture()) == false)
+    if (mTextureShader->Render(mDirect->GetDeviceContext(), mMouseBitmap->GetIndexCount(), worldMatrix, mBaseViewMatrix, orthoMatrix, mMouseBitmap->GetTexture()) == false)
     {
         return false;
     }
