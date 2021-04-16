@@ -197,6 +197,16 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     if (result == false)
         return false;
 
+    mMouseBitmap = new BitmapClass;
+    result = mMouseBitmap->Initialize(mDirect->GetDevice(), mDirect->GetDeviceContext(), screenWidth, screenHeight, "Texture/mouse.dds", 32, 32);
+    if (result == false)
+        return false;
+
+    mTextureShader = new TextureShaderClass;
+    result = mTextureShader->Initialize(mDirect->GetDevice(),hwnd);
+    if (result == false)
+        return false;
+
     return true;
 }
 
@@ -331,6 +341,20 @@ void GraphicsClass::Shutdown()
         mArrowModel->Shutdown();
         delete mArrowModel;
         mArrowModel = nullptr;
+    }
+
+    if (mMouseBitmap)
+    {
+        mMouseBitmap->Shutdown();
+        delete mMouseBitmap;
+        mMouseBitmap = nullptr;
+    }
+
+    if (mTextureShader)
+    {
+        mTextureShader->Shutdown();
+        delete mTextureShader;
+        mTextureShader = nullptr;
     }
 }
 
@@ -485,6 +509,20 @@ bool GraphicsClass::Render()
     //2D ·»´õ¸µ
     mDirect->TurnZBufferOff();
     mDirect->TurnOnAlphaBlending();
+
+    int mouseX = 0;
+    int mouseY = 0;
+    InputClass::GetInstance()->GetMouseLocation(mouseX, mouseY);
+
+    if (mMouseBitmap->Render(mDirect->GetDeviceContext(), mouseX, mouseY) == false)
+    {
+        return false;
+    }
+
+    if (mTextureShader->Render(mDirect->GetDeviceContext(), mMouseBitmap->GetIndexCount(), worldMatrix, viewMatrix, orthoMatrix, mMouseBitmap->GetTexture()) == false)
+    {
+        return false;
+    }
 
     mDirect->TurnOffAlphaBlending();
     mDirect->TurnZBufferOn();

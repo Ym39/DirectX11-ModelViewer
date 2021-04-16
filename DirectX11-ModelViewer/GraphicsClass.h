@@ -18,6 +18,8 @@
 #include "SkinnedDepthShaderClass.h"
 #include "SolidColorShader.h"
 #include "ArrowModel.h"
+#include "TextureShaderClass.h"
+#include "BitmapClass.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = false;
@@ -64,6 +66,9 @@ private:
 	Texture* mGroundTexture;
 	SolidColorShader* mSolidShader;
 	ArrowModel* mArrowModel;
+	BitmapClass* mMouseBitmap = nullptr;
+	TextureShaderClass* mTextureShader = nullptr;
+
 
 	XMMATRIX floorWorld;
 

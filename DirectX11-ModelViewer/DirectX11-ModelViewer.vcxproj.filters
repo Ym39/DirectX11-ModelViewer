@@ -28,7 +28,13 @@
     <Filter Include="소스 파일\UI">
       <UniqueIdentifier>{d36a9dfb-cf3a-40bb-abe4-b1c5a583d34f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="헤더 파일\UI">
+    <Filter Include="소스 파일\셰이더 클래스">
+      <UniqueIdentifier>{a7b7b023-9f92-4a9a-96a1-eea2b99a2906}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\셰이더 클래스">
+      <UniqueIdentifier>{7764df23-65e0-45fa-a308-878f10164b91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\셰이더 클래스\UI">
       <UniqueIdentifier>{8cd86e3e-27cc-41b6-b4a3-50a258ac0057}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -70,9 +76,6 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="FBXLoader.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SkinnedMeshShader.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
@@ -118,19 +121,16 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="TransformInspector.h">
-      <Filter>헤더 파일\UI</Filter>
+      <Filter>헤더 파일\셰이더 클래스\UI</Filter>
     </ClInclude>
     <ClInclude Include="MainInspector.h">
-      <Filter>헤더 파일\UI</Filter>
+      <Filter>헤더 파일\셰이더 클래스\UI</Filter>
     </ClInclude>
     <ClInclude Include="FileBrowser.h">
-      <Filter>헤더 파일\UI</Filter>
+      <Filter>헤더 파일\셰이더 클래스\UI</Filter>
     </ClInclude>
     <ClInclude Include="ImguiClass.h">
-      <Filter>헤더 파일\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="SpecularShaderClass.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>헤더 파일\셰이더 클래스\UI</Filter>
     </ClInclude>
     <ClInclude Include="GridClass.h">
       <Filter>헤더 파일</Filter>
@@ -144,31 +144,43 @@
     <ClInclude Include="LightState.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="DepthShaderClass.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="RenderTextureClass.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="ShadowShaderClass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="ModelClass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SkinnedDepthShaderClass.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="BoneTransformInspector.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="ArrowModel.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SolidColorShader.h">
+    <ClInclude Include="Bounds.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Bounds.h">
+    <ClInclude Include="BitmapClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="BoneTransformInspector.h">
+      <Filter>헤더 파일\셰이더 클래스\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="SolidColorShader.h">
+      <Filter>헤더 파일\셰이더 클래스</Filter>
+    </ClInclude>
+    <ClInclude Include="SpecularShaderClass.h">
+      <Filter>헤더 파일\셰이더 클래스</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinnedMeshShader.h">
+      <Filter>헤더 파일\셰이더 클래스</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinnedDepthShaderClass.h">
+      <Filter>헤더 파일\셰이더 클래스</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowShaderClass.h">
+      <Filter>헤더 파일\셰이더 클래스</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthShaderClass.h">
+      <Filter>헤더 파일\셰이더 클래스</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureShaderClass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -208,9 +220,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="FBXLoader.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SkinnedMeshShader.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
@@ -261,13 +270,7 @@
     <ClCompile Include="FileBrowser.cpp">
       <Filter>소스 파일\UI</Filter>
     </ClCompile>
-    <ClCompile Include="SpecularShaderClass.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="GridClass.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="ColorShader.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="CameraTransform.cpp">
@@ -276,32 +279,47 @@
     <ClCompile Include="LightState.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="DepthShaderClass.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="RenderTextureClass.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="ShadowShaderClass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="ModelClass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SkinnedDepthShaderClass.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="BoneTransformInspector.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="ArrowModel.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SolidColorShader.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Bounds.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="BitmapClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="DepthShaderClass.cpp">
+      <Filter>소스 파일\셰이더 클래스</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorShader.cpp">
+      <Filter>소스 파일\셰이더 클래스</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinnedDepthShaderClass.cpp">
+      <Filter>소스 파일\셰이더 클래스</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinnedMeshShader.cpp">
+      <Filter>소스 파일\셰이더 클래스</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowShaderClass.cpp">
+      <Filter>소스 파일\셰이더 클래스</Filter>
+    </ClCompile>
+    <ClCompile Include="SolidColorShader.cpp">
+      <Filter>소스 파일\셰이더 클래스</Filter>
+    </ClCompile>
+    <ClCompile Include="SpecularShaderClass.cpp">
+      <Filter>소스 파일\셰이더 클래스</Filter>
+    </ClCompile>
+    <ClCompile Include="BoneTransformInspector.cpp">
+      <Filter>소스 파일\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureShaderClass.cpp">
+      <Filter>소스 파일\셰이더 클래스</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -339,6 +357,12 @@
       <Filter>셰이더</Filter>
     </None>
     <None Include="SolidColorShader.hlsl">
+      <Filter>셰이더</Filter>
+    </None>
+    <None Include="TexturePixelShader.hlsl">
+      <Filter>셰이더</Filter>
+    </None>
+    <None Include="TextureVertexShader.hlsl">
       <Filter>셰이더</Filter>
     </None>
   </ItemGroup>
