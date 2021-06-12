@@ -15,7 +15,7 @@ mDepthShader(nullptr),
 mShadowShader(nullptr),
 mGroundModel(nullptr),
 mSolidShader(nullptr),
-mArrowModel(nullptr)
+mForwardArrowModel(nullptr)
 {
 }
 
@@ -193,8 +193,18 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     if (result == false)
         return false;
 
-    mArrowModel = new ArrowModel;
-    result = mArrowModel->Initialize(mDirect->GetDevice());
+    mForwardArrowModel = new ArrowModel;
+    result = mForwardArrowModel->Initialize(mDirect->GetDevice(),ArrowDirection::Forward);
+    if (result == false)
+        return false;
+
+    mRightArrowModel = new ArrowModel;
+    result = mRightArrowModel->Initialize(mDirect->GetDevice(), ArrowDirection::Right);
+    if (result == false)
+        return false;
+
+    mUpArrowModel = new ArrowModel;
+    result = mUpArrowModel->Initialize(mDirect->GetDevice(), ArrowDirection::Up);
     if (result == false)
         return false;
 
@@ -337,11 +347,11 @@ void GraphicsClass::Shutdown()
         mSolidShader = nullptr;
     }
 
-    if (mArrowModel)
+    if (mForwardArrowModel)
     {
-        mArrowModel->Shutdown();
-        delete mArrowModel;
-        mArrowModel = nullptr;
+        mForwardArrowModel->Shutdown();
+        delete mForwardArrowModel;
+        mForwardArrowModel = nullptr;
     }
 
     if (mMouseBitmap)
@@ -488,8 +498,14 @@ bool GraphicsClass::Render()
             mSpecularShader->Render(mDirect->GetDeviceContext(), renderObject.GetIndexCount(), renderObject.Transfrom().GetTransform(), viewMatrix, projectionMatrix, renderObject.GetTexture(), mLight->GetPosition(), mLight->GetDiffuseColor(), mLight->GetAmbientColor(), mCamera->GetPosition(), mLight->GetSpecularColor(), mLight->GetSpecularPower());
         }
 
-        mArrowModel->Render(mDirect->GetDeviceContext());
-        mSolidShader->Render(mDirect->GetDeviceContext(), mArrowModel->GetIndexCount(),   XMMatrixScaling(20.0f,20.0f,100.0f) , viewMatrix, projectionMatrix);
+        mForwardArrowModel->Render(mDirect->GetDeviceContext());
+        mSolidShader->Render(mDirect->GetDeviceContext(), mForwardArrowModel->GetIndexCount(),   XMMatrixScaling(20.0f,20.0f,100.0f) , viewMatrix, projectionMatrix, XMFLOAT4(0.0f, 0.0f, 1.f, 1.f));
+
+        mRightArrowModel->Render(mDirect->GetDeviceContext());
+        mSolidShader->Render(mDirect->GetDeviceContext(), mRightArrowModel->GetIndexCount(), XMMatrixScaling(100.0f, 20.0f, 20.0f), viewMatrix, projectionMatrix, XMFLOAT4(1.0f, 0.0f, 0.f, 1.f));
+
+        mUpArrowModel->Render(mDirect->GetDeviceContext());
+        mSolidShader->Render(mDirect->GetDeviceContext(), mUpArrowModel->GetIndexCount(), XMMatrixScaling(20.0f, 100.0f, 20.0f), viewMatrix, projectionMatrix, XMFLOAT4(0.0f, 1.f, 0.f, 1.f));
     }
    /* mObject->Render(mDirect->GetDeviceContext());
     mShader->Render(mDirect->GetDeviceContext(), mObject->GetIndexCount(), mObject->Transfrom().GetTransform(), viewMatrix, projectionMatrix, mObject->GetTexture(), mLight->GetPosition(), mLight->GetDiffuseColor(), mLight->GetAmbientColor(), mCamera->GetPosition(), mLight->GetSpecularColor(), mLight->GetSpecularPower(), mObject->GetBoneTransform());*/
@@ -674,7 +690,7 @@ void GraphicsClass::TestIntersection(int mouseX, int mouseY, XMFLOAT3 position)
 
     XMStoreFloat3(&rayDirection, XMVector3Normalize(XMVectorSet(direction.x, direction.y, direction.z, 0.f)));
 
-    bool result = mArrowModel->RayIntersect(rayOrigin, rayDirection, position, XMFLOAT3(20.0f, 20.0f, 100.0f));
+    bool result = mForwardArrowModel->RayIntersect(rayOrigin, rayDirection, position, XMFLOAT3(20.0f, 20.0f, 100.0f));
     if (result == true)
     {
         result = true;

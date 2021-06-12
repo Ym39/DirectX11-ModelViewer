@@ -65,7 +65,9 @@ private:
 	Mesh* mGroundMesh;
 	Texture* mGroundTexture;
 	SolidColorShader* mSolidShader;
-	ArrowModel* mArrowModel;
+	ArrowModel* mForwardArrowModel;
+	ArrowModel* mRightArrowModel;
+	ArrowModel* mUpArrowModel;
 	BitmapClass* mMouseBitmap = nullptr;
 	TextureShaderClass* mTextureShader = nullptr;
 

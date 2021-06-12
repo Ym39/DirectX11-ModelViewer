@@ -4,8 +4,7 @@ SolidColorShader::SolidColorShader():
 	mVertexShader(nullptr),
 	mPixelShader(nullptr),
 	mMatrixBuffer(nullptr),
-	mColorBuffer(nullptr),
-	mSolideColor(1.0f,1.0f,1.0f,1.0f)
+	mColorBuffer(nullptr)
 {
 }
 
@@ -16,8 +15,6 @@ SolidColorShader::~SolidColorShader()
 bool SolidColorShader::Initialize(ID3D11Device* device, HWND hwnd, XMFLOAT4 color)
 {
 	bool result;
-
-	mSolideColor = color;
 
 	result = InitializeShader(device, hwnd, L"SolidColorShader.hlsl", L"SolidColorShader.hlsl");
 	if (result == false)
@@ -33,11 +30,11 @@ void SolidColorShader::Shutdown()
 	ShutdownShader();
 }
 
-bool SolidColorShader::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
+bool SolidColorShader::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, XMFLOAT4 soliedColor)
 {
 	bool result;
 
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix);
+	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, soliedColor);
 	if (!result)
 	{
 		return false;
@@ -234,7 +231,7 @@ void SolidColorShader::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND h
 	return;
 }
 
-bool SolidColorShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
+bool SolidColorShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, XMFLOAT4 soliedColor)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -275,7 +272,7 @@ bool SolidColorShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, X
 
 	ColorBufferType* dataPtr2 = (ColorBufferType*)mappedResource.pData;
 
-	dataPtr2->color = mSolideColor;
+	dataPtr2->color = soliedColor;
 
 	deviceContext->Unmap(mColorBuffer,0);
 

@@ -10,8 +10,10 @@ ArrowModel::~ArrowModel()
 {
 }
 
-bool ArrowModel::Initialize(ID3D11Device* device)
+bool ArrowModel::Initialize(ID3D11Device* device, ArrowDirection direction)
 {
+	mArrowDirection = direction;
+
 	if (InitializeBuffers(device) == false)
 		return false;
 
@@ -136,6 +138,23 @@ bool ArrowModel::InitializeBuffers(ID3D11Device* device)
 		indices[i] = arrowIndice[i];
 	}
 
+	std::array<XMFLOAT3, 29> position;
+	std::copy(arrowPositions.begin(), arrowPositions.end(), position.begin());
+
+	switch (mArrowDirection)
+	{
+	case ArrowDirection::Forward:
+		break;
+	case ArrowDirection::Right:
+		for(auto& curPos : position)
+		   XMStoreFloat3(&curPos,(XMVector3Transform(XMLoadFloat3(&curPos), XMMatrixRotationY(XMConvertToRadians(90.f)))));
+		break;
+	case ArrowDirection::Up:
+		for (auto& curPos : position)
+			XMStoreFloat3(&curPos, (XMVector3Transform(XMLoadFloat3(&curPos), XMMatrixRotationX(XMConvertToRadians(-90.f)))));
+		break;
+	}
+
 	D3D11_BUFFER_DESC vertexBufferDesc;
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	vertexBufferDesc.ByteWidth = sizeof(XMFLOAT3) * arrowPositions.size();
@@ -145,7 +164,7 @@ bool ArrowModel::InitializeBuffers(ID3D11Device* device)
 	vertexBufferDesc.StructureByteStride = 0;
 
 	D3D11_SUBRESOURCE_DATA vertexData;
-	vertexData.pSysMem = &(arrowPositions.front());
+	vertexData.pSysMem = &(position.front());
 	vertexData.SysMemPitch = 0;
 	vertexData.SysMemSlicePitch = 0;
 

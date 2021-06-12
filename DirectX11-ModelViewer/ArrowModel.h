@@ -29,7 +29,13 @@ constexpr static std::array<size_t, 54> arrowIndice = {
 	20, 21, 22, 20, 22, 23,
 	// Head
 	24, 26, 25, 24, 27, 26,
-	24, 28, 27, 24, 25, 28, 25, 26, 28, 26, 27, 28
+	24, 28, 27, 24, 25, 28, 
+	25, 26, 28, 26, 27, 28
+};
+
+enum class ArrowDirection
+{
+	Forward, Right, Up
 };
 
 class ArrowModel
@@ -38,7 +44,7 @@ public:
 	ArrowModel();
 	~ArrowModel();
 
-	bool Initialize(ID3D11Device* device);
+	bool Initialize(ID3D11Device* device , ArrowDirection direction = ArrowDirection::Forward);
 	void Shutdown();
 	void Render(ID3D11DeviceContext* deviceContext);
 
@@ -60,5 +66,6 @@ private:
 	int mIndexCount = 0;
 
 	Bounds mBounds;
+	ArrowDirection mArrowDirection;
 };
 
