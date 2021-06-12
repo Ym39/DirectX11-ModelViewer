@@ -18,6 +18,7 @@ public:
 	void Run();
 
 	float DeltaTime() const { return mTime->GetTime(); }
+	InputClass& Input() { return *mInput; }
 
 	LRESULT CALLBACK MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam);
 

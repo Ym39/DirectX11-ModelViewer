@@ -283,6 +283,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 		PostQuitMessage(0);
 		return 0;
 	}
+	case WM_MOUSEMOVE:
+	{
+		ApplicationHandle->Input().SetWMMouseLocation((int)(short)LOWORD(lparam), (int)(short)HIWORD(lparam));
+		return 0;
+	}
 
 	default:
 	{

@@ -29,12 +29,16 @@ public:
 	bool IsDPressed();
 
 	void GetMouseLocation(int&, int&);
+	void GetWMMouseLocation(int&, int&) const;
+	void SetWMMouseLocation(int x, int y);
+
 	bool IsMouse0Pressed();
 	bool IsMouse1Pressed();
 
 	float GetMouseX();
 	float GetMouseY();
 	
+
 
 public:
 	static InputClass* GetInstance()
@@ -58,6 +62,7 @@ private:
 
 	int m_screenWidth, m_screenHeight;
 	int m_mouseX, m_mouseY;
+	int mWmmouseX, mWmmouseY;
 };
 
 

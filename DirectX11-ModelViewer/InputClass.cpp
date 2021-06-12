@@ -216,6 +216,18 @@ void InputClass::GetMouseLocation(int& mouseX, int& mouseY)
 	return;
 }
 
+void InputClass::GetWMMouseLocation(int& x, int& y) const
+{
+	x = mWmmouseX;
+	y = mWmmouseY;
+}
+
+void InputClass::SetWMMouseLocation(int x, int y)
+{
+	mWmmouseX = x;
+	mWmmouseY = y;
+}
+
 bool InputClass::IsMouse0Pressed()
 {
 	if (m_mouseState.rgbButtons[0] & 0x80)

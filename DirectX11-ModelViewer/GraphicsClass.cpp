@@ -515,7 +515,10 @@ bool GraphicsClass::Render()
     int mouseY = 0;
     InputClass::GetInstance()->GetMouseLocation(mouseX, mouseY);
 
-    if (mMouseBitmap->Render(mDirect->GetDeviceContext(), mouseX, mouseY) == false)
+    int wmX, wmY;
+    ApplicationHandle->Input().GetWMMouseLocation(wmX, wmY);
+
+    if (mMouseBitmap->Render(mDirect->GetDeviceContext(), wmX, wmY) == false)
     {
         return false;
     }
@@ -532,7 +535,7 @@ bool GraphicsClass::Render()
     bool loadFbx = false;
     fs::path loadPath;
     //IMGUI ·»´õ¸µ
-    mImgui->Render(&loadFbx,loadPath, meshMap[mCurrentRenderMesh].Transfrom(),meshMap,mCurrentRenderMesh,*mCamera,mLight,mCurrentRenderMesh == "" ? nullptr : &(meshMap[mCurrentRenderMesh]));
+    mImgui->Render(&loadFbx,loadPath, meshMap[mCurrentRenderMesh].Transfrom(),meshMap,mCurrentRenderMesh,*mCamera,mLight,mCurrentRenderMesh == "" ? nullptr : &(meshMap[mCurrentRenderMesh]), wmX, wmY);
 
     if (loadFbx == true)
     {
