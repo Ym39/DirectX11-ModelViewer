@@ -37,6 +37,7 @@ void ImguiClass::Render(bool* loadFbx, fs::path& filePath,Transform& transform, 
 	ImGui::Begin("DebugText");
 	ImGui::Text(std::to_string(mouseX).c_str());
 	ImGui::Text(std::to_string(mouseY).c_str());
+
 	ImGui::End();
 
 

@@ -15,6 +15,7 @@ public:
    ~Transform() = default;
 
    XMFLOAT3 GetPosition() const;
+   XMVECTOR GetPositionXM() const;
    XMFLOAT3 GetRotation() const;
    XMFLOAT3 GetScale() const;
    XMMATRIX GetTransform() const;

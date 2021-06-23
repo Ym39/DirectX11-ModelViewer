@@ -3,19 +3,19 @@
 
 extern SystemClass* ApplicationHandle;
 
-GraphicsClass::GraphicsClass():
-mDirect(nullptr),
-mFbxLoader(nullptr),
-mMesh(nullptr),
-mTexture(nullptr),
-mCurrentRenderMesh(""),
-mObject(nullptr),
-mRenderTexture(nullptr),
-mDepthShader(nullptr),
-mShadowShader(nullptr),
-mGroundModel(nullptr),
-mSolidShader(nullptr),
-mForwardArrowModel(nullptr)
+GraphicsClass::GraphicsClass() :
+    mDirect(nullptr),
+    mFbxLoader(nullptr),
+    mMesh(nullptr),
+    mTexture(nullptr),
+    mCurrentRenderMesh(""),
+    mObject(nullptr),
+    mRenderTexture(nullptr),
+    mDepthShader(nullptr),
+    mShadowShader(nullptr),
+    mGroundModel(nullptr),
+    mSolidShader(nullptr),
+    mForwardArrowModel(nullptr)
 {
 }
 
@@ -194,17 +194,17 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
         return false;
 
     mForwardArrowModel = new ArrowModel;
-    result = mForwardArrowModel->Initialize(mDirect->GetDevice(),ArrowDirection::Forward);
+    result = mForwardArrowModel->Initialize(mDirect->GetDevice(),ArrowDirection::Forward,XMFLOAT3(20.0f,20.0f,100.0f));
     if (result == false)
         return false;
 
     mRightArrowModel = new ArrowModel;
-    result = mRightArrowModel->Initialize(mDirect->GetDevice(), ArrowDirection::Right);
+    result = mRightArrowModel->Initialize(mDirect->GetDevice(), ArrowDirection::Right, XMFLOAT3(100.0f, 20.0f, 20.0f));
     if (result == false)
         return false;
 
     mUpArrowModel = new ArrowModel;
-    result = mUpArrowModel->Initialize(mDirect->GetDevice(), ArrowDirection::Up);
+    result = mUpArrowModel->Initialize(mDirect->GetDevice(), ArrowDirection::Up, XMFLOAT3(20.0f, 100.0f, 20.0f));
     if (result == false)
         return false;
 
@@ -434,10 +434,63 @@ bool GraphicsClass::Frame()
     {
         meshMap[mCurrentRenderMesh].Update(ApplicationHandle->DeltaTime());
 
-        if (InputClass::GetInstance()->IsMouse0Pressed())
+        if (mCurrentPositionGizumoState == PositionGizumoState::NONE)
         {
-            InputClass::GetInstance()->GetMouseLocation(mouseX, mouseY);
-            TestIntersection(mouseX, mouseY, meshMap[mCurrentRenderMesh].Transfrom().GetPosition());
+            if (InputClass::GetInstance()->IsMouse0Pressed())
+            {
+                InputClass::GetInstance()->GetWMMouseLocation(mouseX, mouseY);
+                TestIntersection(mouseX, mouseY, meshMap[mCurrentRenderMesh].Transfrom().GetPosition());
+            }
+        }
+        else
+        {
+            XMVECTOR cameraForward;
+            XMVECTOR arrowDirection;
+            float yWeight = 0.0f;
+            float xWeight = 0.0f;
+
+            switch (mCurrentPositionGizumoState)
+            {
+            case PositionGizumoState::FORWARD:
+            {
+                cameraForward = XMLoadFloat3(&mCamera->GetTransform().Forward());
+                arrowDirection = XMVectorSet(0.f, 0.f, 1.f, 0.f);
+                XMVECTOR dot = XMVector3Dot(cameraForward, arrowDirection);
+                yWeight = XMVectorGetX(dot);
+                xWeight = 1.0f - abs(yWeight);
+                float deltaWeight = (ApplicationHandle->Input().GetMouseY() * yWeight) + (ApplicationHandle->Input().GetMouseX() * xWeight);
+                meshMap[mCurrentRenderMesh].Transfrom().Translate(XMFLOAT3(0.f, 0.f, 1.f * deltaWeight));
+            }
+
+                break;
+            case PositionGizumoState::RIGHT:
+            {
+                cameraForward = XMLoadFloat3(&mCamera->GetTransform().Forward());
+                arrowDirection = XMVectorSet(1.f, 0.f, 0.f, 0.f);
+                XMVECTOR dot = XMVector3Dot(cameraForward, arrowDirection);
+                yWeight = XMVectorGetX(dot);
+                xWeight = 1.0f - abs(yWeight);
+                float deltaWeight = (ApplicationHandle->Input().GetMouseY() * yWeight) + (ApplicationHandle->Input().GetMouseX() * xWeight);
+                meshMap[mCurrentRenderMesh].Transfrom().Translate(XMFLOAT3(1.f* deltaWeight, 0.f, 0.f));
+
+            }
+                break;
+            case PositionGizumoState::UP:
+            {
+                cameraForward = XMLoadFloat3(&mCamera->GetTransform().Forward());
+                arrowDirection = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+                float deltaWeight = -(ApplicationHandle->Input().GetMouseY());
+                meshMap[mCurrentRenderMesh].Transfrom().Translate(XMFLOAT3(0.f, 1.f * deltaWeight, 0.f ));
+            }
+                break;
+            }
+
+            
+
+            if (InputClass::GetInstance()->IsMouse0Pressed() == false)
+            {
+                mCurrentPositionGizumoState = PositionGizumoState::NONE;
+            }
         }
     }
 
@@ -498,14 +551,18 @@ bool GraphicsClass::Render()
             mSpecularShader->Render(mDirect->GetDeviceContext(), renderObject.GetIndexCount(), renderObject.Transfrom().GetTransform(), viewMatrix, projectionMatrix, renderObject.GetTexture(), mLight->GetPosition(), mLight->GetDiffuseColor(), mLight->GetAmbientColor(), mCamera->GetPosition(), mLight->GetSpecularColor(), mLight->GetSpecularPower());
         }
 
+        XMMATRIX transformMatrix;
+        XMFLOAT3 position = renderObject.Transfrom().GetPosition();
+        transformMatrix = XMMatrixTranslation(position.x, position.y, position.z);
+
         mForwardArrowModel->Render(mDirect->GetDeviceContext());
-        mSolidShader->Render(mDirect->GetDeviceContext(), mForwardArrowModel->GetIndexCount(),   XMMatrixScaling(20.0f,20.0f,100.0f) , viewMatrix, projectionMatrix, XMFLOAT4(0.0f, 0.0f, 1.f, 1.f));
+        mSolidShader->Render(mDirect->GetDeviceContext(), mForwardArrowModel->GetIndexCount(), transformMatrix  , viewMatrix, projectionMatrix, XMFLOAT4(0.0f, 0.0f, 1.f, 1.f));
 
         mRightArrowModel->Render(mDirect->GetDeviceContext());
-        mSolidShader->Render(mDirect->GetDeviceContext(), mRightArrowModel->GetIndexCount(), XMMatrixScaling(100.0f, 20.0f, 20.0f), viewMatrix, projectionMatrix, XMFLOAT4(1.0f, 0.0f, 0.f, 1.f));
+        mSolidShader->Render(mDirect->GetDeviceContext(), mRightArrowModel->GetIndexCount(), transformMatrix , viewMatrix, projectionMatrix, XMFLOAT4(1.0f, 0.0f, 0.f, 1.f));
 
         mUpArrowModel->Render(mDirect->GetDeviceContext());
-        mSolidShader->Render(mDirect->GetDeviceContext(), mUpArrowModel->GetIndexCount(), XMMatrixScaling(20.0f, 100.0f, 20.0f), viewMatrix, projectionMatrix, XMFLOAT4(0.0f, 1.f, 0.f, 1.f));
+        mSolidShader->Render(mDirect->GetDeviceContext(), mUpArrowModel->GetIndexCount(), transformMatrix , viewMatrix, projectionMatrix, XMFLOAT4(0.0f, 1.f, 0.f, 1.f));
     }
    /* mObject->Render(mDirect->GetDeviceContext());
     mShader->Render(mDirect->GetDeviceContext(), mObject->GetIndexCount(), mObject->Transfrom().GetTransform(), viewMatrix, projectionMatrix, mObject->GetTexture(), mLight->GetPosition(), mLight->GetDiffuseColor(), mLight->GetAmbientColor(), mCamera->GetPosition(), mLight->GetSpecularColor(), mLight->GetSpecularPower(), mObject->GetBoneTransform());*/
@@ -690,9 +747,20 @@ void GraphicsClass::TestIntersection(int mouseX, int mouseY, XMFLOAT3 position)
 
     XMStoreFloat3(&rayDirection, XMVector3Normalize(XMVectorSet(direction.x, direction.y, direction.z, 0.f)));
 
-    bool result = mForwardArrowModel->RayIntersect(rayOrigin, rayDirection, position, XMFLOAT3(20.0f, 20.0f, 100.0f));
-    if (result == true)
+    if (mCurrentPositionGizumoState != PositionGizumoState::NONE)
+        return;
+
+
+    if (mForwardArrowModel->RayIntersect(rayOrigin, rayDirection, position, XMFLOAT3(20.0f, 20.0f, 100.0f)))
     {
-        result = true;
+        mCurrentPositionGizumoState = PositionGizumoState::FORWARD;
+    }
+    else if (mRightArrowModel->RayIntersect(rayOrigin, rayDirection, position, XMFLOAT3(100.0f, 20.0f, 20.0f)))
+    {
+        mCurrentPositionGizumoState = PositionGizumoState::RIGHT;
+    }
+    else if (mUpArrowModel->RayIntersect(rayOrigin, rayDirection, position, XMFLOAT3(20.0f, 100.0f, 20.0f)))
+    {
+        mCurrentPositionGizumoState = PositionGizumoState::UP;
     }
 }

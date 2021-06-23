@@ -44,7 +44,7 @@ public:
 	ArrowModel();
 	~ArrowModel();
 
-	bool Initialize(ID3D11Device* device , ArrowDirection direction = ArrowDirection::Forward);
+	bool Initialize(ID3D11Device* device , ArrowDirection direction = ArrowDirection::Forward, XMFLOAT3 scale = XMFLOAT3(1.0f,1.0f,1.0f));
 	void Shutdown();
 	void Render(ID3D11DeviceContext* deviceContext);
 
@@ -53,7 +53,7 @@ public:
 	bool RayIntersect(XMFLOAT3 rayOrigin, XMFLOAT3 rayDirection, XMFLOAT3 position , XMFLOAT3 arrowScale);
 
 private:
-	bool InitializeBuffers(ID3D11Device* device);
+	bool InitializeBuffers(ID3D11Device* device,XMFLOAT3 scale);
 	void ShutdownBuffers();
 	void RenderBuffers(ID3D11DeviceContext* deviceContext);
 

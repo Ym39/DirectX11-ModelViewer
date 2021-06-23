@@ -28,6 +28,11 @@ const float SCREEN_NEAR = 1.0f;
 const int SHADOWMAP_WIDTH = 1024;
 const int SHADOWMAP_HEIGHT = 1024;
 
+enum class PositionGizumoState
+{
+	NONE, FORWARD, RIGHT, UP
+};
+
 class GraphicsClass
 {
 public:
@@ -80,5 +85,7 @@ private:
 
 	int mScreenWidth;
 	int mScreenHeight;
+
+	PositionGizumoState mCurrentPositionGizumoState = PositionGizumoState::NONE;
 };
 

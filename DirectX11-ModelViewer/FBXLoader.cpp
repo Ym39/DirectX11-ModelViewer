@@ -14,7 +14,6 @@ FBXLoader::~FBXLoader()
 
 Mesh* FBXLoader::LoadFbx(char* fbxFilename)
 {
-
     mImporter = FbxImporter::Create(mFbxManager,"");
     bool status = mImporter->Initialize(fbxFilename, -1,mFbxManager->GetIOSettings());
     if (status == false)
@@ -38,15 +37,20 @@ Mesh* FBXLoader::LoadFbx(char* fbxFilename)
 
 	mSkeleton = new Skeleton;
 	ProcessSkeletonHierarchy(rootNode);
-	if (mSkeleton->joints.empty() == false)
+	/*if (mSkeleton->joints.empty() == false)
 	{
 	    finalMesh->SetSkeleton(mSkeleton);
-	}
+	}*/
 
 	LoadNode(rootNode);
 
 	finalMesh->SetAnimationLength(mAnimationLength);
 	finalMesh->SetMeshData(vertices,indices);
+
+	if (mSkeleton->joints.empty() == false)
+	{
+		finalMesh->SetSkeleton(mSkeleton);
+	}
 
  	vertices.clear();
 	indices.clear();

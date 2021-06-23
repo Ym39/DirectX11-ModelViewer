@@ -288,7 +288,7 @@ bool SkinnedDepthShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceCon
 
 	BoneBufferType* dataPtr2 = (BoneBufferType*)mappedResource.pData;
 
-	for (int i = 0; i < 65; i++)
+	for (int i = 0; i < bones.size(); i++)
 	{
 		dataPtr2->boneTransforms[i] = bones[i];
 	}

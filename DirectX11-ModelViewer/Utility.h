@@ -123,6 +123,13 @@ struct Skeleton
 {
 	std::vector<Joint> joints;
 
+	Skeleton() = default;
+	Skeleton(const Skeleton& copy)
+	{
+		joints.resize(copy.joints.size());
+		std::copy(copy.joints.begin(), copy.joints.end(), joints.begin());
+	}
+
 	~Skeleton()
 	{
 		for (auto& joint : joints)

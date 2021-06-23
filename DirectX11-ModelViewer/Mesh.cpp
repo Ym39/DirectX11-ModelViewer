@@ -72,6 +72,9 @@ void Mesh::UpdateAnimation(float time)
 		{
 			const Keyframe* curKey = mSkeleton->joints[i].animation;
 
+			if (curKey == nullptr)
+				continue;
+
 			for (int keyCount = 0; keyCount < mCurrentFrame; keyCount++)
 			{
 				curKey = curKey->next;
@@ -79,7 +82,7 @@ void Mesh::UpdateAnimation(float time)
 
 			XMMATRIX boneOffset = XMLoadFloat4x4(&mSkeleton->joints[i].globalBindposeInverse);
 			XMMATRIX toParent = XMLoadFloat4x4(&curKey->globalTransfrom);
-			XMMATRIX finalTransform = XMMatrixMultiply(boneOffset, toParent);
+			XMMATRIX finalTransform = XMMatrixMultiply(boneOffset, toParent) * XMMatrixTranslation(0.f,200.f,0.f);
 			//finalTransform *= XMMatrixScaling(0.01f, 0.01f, 0.01f);
 			finalTransform *= XMMatrixScaling(1.0f, 1.0f, 1.0f);
 			mUpdateBoneTransfroms[i] = XMMatrixTranspose(finalTransform);
@@ -194,6 +197,7 @@ void Mesh::SetMeshData(const vector<VertexType>& vertex, const vector<unsigned i
 void Mesh::SetSkeleton(Skeleton* skeleton)
 {
     mSkeleton = skeleton;
+	//mSkeleton = new Skeleton(*skeleton);
 	mIsSkinnedMesh=true;
 	mUpdateBoneTransfroms.resize(mSkeleton->joints.size());
 }

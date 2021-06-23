@@ -12,6 +12,11 @@ DirectX::XMFLOAT3 Transform::GetPosition() const
     return mPosition;
 }
 
+XMVECTOR Transform::GetPositionXM() const
+{
+    return XMLoadFloat3(&mPosition);
+}
+
 XMFLOAT3 Transform::GetRotation() const
 {
     return mRotation;

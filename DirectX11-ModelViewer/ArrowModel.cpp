@@ -10,11 +10,11 @@ ArrowModel::~ArrowModel()
 {
 }
 
-bool ArrowModel::Initialize(ID3D11Device* device, ArrowDirection direction)
+bool ArrowModel::Initialize(ID3D11Device* device, ArrowDirection direction,XMFLOAT3 scale)
 {
 	mArrowDirection = direction;
 
-	if (InitializeBuffers(device) == false)
+	if (InitializeBuffers(device,scale) == false)
 		return false;
 
 	mVertexCount = arrowPositions.size();
@@ -130,7 +130,7 @@ bool ArrowModel::RayIntersect(XMFLOAT3 rayOrigin, XMFLOAT3 rayDirection, XMFLOAT
 	return true;*/
 }
 
-bool ArrowModel::InitializeBuffers(ID3D11Device* device)
+bool ArrowModel::InitializeBuffers(ID3D11Device* device, XMFLOAT3 scale)
 {
 	unsigned long* indices = new unsigned long[arrowIndice.size()];
 	for (int i = 0; i < arrowIndice.size(); i++)
@@ -144,14 +144,16 @@ bool ArrowModel::InitializeBuffers(ID3D11Device* device)
 	switch (mArrowDirection)
 	{
 	case ArrowDirection::Forward:
+		for (auto& curPos : position)
+			XMStoreFloat3(&curPos, (XMVector3Transform(XMLoadFloat3(&curPos),XMMatrixScaling(scale.x, scale.y, scale.z))));
 		break;
 	case ArrowDirection::Right:
 		for(auto& curPos : position)
-		   XMStoreFloat3(&curPos,(XMVector3Transform(XMLoadFloat3(&curPos), XMMatrixRotationY(XMConvertToRadians(90.f)))));
+		   XMStoreFloat3(&curPos,(XMVector3Transform(XMLoadFloat3(&curPos), XMMatrixRotationY(XMConvertToRadians(90.f))*XMMatrixScaling(scale.x, scale.y, scale.z))));
 		break;
 	case ArrowDirection::Up:
 		for (auto& curPos : position)
-			XMStoreFloat3(&curPos, (XMVector3Transform(XMLoadFloat3(&curPos), XMMatrixRotationX(XMConvertToRadians(-90.f)))));
+			XMStoreFloat3(&curPos, (XMVector3Transform(XMLoadFloat3(&curPos), XMMatrixRotationX(XMConvertToRadians(-90.f)) * XMMatrixScaling(scale.x, scale.y, scale.z))));
 		break;
 	}
 
