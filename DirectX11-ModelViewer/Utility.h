@@ -9,6 +9,7 @@
 #include <boost\archive\binary_oarchive.hpp>
 #include <boost\archive\binary_iarchive.hpp>
 #include <boost\serialization\vector.hpp>
+#include <boost\serialization\string.hpp>
 
 using namespace DirectX;
 using namespace std;
@@ -38,6 +39,96 @@ struct Joint
 		animation(nullptr)
 	{
 		parentIndex = -1;
+	}
+};
+
+struct Skeleton
+{
+	std::vector<Joint> joints;
+
+	Skeleton() = default;
+	Skeleton(const Skeleton& copy)
+	{
+		joints.resize(copy.joints.size());
+		std::copy(copy.joints.begin(), copy.joints.end(), joints.begin());
+	}
+
+	~Skeleton()
+	{
+		for (auto& joint : joints)
+		{
+			Keyframe* remove = joint.animation;
+			while (remove)
+			{
+				Keyframe* temp = remove->next;
+				delete remove;
+				remove = temp;
+			}
+		}
+	}
+};
+
+struct Float4x4
+{
+	union
+	{
+		struct
+		{
+			float _11, _12, _13, _14;
+			float _21, _22, _23, _24;
+			float _31, _32, _33, _34;
+			float _41, _42, _43, _44;
+		};
+		float m[4][4];
+	};
+
+	Float4x4& operator=(const XMFLOAT4X4& matrix)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				m[i][j] = matrix.m[i][j];
+			}
+		}
+
+		return *this;
+	}
+
+	void LoadXMFLOAT4X4(XMFLOAT4X4* matrix)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				matrix->m[i][j] = m[i][j];
+			}
+		}
+	}
+
+	float operator() (size_t Row, size_t Column) const { return m[Row][Column]; }
+
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive& ar, const unsigned int version)
+	{
+		ar& m;
+	}
+};
+
+struct BoneData
+{	
+	std::string name;
+	int parentIndex;
+	Float4x4 globalBindposeInverse;
+
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive& ar, const unsigned int version)
+	{
+		ar& name;
+		ar& parentIndex;
+		ar& globalBindposeInverse;
 	}
 };
 
@@ -159,12 +250,13 @@ struct VertexType
 	}
 };
 
-struct SaveVertexType
+struct InputVertex
 {
-	Float3 position;
-	Float2 texture;
-	Float3 normal;
-	std::vector<BlendingIndexWeightPair> blendingInfo;
+	XMFLOAT3 position;
+	XMFLOAT2 texture;
+	XMFLOAT3 normal;
+	XMFLOAT3 weight;
+	unsigned int boneIndices[4] = {0,};
 
 	friend class boost::serialization::access;
 	template<class Archive>
@@ -173,26 +265,133 @@ struct SaveVertexType
 		ar& position;
 		ar& texture;
 		ar& normal;
-		ar& blendingInfo;
+		ar& weight;
+		ar& boneIndices;
+	}
+};
+
+struct SaveVertexType
+{
+	Float3 position;
+	Float2 texture;
+	Float3 normal;
+	Float3 weight;
+	unsigned int boneIndices[4] = { 0, };
+
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive& ar, const unsigned int version)
+	{
+		ar& position;
+		ar& texture;
+		ar& normal;
+		ar& weight;
+		ar& boneIndices;
 	}
 
-	SaveVertexType(const VertexType& copy)
+	SaveVertexType& operator=(const VertexType& copy)
 	{
 		position = copy.position;
 		texture = copy.texture;
 		normal = copy.normal;
-		blendingInfo.resize(copy.blendingInfo.size());
-		std::copy(copy.blendingInfo.begin(), copy.blendingInfo.end(), blendingInfo.begin());
+
+		if (copy.blendingInfo.size() == 4)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				boneIndices[i] = copy.blendingInfo[i].blendingIndex;
+				switch (i)
+				{
+				case 0:
+					weight.x = copy.blendingInfo[i].blendingWeight;
+					break;
+				case 1:
+					weight.y = copy.blendingInfo[i].blendingWeight;
+					break;
+				case 2:
+					weight.z = copy.blendingInfo[i].blendingWeight;
+					break;
+				}
+			}
+		}
+		return *this;
 	}
 };
 
-struct InputVertex
+struct SkinnedMeshData
 {
-	XMFLOAT3 position;
-	XMFLOAT2 texture;
-	XMFLOAT3 normal;
-	XMFLOAT3 weight;
-	unsigned int boneIndices[4] = {0,};
+	vector<SaveVertexType> vertices;
+	vector<unsigned int> indices;
+	vector<BoneData> bones;
+
+	SkinnedMeshData& operator=(const vector<VertexType>& vertex)
+	{
+		/*vertices.resize(vertex.size());
+		for (int i = 0; i < vertices.size(); i++)
+		{
+			vertices[i].position = vertex[i].position;
+			vertices[i].normal = vertex[i].normal;
+			vertices[i].texture = vertex[i].texture;
+
+			for (int j = 0; j < vertex[i].blendingInfo.size(); ++j)
+			{
+				vertices[i].boneIndices[j] = vertex[i].blendingInfo[j].blendingIndex;
+				switch (j)
+				{
+				case 0:
+					vertices[i].weight.x = vertex[i].blendingInfo[j].blendingWeight;
+					break;
+				case 1:
+					vertices[i].weight.y = vertex[i].blendingInfo[j].blendingWeight;
+					break;
+				case 2:
+					vertices[i].weight.z = vertex[i].blendingInfo[j].blendingWeight;
+					break;
+				}
+			}
+		}*/
+		vertices.reserve(vertex.size());
+		for (const auto& v : vertex)
+		{
+			SaveVertexType newVertex;
+			newVertex = v;
+			vertices.push_back(newVertex);
+		}
+
+		return *this;
+	}
+
+	SkinnedMeshData& operator=(const vector<unsigned int>& index)
+	{
+		indices.resize(index.size());
+		copy(index.begin(), index.end(), indices.begin());
+		return *this;
+	}
+
+	SkinnedMeshData& operator=(const Skeleton& skeleton)
+	{
+		bones.reserve(skeleton.joints.size());
+
+		for (const auto& joint : skeleton.joints)
+		{
+			BoneData boneData;
+			boneData.name = joint.name;
+			boneData.parentIndex = joint.parentIndex;
+			boneData.globalBindposeInverse = joint.globalBindposeInverse;
+			bones.push_back(boneData);
+		}
+
+		return *this;
+	}
+
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive& ar, const unsigned int version)
+	{
+		ar& vertices;
+		ar& indices;
+		ar& bones;
+	}
 };
 
 struct CtrlPoint
@@ -207,31 +406,6 @@ struct CtrlPoint
 };
 
 
-struct Skeleton
-{
-	std::vector<Joint> joints;
-
-	Skeleton() = default;
-	Skeleton(const Skeleton& copy)
-	{
-		joints.resize(copy.joints.size());
-		std::copy(copy.joints.begin(), copy.joints.end(), joints.begin());
-	}
-
-	~Skeleton()
-	{
-		for (auto& joint : joints)
-		{
-			Keyframe* remove = joint.animation;
-			while (remove)
-			{
-				Keyframe* temp = remove->next;
-				delete remove;
-				remove = temp;
-			}
-		}
-	}
-};
 
 namespace std {
 
