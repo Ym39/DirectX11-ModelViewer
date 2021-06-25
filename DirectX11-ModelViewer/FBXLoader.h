@@ -2,6 +2,7 @@
 #include "Utility.h"
 #include "Mesh.h"
 #include<fbxsdk.h>
+#include<fstream>
 using namespace DirectX;
 using namespace std;
 

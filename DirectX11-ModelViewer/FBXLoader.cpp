@@ -47,6 +47,21 @@ Mesh* FBXLoader::LoadFbx(char* fbxFilename)
 	finalMesh->SetAnimationLength(mAnimationLength);
 	finalMesh->SetMeshData(vertices,indices);
 
+	std::vector<SaveVertexType> saveVertices;
+	saveVertices.reserve(vertices.size());
+
+	for (const auto& vertex : vertices)
+	{
+		SaveVertexType v(vertex);
+		saveVertices.push_back(v);
+	}
+
+	//ofstream out; //쓰기 스트림 생성
+	//out.open("vertex.vert", ios_base::binary); //바이너리 모드로 파일을 열었습니다.
+	//boost::archive::binary_oarchive out_archive(out); //연 스트림을 넘겨주어서 직렬화객체 초기화
+	//out_archive << saveVertices; //쓰기
+	//out.close();
+
 	if (mSkeleton->joints.empty() == false)
 	{
 		finalMesh->SetSkeleton(mSkeleton);

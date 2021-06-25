@@ -73,5 +73,10 @@ DirectX::ScratchImage Texture::LoadTextureFromFile(LPCSTR filename)
 		hr = LoadFromWICFile(ws.c_str(), WIC_FLAGS_NONE, nullptr, image);
 	}
 
+	else if (_wcsicmp(ext, L".png") == 0)
+	{
+		hr = LoadFromWICFile(ws.c_str(), WIC_FLAGS_NONE, nullptr, image);
+	}
+
 	return image;
 }

@@ -72,6 +72,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\Users\admin\Desktop\boost_1_76_0;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\admin\Desktop\boost_1_76_0\stage\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -94,7 +96,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.2\lib\vs2019\x86\debug;F:\VisualStudio Project\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;G:\ModelViewer\DirectX11-ModelViewer\DirectXTex;C:\Users\vinoo\Desktop\VSProject\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.2\lib\vs2019\x86\debug;F:\VisualStudio Project\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;G:\ModelViewer\DirectX11-ModelViewer\DirectXTex;C:\Users\vinoo\Desktop\VSProject\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;C:\Users\admin\Desktop\boost_1_76_0\stage\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>DirectXTex.lib;libfbxsdk-md.lib;libxml2-md.lib;zlib-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

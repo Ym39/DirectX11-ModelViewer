@@ -622,7 +622,7 @@ bool GraphicsClass::Render()
         }
         loadObject.SetMesh(loadMesh);
         Texture* texture = new Texture;
-        result = texture->Initialize(mDirect->GetDevice(), mDirect->GetDeviceContext(), "Texture\\vanguard_diffuse.dds");
+        result = texture->Initialize(mDirect->GetDevice(), mDirect->GetDeviceContext(), "Texture\\vanguard_diffuse.png");
         if (result == false)
         {
             return false;

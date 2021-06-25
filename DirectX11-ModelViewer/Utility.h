@@ -4,6 +4,12 @@
 #include<unordered_map>
 #include<fbxsdk.h>
 #include"MathHelper.h"
+
+#include <boost\serialization\serialization.hpp>
+#include <boost\archive\binary_oarchive.hpp>
+#include <boost\archive\binary_iarchive.hpp>
+#include <boost\serialization\vector.hpp>
+
 using namespace DirectX;
 using namespace std;
 
@@ -40,10 +46,65 @@ struct BlendingIndexWeightPair
 	unsigned int blendingIndex;
 	double blendingWeight;
 
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive& ar, const unsigned int version)
+	{
+		ar& blendingIndex;
+		ar& blendingWeight;
+	}
+
 	BlendingIndexWeightPair() :
 		blendingIndex(0),
 		blendingWeight(0)
 	{}
+};
+
+struct Float3
+{
+	float x;
+	float y;
+	float z;
+
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive& ar, const unsigned int version)
+	{
+		ar& x;
+		ar& y;
+		ar& z;
+	}
+
+	Float3& operator=(const XMFLOAT3& xmFloat3)
+	{
+		x = xmFloat3.x;
+		y = xmFloat3.y;
+		z = xmFloat3.z;
+
+		return *this;
+	}
+};
+
+struct Float2
+{
+	float x;
+	float y;
+
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive& ar, const unsigned int version)
+	{
+		ar& x;
+		ar& y;
+	}
+
+	Float2& operator=(const XMFLOAT2& xmFloat2)
+	{
+		x = xmFloat2.x;
+		y = xmFloat2.y;
+
+		return *this;
+	}
 };
 
 struct VertexType
@@ -95,6 +156,33 @@ struct VertexType
 		bool result3 = MathHelper::CompareVector2WithEpsilon(texture, rhs.texture);
 
 		return result1 && result2 && result3 && sameBlendingInfo;
+	}
+};
+
+struct SaveVertexType
+{
+	Float3 position;
+	Float2 texture;
+	Float3 normal;
+	std::vector<BlendingIndexWeightPair> blendingInfo;
+
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive& ar, const unsigned int version)
+	{
+		ar& position;
+		ar& texture;
+		ar& normal;
+		ar& blendingInfo;
+	}
+
+	SaveVertexType(const VertexType& copy)
+	{
+		position = copy.position;
+		texture = copy.texture;
+		normal = copy.normal;
+		blendingInfo.resize(copy.blendingInfo.size());
+		std::copy(copy.blendingInfo.begin(), copy.blendingInfo.end(), blendingInfo.begin());
 	}
 };
 
