@@ -57,11 +57,11 @@ Mesh* FBXLoader::LoadFbx(char* fbxFilename)
 	saveMeshData = indices;
 	saveMeshData = *mSkeleton;
 
-	ofstream out; //쓰기 스트림 생성
-	out.open("Character.SM", ios_base::binary); //바이너리 모드로 파일을 열었습니다.
-	boost::archive::binary_oarchive out_archive(out); //연 스트림을 넘겨주어서 직렬화객체 초기화
-	out_archive << saveMeshData; //쓰기
-	out.close();
+	//ofstream out; //쓰기 스트림 생성
+	//out.open("Character.SM", ios_base::binary); //바이너리 모드로 파일을 열었습니다.
+	//boost::archive::binary_oarchive out_archive(out); //연 스트림을 넘겨주어서 직렬화객체 초기화
+	//out_archive << saveMeshData; //쓰기
+	//out.close();
 
  	vertices.clear();
 	indices.clear();
@@ -71,13 +71,13 @@ Mesh* FBXLoader::LoadFbx(char* fbxFilename)
 	return finalMesh;
 }
 
-Skeleton* FBXLoader::LoadAnimation(char* fbxFilename)
+void FBXLoader::LoadAnimation(char* fbxFilename)
 {
 	mImporter = FbxImporter::Create(mFbxManager, "");
 	bool status = mImporter->Initialize(fbxFilename, -1, mFbxManager->GetIOSettings());
 	if (status == false)
 	{
-		return nullptr;
+		return;
 	}
 
 	mFbxScene = FbxScene::Create(mFbxManager, "scene");
@@ -94,17 +94,30 @@ Skeleton* FBXLoader::LoadAnimation(char* fbxFilename)
 
 	mSkeleton = new Skeleton;
 	ProcessSkeletonHierarchy(rootNode);
+	
 	if (mSkeleton->joints.empty() == true)
-	{
-	    return nullptr;
-	}
+		return;
 
-	LoadNodeJointAndAnimation(rootNode);
+	mSaveAnimation = new AnimationData;
+	mSaveAnimation->keyFrames.resize(mSkeleton->joints.size());
+
+	LoadNodeForAnimation(rootNode);
+
+	string fileName = fbxFilename;
+	fileName += ".Animation";
+
+	ofstream out;
+	out.open("Test.Animation", ios_base::binary); //바이너리 모드로 파일을 열었습니다.
+	boost::archive::binary_oarchive out_archive(out); //연 스트림을 넘겨주어서 직렬화객체 초기화
+	out_archive << mSaveAnimation; //쓰기
+	out.close();
+
+	delete mSaveAnimation;
+	mSaveAnimation = nullptr;
 
 	mFbxScene->Destroy();
-
-	return mSkeleton;
 }
+
 
 void FBXLoader::ProcessSkeletonHierarchy(FbxNode* inRootNode)
 {
@@ -154,6 +167,25 @@ void FBXLoader::LoadNode(FbxNode* node)
 	for (unsigned i = 0; i < childCount; ++i)
 	{
 		LoadNode(node->GetChild(i));
+	}
+}
+
+void FBXLoader::LoadNodeForAnimation(FbxNode* node)
+{
+	FbxNodeAttribute* nodeAttribute = node->GetNodeAttribute();
+
+	if (nodeAttribute != nullptr)
+	{
+		if (nodeAttribute->GetAttributeType() == FbxNodeAttribute::eMesh)
+		{
+		    ProcessAnimations(node);
+		}
+	}
+
+	const int childCount = node->GetChildCount();
+	for (unsigned i = 0; i < childCount; ++i)
+	{
+		LoadNodeForAnimation(node->GetChild(i));
 	}
 }
 
@@ -474,6 +506,83 @@ void FBXLoader::ProcessJointsAndAnmations(FbxNode* inNode)
 		}
 	}
 
+}
+
+void FBXLoader::ProcessAnimations(FbxNode* inNode)
+{
+	if (inNode == nullptr)
+	{
+		return;
+	}
+
+	FbxMesh* currMesh = inNode->GetMesh();
+	unsigned int numOfDeformers = currMesh->GetDeformerCount();
+
+	FbxAMatrix gemotryTransform = GetGeometryTransformation(inNode);
+
+	for (unsigned int deformerIndex = 0; deformerIndex < numOfDeformers; ++deformerIndex)
+	{
+		FbxSkin* currSkin = reinterpret_cast<FbxSkin*>(currMesh->GetDeformer(deformerIndex, FbxDeformer::eSkin));
+		if (!currSkin)
+		{
+			continue;
+		}
+
+		unsigned int numOfCluster = currSkin->GetClusterCount();
+		for (unsigned int clusterIndex = 0; clusterIndex < numOfCluster; ++clusterIndex)
+		{
+			FbxCluster* currCluster = currSkin->GetCluster(clusterIndex);
+			std::string currJointName = currCluster->GetLink()->GetName();
+			unsigned int currJointIndex = FindJointIndexUsingName(currJointName);
+
+			FbxAnimStack* currAnimStack = mFbxScene->GetSrcObject<FbxAnimStack>(0);
+			FbxString animStackName = currAnimStack->GetName();
+			string anmationName = animStackName.Buffer();
+			FbxTakeInfo* takeInfo = mFbxScene->GetTakeInfo(animStackName);
+			FbxTime start = takeInfo->mLocalTimeSpan.GetStart();
+			FbxTime end = takeInfo->mLocalTimeSpan.GetStop();
+			mAnimationLength = end.GetFrameCount(FbxTime::eFrames30) - start.GetFrameCount(FbxTime::eFrames30) + 1;
+			mSaveAnimation->keyFrames[currJointIndex].resize(mAnimationLength);
+			mSaveAnimation->animationLength = mAnimationLength;
+
+			for (FbxLongLong i = start.GetFrameCount(FbxTime::eFrames30); i < end.GetFrameCount(FbxTime::eFrames30); ++i)
+			{
+				FbxTime currTime;
+				currTime.SetFrame(i, FbxTime::eFrames30);
+
+				//SaveKeyFrame saveKeyFrame;
+				//saveKeyFrame.frameName = i;
+				mSaveAnimation->keyFrames[currJointIndex][i].frameName = i;
+
+				FbxAMatrix currentTransformOffset = inNode->EvaluateGlobalTransform(currTime) * gemotryTransform;
+				FbxAMatrix fbxGlobalTransform = currentTransformOffset.Inverse() * currCluster->GetLink()->EvaluateGlobalTransform(currTime);
+
+				Float4x4 key;
+				for (int i = 0; i < 4; ++i)
+				{
+					for (int j = 0; j < 4; ++j)
+					{
+						key.m[i][j] = fbxGlobalTransform.Get(i, j);
+					}
+				}
+
+				//saveKeyFrame.globalTransfrom = key;
+				//mSaveAnimation->keyFrames[currJointIndex].push_back(saveKeyFrame);
+				mSaveAnimation->keyFrames[currJointIndex][i].globalTransfrom = key;
+			}
+		}
+	}
+
+	BlendingIndexWeightPair currBlendingIndexWeightPair;
+	currBlendingIndexWeightPair.blendingIndex = 0;
+	currBlendingIndexWeightPair.blendingWeight = 0;
+	for (auto itr = mCtrlPoint.begin(); itr != mCtrlPoint.end(); ++itr)
+	{
+		for (unsigned int i = itr->second->blendingInfo.size(); i < 4; ++i)
+		{
+			itr->second->blendingInfo.push_back(currBlendingIndexWeightPair);
+		}
+	}
 }
 
 unsigned int FBXLoader::FindJointIndexUsingName(const std::string& inJointName)

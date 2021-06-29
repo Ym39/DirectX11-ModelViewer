@@ -11,7 +11,7 @@ public:
 	MainInspector();
 	~MainInspector() = default;
 
-	void Render(bool* pActiveModelBrowser, std::unordered_map<std::string, GameObject>& meshMap, string& renderModelKey);
+	void Render(bool* pActiveModelBrowser,bool* pActiveAnimBrowser, std::unordered_map<std::string, GameObject>& meshMap, string& renderModelKey);
 
 private:  
     unsigned int mModleCount;

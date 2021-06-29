@@ -13,12 +13,13 @@ public:
     ~FBXLoader();
   
     Mesh* LoadFbx(char* fbxFilename);
-    Skeleton* LoadAnimation(char* fbxFilename);
+	void LoadAnimation(char* fbxFilename);
 private:
     void ProcessSkeletonHierarchy(FbxNode* inRootNode);
     void ProcessSkeletonHierarchyRecursively(FbxNode* inNode, int inDepth, int myIndex, int inParentIndex);
 
 	void LoadNode(FbxNode* node);
+	void LoadNodeForAnimation(FbxNode* node);
 	void LoadNodeJointAndAnimation(FbxNode* node);
 
 	void ProcessControlPoints(FbxMesh* mesh, std::vector<XMFLOAT3>& positions);
@@ -28,6 +29,7 @@ private:
 	XMFLOAT2 ReadUV(const FbxMesh* mesh, int controlPointIndex, int uvIndex);
 
 	void ProcessJointsAndAnmations(FbxNode* inNode);
+	void ProcessAnimations(FbxNode* inNode);
 	unsigned int FindJointIndexUsingName(const std::string& inJointName);
 	FbxAMatrix GetGeometryTransformation(FbxNode* inNode);
 
@@ -38,6 +40,7 @@ private:
     Skeleton* mSkeleton;
 	FbxScene* mFbxScene;
 	FbxLongLong mAnimationLength;
+	AnimationData* mSaveAnimation;
 
 	vector<VertexType> vertices;
 	unordered_map<VertexType, unsigned int> indexMapping;

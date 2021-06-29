@@ -21,7 +21,7 @@ bool Getter(void* list, int count, const char** outText)
 }
 
 
-void MainInspector::Render(bool* pActiveModelBrowser, std::unordered_map<std::string, GameObject>& meshMap, string& renderModelKey)
+void MainInspector::Render(bool* pActiveModelBrowser, bool* pActiveAnimBrowser, std::unordered_map<std::string, GameObject>& meshMap, string& renderModelKey)
 {
 	if (mModleCount != meshMap.size())
 	{
@@ -43,6 +43,12 @@ void MainInspector::Render(bool* pActiveModelBrowser, std::unordered_map<std::st
 			{
 				*pActiveModelBrowser = true;
 			}
+
+			if (ImGui::MenuItem("Load Animation"))
+			{
+				*pActiveAnimBrowser = true;
+			}
+
 			
 			ImGui::EndMenu();
 		}

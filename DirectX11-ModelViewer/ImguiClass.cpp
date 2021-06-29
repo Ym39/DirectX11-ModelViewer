@@ -1,7 +1,8 @@
 #include "ImguiClass.h"
 
 ImguiClass::ImguiClass():
-	mActiveModelBrowser(false)
+	mActiveModelBrowser(false),
+	mActiveAnimBrowser(false)
 { 
 
 }
@@ -16,17 +17,19 @@ void ImguiClass::Initialize(HWND hwnd, ID3D11Device* device, ID3D11DeviceContext
 	ImGui::StyleColorsDark();
 }
 
-void ImguiClass::Render(bool* loadFbx, fs::path& filePath,Transform& transform, std::unordered_map<std::string, GameObject>& meshMap, string& renderKey, Camera& camera, Light* light, GameObject* currentRenderingObject, int mouseX, int mouseY)
+void ImguiClass::Render(bool* loadFbx, fs::path& filePath,Transform& transform, std::unordered_map<std::string, GameObject>& meshMap, string& renderKey, Camera& camera, Light* light, GameObject* currentRenderingObject, int mouseX, int mouseY, bool* loadAnim, fs::path& animfilePath)
 {
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	mMain.Render(&mActiveModelBrowser,meshMap,renderKey);
+	mMain.Render(&mActiveModelBrowser,&mActiveAnimBrowser,meshMap,renderKey);
 
 	mCamerUi.Render(camera);
 
     mFileBrowser.Render(loadFbx,filePath,&mActiveModelBrowser);
+
+	mAnimFileBrowser.Render(loadAnim, animfilePath, &mActiveAnimBrowser);
 	
 	mTransformInspector.Render(transform);
 

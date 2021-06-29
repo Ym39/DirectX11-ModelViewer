@@ -14,59 +14,6 @@
 using namespace DirectX;
 using namespace std;
 
-struct Keyframe
-{
-	FbxLongLong frameName;
-	XMFLOAT4X4 globalTransfrom;
-	Keyframe* next;
-
-	Keyframe() :
-		next(nullptr)
-	{}
-
-};
-
-struct Joint
-{
-	std::string name;
-	int parentIndex;
-	XMFLOAT4X4 globalBindposeInverse;
-	Keyframe* animation;
-	FbxNode* node;
-
-	Joint() :
-		node(nullptr),
-		animation(nullptr)
-	{
-		parentIndex = -1;
-	}
-};
-
-struct Skeleton
-{
-	std::vector<Joint> joints;
-
-	Skeleton() = default;
-	Skeleton(const Skeleton& copy)
-	{
-		joints.resize(copy.joints.size());
-		std::copy(copy.joints.begin(), copy.joints.end(), joints.begin());
-	}
-
-	~Skeleton()
-	{
-		for (auto& joint : joints)
-		{
-			Keyframe* remove = joint.animation;
-			while (remove)
-			{
-				Keyframe* temp = remove->next;
-				delete remove;
-				remove = temp;
-			}
-		}
-	}
-};
 
 struct Float4x4
 {
@@ -113,6 +60,89 @@ struct Float4x4
 	void serialize(Archive& ar, const unsigned int version)
 	{
 		ar& m;
+	}
+};
+
+
+struct Keyframe
+{
+	FbxLongLong frameName;
+	XMFLOAT4X4 globalTransfrom;
+	Keyframe* next;
+
+	Keyframe() :
+		next(nullptr)
+	{}
+
+};
+
+struct SaveKeyFrame
+{
+	int frameName;
+	Float4x4 globalTransfrom;
+
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive& ar, const unsigned int version)
+	{
+		ar& frameName;
+		ar& globalTransfrom;
+	}
+};
+
+struct AnimationData
+{
+	int animationLength;
+	std::vector<std::vector<SaveKeyFrame>> keyFrames;
+
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive& ar, const unsigned int version)
+	{
+		ar& animationLength;
+		ar& keyFrames;
+	}
+};
+
+struct Joint
+{
+	std::string name;
+	int parentIndex;
+	XMFLOAT4X4 globalBindposeInverse;
+	Keyframe* animation;
+	FbxNode* node;
+
+	Joint() :
+		node(nullptr),
+		animation(nullptr)
+	{
+		parentIndex = -1;
+	}
+};
+
+struct Skeleton
+{
+	std::vector<Joint> joints;
+
+	Skeleton() = default;
+	Skeleton(const Skeleton& copy)
+	{
+		joints.resize(copy.joints.size());
+		std::copy(copy.joints.begin(), copy.joints.end(), joints.begin());
+	}
+
+	~Skeleton()
+	{
+		for (auto& joint : joints)
+		{
+			Keyframe* remove = joint.animation;
+			while (remove)
+			{
+				Keyframe* temp = remove->next;
+				delete remove;
+				remove = temp;
+			}
+		}
 	}
 };
 

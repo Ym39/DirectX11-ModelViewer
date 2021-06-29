@@ -34,7 +34,7 @@
     <Filter Include="헤더 파일\셰이더 클래스">
       <UniqueIdentifier>{7764df23-65e0-45fa-a308-878f10164b91}</UniqueIdentifier>
     </Filter>
-    <Filter Include="헤더 파일\셰이더 클래스\UI">
+    <Filter Include="헤더 파일\UI">
       <UniqueIdentifier>{8cd86e3e-27cc-41b6-b4a3-50a258ac0057}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -121,16 +121,16 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="TransformInspector.h">
-      <Filter>헤더 파일\셰이더 클래스\UI</Filter>
+      <Filter>헤더 파일\UI</Filter>
     </ClInclude>
     <ClInclude Include="MainInspector.h">
-      <Filter>헤더 파일\셰이더 클래스\UI</Filter>
+      <Filter>헤더 파일\UI</Filter>
     </ClInclude>
     <ClInclude Include="FileBrowser.h">
-      <Filter>헤더 파일\셰이더 클래스\UI</Filter>
+      <Filter>헤더 파일\UI</Filter>
     </ClInclude>
     <ClInclude Include="ImguiClass.h">
-      <Filter>헤더 파일\셰이더 클래스\UI</Filter>
+      <Filter>헤더 파일\UI</Filter>
     </ClInclude>
     <ClInclude Include="GridClass.h">
       <Filter>헤더 파일</Filter>
@@ -160,7 +160,7 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="BoneTransformInspector.h">
-      <Filter>헤더 파일\셰이더 클래스\UI</Filter>
+      <Filter>헤더 파일\UI</Filter>
     </ClInclude>
     <ClInclude Include="SolidColorShader.h">
       <Filter>헤더 파일\셰이더 클래스</Filter>
@@ -182,6 +182,9 @@
     </ClInclude>
     <ClInclude Include="TextureShaderClass.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationFileBrowser.h">
+      <Filter>헤더 파일\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -320,6 +323,9 @@
     </ClCompile>
     <ClCompile Include="TextureShaderClass.cpp">
       <Filter>소스 파일\셰이더 클래스</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationFileBrowser.cpp">
+      <Filter>소스 파일\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

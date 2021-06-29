@@ -606,9 +606,10 @@ bool GraphicsClass::Render()
     //2D ·»´õ¸µ ³¡
 
     bool loadFbx = false;
+    bool loadAnim = false;
     fs::path loadPath;
     //IMGUI ·»´õ¸µ
-    mImgui->Render(&loadFbx,loadPath, meshMap[mCurrentRenderMesh].Transfrom(),meshMap,mCurrentRenderMesh,*mCamera,mLight,mCurrentRenderMesh == "" ? nullptr : &(meshMap[mCurrentRenderMesh]), wmX, wmY);
+    mImgui->Render(&loadFbx,loadPath, meshMap[mCurrentRenderMesh].Transfrom(),meshMap,mCurrentRenderMesh,*mCamera,mLight,mCurrentRenderMesh == "" ? nullptr : &(meshMap[mCurrentRenderMesh]), wmX, wmY, &loadAnim, loadPath);
 
     if (loadFbx == true)
     {
@@ -630,7 +631,11 @@ bool GraphicsClass::Render()
         loadObject.SetTexture(texture);
 
         meshMap.insert(std::pair<std::string, GameObject>(meshKey, loadObject));
+    }
 
+    if (loadAnim == true)
+    {
+        mFbxLoader->LoadAnimation(const_cast<char*>(loadPath.string().c_str()));
     }
 
     mDirect->EndScene();
