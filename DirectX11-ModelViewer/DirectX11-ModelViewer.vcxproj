@@ -90,13 +90,13 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.2\include;F:\VisualStudio Project\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;G:\ModelViewer\DirectX11-ModelViewer\DirectXTex;C:\Users\vinoo\Desktop\VSProject\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.2\include;F:\VisualStudio Project\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;G:\ModelViewer\DirectX11-ModelViewer\DirectXTex;C:\Users\vinoo\Desktop\VSProject\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;C:\boost_1_76_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.2\lib\vs2019\x86\debug;F:\VisualStudio Project\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;G:\ModelViewer\DirectX11-ModelViewer\DirectXTex;C:\Users\vinoo\Desktop\VSProject\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;C:\Users\admin\Desktop\boost_1_76_0\stage\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.2\lib\vs2019\x86\debug;F:\VisualStudio Project\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;G:\ModelViewer\DirectX11-ModelViewer\DirectXTex;C:\Users\vinoo\Desktop\VSProject\DirectX11-ModelViewer\DirectX11-ModelViewer\DirectXTex;C:\Users\admin\Desktop\boost_1_76_0\stage\lib;C:\boost_1_76_0\stage\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>DirectXTex.lib;libfbxsdk-md.lib;libxml2-md.lib;zlib-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -160,6 +160,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraTransform.h" />
     <ClInclude Include="ColorShader.h" />
+    <ClInclude Include="Component.h" />
     <ClInclude Include="D3DClass.h" />
     <ClInclude Include="DepthShaderClass.h" />
     <ClInclude Include="DirectX11-ModelViewer.h" />
@@ -185,6 +186,7 @@
     <ClInclude Include="MainInspector.h" />
     <ClInclude Include="MathHelper.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="MeshClass.h" />
     <ClInclude Include="ModelClass.h" />
     <ClInclude Include="RenderTextureClass.h" />
     <ClInclude Include="Resource.h" />
@@ -195,10 +197,12 @@
     <ClInclude Include="SpecularShaderClass.h" />
     <ClInclude Include="SystemClass.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="TempMesh.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureShaderClass.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="TransformInspector.h" />
     <ClInclude Include="Utility.h" />
   </ItemGroup>
@@ -232,6 +236,7 @@
     <ClCompile Include="MainInspector.cpp" />
     <ClCompile Include="MathHelper.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="MeshClass.cpp" />
     <ClCompile Include="ModelClass.cpp" />
     <ClCompile Include="RenderTextureClass.cpp" />
     <ClCompile Include="ShadowShaderClass.cpp" />
@@ -240,10 +245,12 @@
     <ClCompile Include="SolidColorShader.cpp" />
     <ClCompile Include="SpecularShaderClass.cpp" />
     <ClCompile Include="SystemClass.cpp" />
+    <ClCompile Include="TempMesh.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureShaderClass.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="TransformComponent.cpp" />
     <ClCompile Include="TransformInspector.cpp" />
   </ItemGroup>
   <ItemGroup>

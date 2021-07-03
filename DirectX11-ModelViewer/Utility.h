@@ -42,7 +42,7 @@ struct Float4x4
 		return *this;
 	}
 
-	void LoadXMFLOAT4X4(XMFLOAT4X4* matrix)
+	void LoadXMFLOAT4X4(XMFLOAT4X4* matrix) const
 	{
 		for (int i = 0; i < 4; i++)
 		{
@@ -159,6 +159,20 @@ struct BoneData
 		ar& name;
 		ar& parentIndex;
 		ar& globalBindposeInverse;
+	}
+};
+
+struct Bone
+{
+	std::string name;
+	int parentIndex;
+	XMFLOAT4X4 globalBindposeInverse;
+
+	Bone& operator=(const BoneData& boneData)
+	{
+		this->name = boneData.name;
+		this->parentIndex = boneData.parentIndex;
+		boneData.globalBindposeInverse.LoadXMFLOAT4X4(&this->globalBindposeInverse);
 	}
 };
 
@@ -280,26 +294,6 @@ struct VertexType
 	}
 };
 
-struct InputVertex
-{
-	XMFLOAT3 position;
-	XMFLOAT2 texture;
-	XMFLOAT3 normal;
-	XMFLOAT3 weight;
-	unsigned int boneIndices[4] = {0,};
-
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		ar& position;
-		ar& texture;
-		ar& normal;
-		ar& weight;
-		ar& boneIndices;
-	}
-};
-
 struct SaveVertexType
 {
 	Float3 position;
@@ -346,7 +340,42 @@ struct SaveVertexType
 		}
 		return *this;
 	}
+}; 
+
+struct InputVertex
+{
+	XMFLOAT3 position;
+	XMFLOAT2 texture;
+	XMFLOAT3 normal;
+	XMFLOAT3 weight;
+	unsigned int boneIndices[4] = {0,};
+
+	InputVertex& operator=(const SaveVertexType& saveVertex)
+	{
+		this->position.x = saveVertex.position.x;
+		this->position.y = saveVertex.position.y;
+		this->position.z = saveVertex.position.z;
+
+		this->texture.x = saveVertex.texture.x;
+		this->texture.y = saveVertex.texture.y;
+
+		this->normal.x = saveVertex.normal.x;
+		this->normal.y = saveVertex.normal.y;
+		this->normal.z = saveVertex.normal.z;
+
+		this->weight.x = saveVertex.weight.x;
+		this->weight.y = saveVertex.weight.y;
+		this->weight.z = saveVertex.weight.z;
+
+		this->boneIndices[0] = saveVertex.boneIndices[0];
+		this->boneIndices[1] = saveVertex.boneIndices[1];
+		this->boneIndices[2] = saveVertex.boneIndices[2];
+		this->boneIndices[3] = saveVertex.boneIndices[3];
+
+		return *this;
+	}
 };
+
 
 struct SkinnedMeshData
 {

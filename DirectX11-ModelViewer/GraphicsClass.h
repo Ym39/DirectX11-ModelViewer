@@ -20,6 +20,7 @@
 #include "ArrowModel.h"
 #include "TextureShaderClass.h"
 #include "BitmapClass.h"
+#include "TempMesh.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = false;
@@ -75,6 +76,10 @@ private:
 	ArrowModel* mUpArrowModel;
 	BitmapClass* mMouseBitmap = nullptr;
 	TextureShaderClass* mTextureShader = nullptr;
+
+	/*Texture* mCharacterTexture;
+	TempMesh* mTempMesh = nullptr;
+	vector<XMMATRIX> dummyBone;*/
 
 	XMMATRIX mBaseViewMatrix;
 

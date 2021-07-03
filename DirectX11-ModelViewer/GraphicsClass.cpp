@@ -218,6 +218,29 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     if (result == false)
         return false;
 
+    //ifstream in; //읽기 스트림 생성
+    //SkinnedMeshData loadMesh; //받을 객체 생성
+    //in.open("Character.SM", ios_base::binary); //바이너리모드로 파일을 열었습니다.
+    //boost::archive::binary_iarchive in_archive(in); //연 스트림을 넘겨주어서 직렬화객체 초기화
+    //in_archive >> loadMesh; //읽기
+    //in.close();
+    
+   /* mTempMesh = new TempMesh;
+    mTempMesh->SetMesh(loadMesh);
+
+    if (mTempMesh->InitializeBuffer(mDirect->GetDevice()) == false)
+        return false;
+
+    mCharacterTexture = new Texture;
+    if (mCharacterTexture->Initialize(mDirect->GetDevice(), mDirect->GetDeviceContext(), "Texture\\vanguard_diffuse.png") == false)
+        return false;
+    
+    dummyBone.resize(120);
+    for (auto& m : dummyBone)
+    {
+        m = XMMatrixTranspose(XMMatrixIdentity());
+    }*/
+
     return true;
 }
 
@@ -367,6 +390,20 @@ void GraphicsClass::Shutdown()
         delete mTextureShader;
         mTextureShader = nullptr;
     }
+
+   /* if (mTempMesh)
+    {
+        mTempMesh->Shutdown();
+        delete mTempMesh;
+        mTempMesh = nullptr;
+    }
+
+    if (mCharacterTexture)
+    {
+        mCharacterTexture->Shutdown();
+        delete mCharacterTexture;
+        mCharacterTexture = nullptr;
+    }*/
 }
 
 bool GraphicsClass::Frame()
@@ -576,6 +613,9 @@ bool GraphicsClass::Render()
     mShadowShader->Render(mDirect->GetDeviceContext(), mGroundModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, mGroundModel->GetTexture(), mRenderTexture->GetShaderResourceView(), mLight->GetPosition(), mLight->GetAmbientColor(), mLight->GetDiffuseColor());*/
     //mDepthShader->Render(mDirect->GetDeviceContext(), mGroundModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
 
+ /*   mTempMesh->Render(mDirect->GetDeviceContext());
+    mShader->Render(mDirect->GetDeviceContext(), mTempMesh->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, mCharacterTexture->GetTexture(), mLight->GetPosition(), mLight->GetDiffuseColor(), mLight->GetAmbientColor(), mCamera->GetPosition(), mLight->GetSpecularColor(), mLight->GetSpecularPower(), dummyBone);*/
+
     mDirect->GetWorldMatrix(worldMatrix);
     mGroundMesh->Render(mDirect->GetDeviceContext());
     mShadowShader->Render(mDirect->GetDeviceContext(), mGroundMesh->GetIndexCount(), floorWorld, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix,mGroundTexture->GetTexture(), mRenderTexture->GetShaderResourceView(), mLight->GetPosition(), mLight->GetAmbientColor(), mLight->GetDiffuseColor());
@@ -608,6 +648,7 @@ bool GraphicsClass::Render()
     bool loadFbx = false;
     bool loadAnim = false;
     fs::path loadPath;
+
     //IMGUI 렌더링
     mImgui->Render(&loadFbx,loadPath, meshMap[mCurrentRenderMesh].Transfrom(),meshMap,mCurrentRenderMesh,*mCamera,mLight,mCurrentRenderMesh == "" ? nullptr : &(meshMap[mCurrentRenderMesh]), wmX, wmY, &loadAnim, loadPath);
 

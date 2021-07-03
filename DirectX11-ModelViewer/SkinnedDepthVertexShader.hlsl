@@ -7,7 +7,7 @@ cbuffer MatrixBuffer
 
 cbuffer BoneBuffer
 {
-	matrix boneTransforms[65];
+	matrix boneTransforms[120];
 };
 
 struct VertexInputType
