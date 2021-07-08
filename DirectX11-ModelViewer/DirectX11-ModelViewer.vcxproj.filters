@@ -37,6 +37,12 @@
     <Filter Include="헤더 파일\UI">
       <UniqueIdentifier>{8cd86e3e-27cc-41b6-b4a3-50a258ac0057}</UniqueIdentifier>
     </Filter>
+    <Filter Include="헤더 파일\컴포넌트">
+      <UniqueIdentifier>{7b193f85-dd2d-435f-81e4-ed8271b94bcd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\컴포넌트">
+      <UniqueIdentifier>{b5726a72-5b48-4bf2-a985-ee58eec43ddc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -189,14 +195,17 @@
     <ClInclude Include="TempMesh.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Component.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="MeshClass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>헤더 파일\컴포넌트</Filter>
+    </ClInclude>
     <ClInclude Include="TransformComponent.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>헤더 파일\컴포넌트</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshRenderComponent.h">
+      <Filter>헤더 파일\컴포넌트</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -345,9 +354,6 @@
     <ClCompile Include="MeshClass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="TransformComponent.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="DirectXTex\DirectXTex.inl">
@@ -391,6 +397,12 @@
     </None>
     <None Include="TextureVertexShader.hlsl">
       <Filter>셰이더</Filter>
+    </None>
+    <None Include="TransformComponent.cpp">
+      <Filter>소스 파일\컴포넌트</Filter>
+    </None>
+    <None Include="MeshRenderComponent.cpp">
+      <Filter>소스 파일\컴포넌트</Filter>
     </None>
   </ItemGroup>
 </Project>

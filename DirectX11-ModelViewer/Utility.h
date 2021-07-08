@@ -173,6 +173,8 @@ struct Bone
 		this->name = boneData.name;
 		this->parentIndex = boneData.parentIndex;
 		boneData.globalBindposeInverse.LoadXMFLOAT4X4(&this->globalBindposeInverse);
+
+		return *this;
 	}
 };
 

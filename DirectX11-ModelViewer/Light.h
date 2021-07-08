@@ -40,4 +40,3 @@ private:
 	XMMATRIX mViewMatrix;
 	XMMATRIX mProjectionMatrix;
 };
-

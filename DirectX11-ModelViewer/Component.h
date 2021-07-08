@@ -1,5 +1,9 @@
 #pragma once
 #include<unordered_map>
+#include <directxmath.h>
+#include"MeshClass.h"
+#include"SpecularShaderClass.h"
+using namespace DirectX;
 
 struct null_t {};
 
@@ -63,6 +67,7 @@ struct _component_identifier
 #define DECLARE_COMPONENT(component_name) \
 	component_name::component_identifier_t component_name::identifier;
 
+class GameObjectClass;
 class BaseComponent
 {
 public:
@@ -72,8 +77,9 @@ public:
 	virtual void Start() = 0;
 	virtual void Update() = 0;
 	virtual void LateUpdate() = 0;
+	virtual void Destroy() = 0;
 
-protected:
+public:
 	void SetOwnerGameObject(GameObjectClass* owner)
 	{
 		mOwnerGameObject = owner;
@@ -87,6 +93,7 @@ DECLARE_COMPONENT(BaseComponent);
 
 class GameObjectClass
 {
+public:
 	static GameObjectClass* Create() { return new GameObjectClass; }
 
 public:
@@ -99,7 +106,7 @@ public:
 	{
 		size_t compId = get_component<component_t>::type::GetComponentId();
 		this->components[compId] = comp;
-		SetOwnerGameObject(this);
+		static_cast<BaseComponent*>(comp)->SetOwnerGameObject(this);
 	}
 
 	template<class component_t>
@@ -113,7 +120,132 @@ public:
 	}
 private:
 	std::unordered_map<size_t, BaseComponent*> components;
-
-protected:
-	friend void BaseComponent::SetOwnerGameObject(GameObjectClass* owner);
 };
+
+
+//class TransformComponent : public BaseComponent
+//{
+//public:
+//	DEFINE_COMPONENT(TransformComponent, BaseComponent, true);
+//
+//public:
+//	TransformComponent() :
+//		mPosition(0.f, 0.f, 0.f),
+//		mRotation(0.f, 0.f, 0.f),
+//		mScale(1.f, 1.f, 1.f)
+//	{
+//		UpdateTransform();
+//	}
+//	~TransformComponent() = delete;
+//
+//public:
+//	virtual void Start() override {};
+//	virtual void Update() override {};
+//	virtual void LateUpdate() override {};
+//	virtual void Destroy() override {};
+//
+//	XMVECTOR GetPosition() const { return XMLoadFloat3(&mPosition); }
+//	XMFLOAT3 GetRotation() const { return mRotation; }
+//	XMFLOAT3 GetScale() const { return mScale; }
+//	XMMATRIX GetTransform() const { return mTransform; }
+//
+//	void SetPosition(XMFLOAT3 position)
+//	{
+//		mPosition = position;
+//		UpdateTransform();
+//	}
+//
+//	void SetRotation(XMFLOAT3 rotation)
+//	{
+//		mRotation = rotation;
+//		UpdateTransform();
+//	}
+//
+//	void SetScale(XMFLOAT3 scale)
+//	{
+//		mScale = scale;
+//		UpdateTransform();
+//	}
+//
+//	void UpdateTransform()
+//	{
+//		mTransform = XMMatrixScaling(mScale.x, mScale.y, mScale.z)
+//			* XMMatrixRotationRollPitchYaw(XMConvertToRadians(mRotation.x), XMConvertToRadians(mRotation.y), XMConvertToRadians(mRotation.z)) * XMMatrixTranslation(mPosition.x, mPosition.y, mPosition.z);
+//	}
+//
+//
+//	XMVECTOR Forward() {return XMVector3Normalize(mTransform.r[3]);}
+//	XMVECTOR Right() {	return XMVector3Normalize(mTransform.r[1]);}
+//	XMVECTOR Up() {return XMVector3Normalize(mTransform.r[2]);}
+//
+//private:
+//	XMFLOAT3 mPosition;
+//	XMFLOAT3 mRotation;
+//	XMFLOAT3 mScale;
+//	XMMATRIX mTransform;
+//};
+//
+//DECLARE_COMPONENT(TransformComponent);
+//
+//extern Camera* gMainCamera;
+//extern Light* gMainLight;
+//extern D3DClass* gDirect;
+//
+//class MeshRenderComponent : public BaseComponent
+//{
+//public:
+//	DEFINE_COMPONENT(MeshRenderComponent, BaseComponent, true);
+//
+//public:
+//	MeshRenderComponent() :
+//		mMesh(nullptr),
+//		mShader(nullptr),
+//		mTexture(nullptr)
+//	{}
+//	~MeshRenderComponent() = default;
+//
+//public:
+//	virtual void Start() override {};
+//	virtual void Update() override {};
+//	virtual void LateUpdate() override {};
+//	virtual void Destroy() override {};
+//
+//	virtual void Render(ID3D11DeviceContext* deviceContext)
+//	{
+//		XMMATRIX viewMatrix, projectionMatrix;
+//		gMainCamera->GetViewMatrix(viewMatrix);
+//		gDirect->GetOrthoMatrix(projectionMatrix);
+//
+//		mMesh->Render(deviceContext);
+//
+//		TransformComponent* objectTransform = mOwnerGameObject->GetComponent<TransformComponent>();
+//
+//		mShader->Render(deviceContext, mMesh->GetIndexCount(), objectTransform->GetTransform(), viewMatrix, projectionMatrix, mTexture->GetTexture(), gMainLight->GetPosition(), gMainLight->GetDiffuseColor(), gMainLight->GetAmbientColor(), gMainCamera->GetPosition(), gMainLight->GetSpecularColor(), gMainLight->GetSpecularPower());
+//	}
+//
+//public:
+//	bool Initalize(MeshClass* mesh, SpecularShaderClass* shader, Texture* texture)
+//	{
+//		if (mesh == nullptr || shader == nullptr || texture == nullptr)
+//			return false;
+//
+//		if (mesh->IsInitalized() == false)
+//			return false;
+//
+//		mMesh = mesh;
+//		mShader = shader;
+//		mTexture = texture;
+//
+//		return true;
+//	}
+//
+//protected:
+//	MeshClass* mMesh;
+//
+//private:
+//	SpecularShaderClass* mShader;
+//	Texture* mTexture;
+//};
+//
+//DECLARE_COMPONENT(MeshRenderComponent);
+//

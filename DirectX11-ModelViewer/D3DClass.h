@@ -65,4 +65,3 @@ private:
 
 	D3D11_VIEWPORT mViewPort;
 };
-

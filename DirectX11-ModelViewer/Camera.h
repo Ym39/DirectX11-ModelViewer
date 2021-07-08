@@ -26,4 +26,3 @@ private:
 	Transform mTransform;
 	XMMATRIX mViewMatrix;
 };
-

@@ -1,7 +1,12 @@
 #include "GraphicsClass.h"
 #include"SystemClass.h"
+#include "Component.h"
+#include "TransformComponent.h"
 
 extern SystemClass* ApplicationHandle;
+extern Camera* gMainCamera;
+extern Light* gMainLight;
+extern D3DClass* gDirect;
 
 GraphicsClass::GraphicsClass() :
     mDirect(nullptr),
@@ -48,6 +53,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
     }
 
+    gDirect = mDirect;
+
     mFbxLoader = new FBXLoader;
     if (mFbxLoader == nullptr)
     {
@@ -75,11 +82,13 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     mLight->SetSpecularColor(1.0f,1.0f,1.0f,1.0f);
     mLight->SetSpecularPower(50.0f);
     mLight->GenerateProjectionMatrix(SCREEN_DEPTH, SCREEN_NEAR);
+    gMainLight = mLight;
 
     mCamera = new Camera;
     mCamera->SetPosition(0.0f,0.0f,-300.0f);
     mCamera->Render();
     mCamera->GetViewMatrix(mBaseViewMatrix);
+    gMainCamera = mCamera;
 
     mShader = new SkinnedMeshShader;
     result = mShader->Initialize(mDirect->GetDevice(),hwnd);
@@ -217,6 +226,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     result = mTextureShader->Initialize(mDirect->GetDevice(),hwnd);
     if (result == false)
         return false;
+
+    GameObjectClass* gameObject = GameObjectClass::Create();
+    gameObject->InsertComponent(new TransformComponent);
 
     //ifstream in; //읽기 스트림 생성
     //SkinnedMeshData loadMesh; //받을 객체 생성

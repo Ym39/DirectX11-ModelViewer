@@ -20,6 +20,10 @@ void TransformComponent::LateUpdate()
 {
 }
 
+void TransformComponent::Destroy()
+{
+}
+
 void TransformComponent::SetPosition(XMFLOAT3 position)
 {
 	mPosition = position;

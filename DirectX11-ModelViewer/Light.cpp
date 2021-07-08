@@ -1,5 +1,7 @@
 #include "Light.h"
 
+Light* gMainLight;
+
 void Light::SetAmbientColor(float red, float green, float blue, float alpha)
 {
 	mAmbientColor = XMFLOAT4(red, green, blue, alpha);

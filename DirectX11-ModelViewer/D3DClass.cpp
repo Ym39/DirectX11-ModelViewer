@@ -1,5 +1,7 @@
 #include "D3DClass.h"
 
+D3DClass* gDirect;
+
 D3DClass::D3DClass():
 mSwapChain(nullptr),
 mDevice(nullptr),

@@ -1,5 +1,7 @@
 #include "Camera.h"
 
+Camera* gMainCamera;
+
 Camera::Camera()
 {
 	mPositionX = 0.0f;
