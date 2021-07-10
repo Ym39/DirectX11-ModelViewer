@@ -33,7 +33,7 @@ public:
 	{
 		XMMATRIX viewMatrix, projectionMatrix;
 		gMainCamera->GetViewMatrix(viewMatrix);
-		gDirect->GetOrthoMatrix(projectionMatrix);
+		gDirect->GetProjectionMatrix(projectionMatrix);
 
 		mMesh->Render(deviceContext);
 

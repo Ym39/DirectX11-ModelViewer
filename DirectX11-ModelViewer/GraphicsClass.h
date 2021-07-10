@@ -21,6 +21,7 @@
 #include "TextureShaderClass.h"
 #include "BitmapClass.h"
 #include "TempMesh.h"
+#include "MeshClass.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = false;
@@ -37,6 +38,8 @@ enum class PositionGizumoState
 {
 	NONE, FORWARD, RIGHT, UP
 };
+
+class GameObjectClass;
 
 class GraphicsClass
 {
@@ -81,9 +84,11 @@ private:
 	BitmapClass* mMouseBitmap = nullptr;
 	TextureShaderClass* mTextureShader = nullptr;
 
-	/*Texture* mCharacterTexture;
-	TempMesh* mTempMesh = nullptr;
-	vector<XMMATRIX> dummyBone;*/
+	Texture* mCharacterTexture;
+	MeshClass* mCharacterMesh;
+	GameObjectClass* mGameObject;
+	//TempMesh* mTempMesh = nullptr;
+	//vector<XMMATRIX> dummyBone;
 
 	XMMATRIX mBaseViewMatrix;
 

@@ -2,6 +2,7 @@
 #include"SystemClass.h"
 #include "Component.h"
 #include "TransformComponent.h"
+#include "MeshRenderComponent.h"
 
 extern SystemClass* ApplicationHandle;
 extern Camera* gMainCamera;
@@ -227,27 +228,36 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     if (result == false)
         return false;
 
-    GameObjectClass* gameObject = GameObjectClass::Create();
-    gameObject->InsertComponent(new TransformComponent);
+    mGameObject = GameObjectClass::Create();
+    mGameObject->InsertComponent(new TransformComponent);
 
-    //ifstream in; //읽기 스트림 생성
-    //SkinnedMeshData loadMesh; //받을 객체 생성
-    //in.open("Character.SM", ios_base::binary); //바이너리모드로 파일을 열었습니다.
-    //boost::archive::binary_iarchive in_archive(in); //연 스트림을 넘겨주어서 직렬화객체 초기화
-    //in_archive >> loadMesh; //읽기
-    //in.close();
+    ifstream in; //읽기 스트림 생성
+    SkinnedMeshData loadMesh; //받을 객체 생성
+    in.open("Character.SM", ios_base::binary); //바이너리모드로 파일을 열었습니다.
+    boost::archive::binary_iarchive in_archive(in); //연 스트림을 넘겨주어서 직렬화객체 초기화
+    in_archive >> loadMesh; //읽기
+    in.close();
     
-   /* mTempMesh = new TempMesh;
+    /*mTempMesh = new TempMesh;
     mTempMesh->SetMesh(loadMesh);
 
     if (mTempMesh->InitializeBuffer(mDirect->GetDevice()) == false)
-        return false;
+        return false;*/
 
     mCharacterTexture = new Texture;
     if (mCharacterTexture->Initialize(mDirect->GetDevice(), mDirect->GetDeviceContext(), "Texture\\vanguard_diffuse.png") == false)
         return false;
+
+    mCharacterMesh = new MeshClass;
+    mCharacterMesh->operator=(loadMesh);
+    mCharacterMesh->Initalize(mDirect->GetDevice());
+
+    MeshRenderComponent* rendercomp = new MeshRenderComponent();
+    rendercomp->Initalize(mCharacterMesh, mSpecularShader, mCharacterTexture);
+
+    mGameObject->InsertComponent(rendercomp);
     
-    dummyBone.resize(120);
+    /*dummyBone.resize(120);
     for (auto& m : dummyBone)
     {
         m = XMMatrixTranspose(XMMatrixIdentity());
@@ -403,19 +413,25 @@ void GraphicsClass::Shutdown()
         mTextureShader = nullptr;
     }
 
-   /* if (mTempMesh)
-    {
-        mTempMesh->Shutdown();
-        delete mTempMesh;
-        mTempMesh = nullptr;
-    }
-
     if (mCharacterTexture)
     {
         mCharacterTexture->Shutdown();
         delete mCharacterTexture;
         mCharacterTexture = nullptr;
-    }*/
+    }
+
+    if (mCharacterMesh)
+    {
+        mCharacterMesh->Shutdown();
+        delete mCharacterMesh;
+        mCharacterMesh = nullptr;
+    }
+
+    if (mGameObject)
+    {
+        delete mGameObject;
+        mGameObject = nullptr;
+    }
 }
 
 bool GraphicsClass::Frame()
@@ -631,6 +647,14 @@ bool GraphicsClass::Render()
     mDirect->GetWorldMatrix(worldMatrix);
     mGroundMesh->Render(mDirect->GetDeviceContext());
     mShadowShader->Render(mDirect->GetDeviceContext(), mGroundMesh->GetIndexCount(), floorWorld, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix,mGroundTexture->GetTexture(), mRenderTexture->GetShaderResourceView(), mLight->GetPosition(), mLight->GetAmbientColor(), mLight->GetDiffuseColor());
+
+    MeshRenderComponent* currentRenderer;
+    currentRenderer = mGameObject->GetComponent<MeshRenderComponent>();
+
+    if (currentRenderer != nullptr)
+    {
+        currentRenderer->Render(mDirect->GetDeviceContext());
+    }
 
     //2D 렌더링
     mDirect->TurnZBufferOff();
