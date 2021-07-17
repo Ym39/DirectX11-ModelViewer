@@ -153,7 +153,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AnimationFileBrowser.h" />
+    <ClInclude Include="AnimatorComponent.h" />
     <ClInclude Include="ArrowModel.h" />
+    <ClInclude Include="AssetClass.h" />
     <ClInclude Include="BitmapClass.h" />
     <ClInclude Include="BoneTransformInspector.h" />
     <ClInclude Include="Bounds.h" />
@@ -193,6 +195,7 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ShadowShaderClass.h" />
     <ClInclude Include="SkinnedDepthShaderClass.h" />
+    <ClInclude Include="SkinnedMeshRenderComponent.h" />
     <ClInclude Include="SkinnedMeshShader.h" />
     <ClInclude Include="SolidColorShader.h" />
     <ClInclude Include="SpecularShaderClass.h" />
@@ -210,6 +213,7 @@
   <ItemGroup>
     <ClCompile Include="AnimationFileBrowser.cpp" />
     <ClCompile Include="ArrowModel.cpp" />
+    <ClCompile Include="AssetClass.cpp" />
     <ClCompile Include="BitmapClass.cpp" />
     <ClCompile Include="BoneTransformInspector.cpp" />
     <ClCompile Include="Bounds.cpp" />

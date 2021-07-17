@@ -15,6 +15,9 @@ public:
     
 	unsigned int GetIndexCount() const { return indices.size(); }
 	bool IsInitalized() const { return mIsInitialize; }
+
+	vector<Bone>& GetBones() { return bones; }
+	Bone& GetBone(int index) { return bones[index]; }
 private:
 	bool mIsInitialize = false;
 

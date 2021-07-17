@@ -63,7 +63,7 @@ struct Float4x4
 	}
 };
 
-
+struct SaveKeyFrame;
 struct Keyframe
 {
 	FbxLongLong frameName;
@@ -73,7 +73,6 @@ struct Keyframe
 	Keyframe() :
 		next(nullptr)
 	{}
-
 };
 
 struct SaveKeyFrame
@@ -90,7 +89,7 @@ struct SaveKeyFrame
 	}
 };
 
-struct AnimationData
+struct SaveAnimationData
 {
 	int animationLength;
 	std::vector<std::vector<SaveKeyFrame>> keyFrames;
@@ -101,6 +100,40 @@ struct AnimationData
 	{
 		ar& animationLength;
 		ar& keyFrames;
+	}
+};
+
+struct KeyFrameData
+{
+	FbxLongLong frameName;
+	XMFLOAT4X4 globalTransfrom;
+
+	KeyFrameData& operator=(const SaveKeyFrame& saveKeyFrame)
+	{
+		frameName = saveKeyFrame.frameName;
+		saveKeyFrame.globalTransfrom.LoadXMFLOAT4X4(&globalTransfrom);
+		return *this;
+	}
+};
+
+struct AnimationData
+{
+	int animationLength;
+	std::vector<std::vector<KeyFrameData>> keyFrames;
+
+	AnimationData& operator=(const SaveAnimationData& saveAnimationData)
+	{
+		animationLength = saveAnimationData.animationLength;
+		keyFrames.resize(saveAnimationData.keyFrames.size());
+		for (int i = 0; i < keyFrames.size(); i++)
+		{
+			keyFrames[i].resize(saveAnimationData.keyFrames[i].size());
+			for (int j = 0; j < keyFrames[i].size(); j++)
+			{
+				keyFrames[i][j] = saveAnimationData.keyFrames[i][j];
+			}
+		}
+		return *this;
 	}
 };
 
@@ -321,7 +354,7 @@ struct SaveVertexType
 		texture = copy.texture;
 		normal = copy.normal;
 
-		if (copy.blendingInfo.size() == 4)
+		/*if (copy.blendingInfo.size() == 4)
 		{
 			for (int i = 0; i < 4; i++)
 			{
@@ -338,6 +371,26 @@ struct SaveVertexType
 					weight.z = copy.blendingInfo[i].blendingWeight;
 					break;
 				}
+			}
+		}*/
+
+		if (copy.blendingInfo.size() == 0)
+			return *this;
+
+		for (int i = 0; i < 4; i++)
+		{
+			boneIndices[i] = copy.blendingInfo[i].blendingIndex;
+			switch (i)
+			{
+			case 0:
+				weight.x = copy.blendingInfo[i].blendingWeight;
+				break;
+			case 1:
+				weight.y = copy.blendingInfo[i].blendingWeight;
+				break;
+			case 2:
+				weight.z = copy.blendingInfo[i].blendingWeight;
+				break;
 			}
 		}
 		return *this;

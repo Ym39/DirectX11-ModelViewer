@@ -20,8 +20,8 @@ public:
 
 public:
 	virtual void Start() override {};
-	virtual void Update() override {};
-	virtual void LateUpdate() override {};
+	virtual void Update(float deltaTime) override {};
+	virtual void LateUpdate(float deltaTime) override {};
 	virtual void Destroy() override {};
 
 	XMVECTOR GetPosition() const { return XMLoadFloat3(&mPosition); }

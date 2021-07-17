@@ -22,6 +22,7 @@
 #include "BitmapClass.h"
 #include "TempMesh.h"
 #include "MeshClass.h"
+#include "AssetClass.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = false;
@@ -87,6 +88,7 @@ private:
 	Texture* mCharacterTexture;
 	MeshClass* mCharacterMesh;
 	GameObjectClass* mGameObject;
+	AnimationData* anim;
 	//TempMesh* mTempMesh = nullptr;
 	//vector<XMMATRIX> dummyBone;
 

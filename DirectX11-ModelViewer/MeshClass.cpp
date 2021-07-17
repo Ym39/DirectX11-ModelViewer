@@ -2,7 +2,8 @@
 
 MeshClass::MeshClass():
 	mVertexBuffer(nullptr),
-	mIndexBuffer(nullptr)
+	mIndexBuffer(nullptr),
+	mIsInitialize(false)
 {
 }
 
@@ -12,7 +13,11 @@ MeshClass& MeshClass::operator=(const SkinnedMeshData& meshData)
 		return *this;
 
 	vertices.resize(meshData.vertices.size());
-	copy(meshData.vertices.begin(), meshData.vertices.end(), vertices.begin());
+	//copy(meshData.vertices.begin(), meshData.vertices.end(), vertices.begin());
+	for (int i = 0; i < vertices.size(); i++)
+	{
+		vertices[i] = meshData.vertices[i];
+	}
 
 	indices.resize(meshData.indices.size());
 	copy(meshData.indices.begin(), meshData.indices.end(), indices.begin());
@@ -21,7 +26,11 @@ MeshClass& MeshClass::operator=(const SkinnedMeshData& meshData)
 		return *this;
 
 	bones.resize(meshData.bones.size());
-	copy(meshData.bones.begin(), meshData.bones.end(), bones.begin());
+	//copy(meshData.bones.begin(), meshData.bones.end(), bones.begin());
+	for (int i = 0; i < bones.size(); i++)
+	{
+		bones[i] = meshData.bones[i];
+	}
 
 	return *this;
 }

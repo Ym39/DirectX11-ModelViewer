@@ -207,6 +207,15 @@
     <ClInclude Include="MeshRenderComponent.h">
       <Filter>헤더 파일\컴포넌트</Filter>
     </ClInclude>
+    <ClInclude Include="AnimatorComponent.h">
+      <Filter>헤더 파일\컴포넌트</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinnedMeshRenderComponent.h">
+      <Filter>헤더 파일\컴포넌트</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX11-ModelViewer.rc">
@@ -352,6 +361,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="MeshClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="AssetClass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

@@ -98,7 +98,7 @@ void FBXLoader::LoadAnimation(char* fbxFilename)
 	if (mSkeleton->joints.empty() == true)
 		return;
 
-	mSaveAnimation = new AnimationData;
+	mSaveAnimation = new SaveAnimationData;
 	mSaveAnimation->keyFrames.resize(mSkeleton->joints.size());
 
 	LoadNodeForAnimation(rootNode);
@@ -109,7 +109,7 @@ void FBXLoader::LoadAnimation(char* fbxFilename)
 	ofstream out;
 	out.open("Test.Animation", ios_base::binary); //바이너리 모드로 파일을 열었습니다.
 	boost::archive::binary_oarchive out_archive(out); //연 스트림을 넘겨주어서 직렬화객체 초기화
-	out_archive << mSaveAnimation; //쓰기
+	out_archive << *mSaveAnimation; //쓰기
 	out.close();
 
 	delete mSaveAnimation;
@@ -408,15 +408,6 @@ void FBXLoader::ProcessJointsAndAnmations(FbxNode* inNode)
 			currCluster->GetTransformLinkMatrix(transformLinkMatrix);
 			globalBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix * gemotryTransform;
 
-			/*XMMATRIX xmGlobalBindposeInverseMatrix=XMMatrixIdentity();
-			FbxVector4 translation = globalBindposeInverseMatrix.GetT();
-			FbxVector4 rotation = globalBindposeInverseMatrix.GetR();
-
-			xmGlobalBindposeInverseMatrix *= XMMatrixRotationX(-XMConvertToRadians(rotation.mData[0]));
-			xmGlobalBindposeInverseMatrix *= XMMatrixRotationY(-XMConvertToRadians(rotation.mData[1]));
-			xmGlobalBindposeInverseMatrix *= XMMatrixRotationZ(XMConvertToRadians(rotation.mData[2]));
-			xmGlobalBindposeInverseMatrix *= XMMatrixTranslation(translation.mData[0], translation.mData[1], -translation.mData[2]);*/
-
 			XMFLOAT4X4 boneOffset;
 			for (int i = 0; i < 4; ++i)
 			{
@@ -435,21 +426,7 @@ void FBXLoader::ProcessJointsAndAnmations(FbxNode* inNode)
 				BlendingIndexWeightPair currBlendingIndexWeightPair;
 				currBlendingIndexWeightPair.blendingIndex = currJointIndex;
 				currBlendingIndexWeightPair.blendingWeight = currCluster->GetControlPointWeights()[i];
-				//vertices[currCluster->GetControlPointIndices()[i]].blendingInfo.push_back(currBlendingIndexWeightPair);
 				mCtrlPoint[currCluster->GetControlPointIndices()[i]]->blendingInfo.push_back(currBlendingIndexWeightPair);
-				/*vertices[currCluster->GetControlPointIndices()[i]].boneIndex[i] = currJointIndex;
-				switch (i)
-				{
-				case 0:
-					vertices[currCluster->GetControlPointIndices()[i]].boneWeight.x = currCluster->GetControlPointWeights()[i];
-					break;
-				case 1:
-					vertices[currCluster->GetControlPointIndices()[i]].boneWeight.y = currCluster->GetControlPointWeights()[i];
-					break;
-				case 2:
-					vertices[currCluster->GetControlPointIndices()[i]].boneWeight.z = currCluster->GetControlPointWeights()[i];
-					break;
-				}*/
 			}
 
 			FbxAnimStack* currAnimStack = mFbxScene->GetSrcObject<FbxAnimStack>(0);
@@ -461,6 +438,9 @@ void FBXLoader::ProcessJointsAndAnmations(FbxNode* inNode)
 			mAnimationLength = end.GetFrameCount(FbxTime::eFrames30) - start.GetFrameCount(FbxTime::eFrames30) + 1;
 			Keyframe** currAnim = &mSkeleton->joints[currJointIndex].animation;
 
+			int startCount = start.GetFrameCount(FbxTime::eFrames30);
+			int endCount = end.GetFrameCount(FbxTime::eFrames30);
+
 			for (FbxLongLong i = start.GetFrameCount(FbxTime::eFrames30); i < end.GetFrameCount(FbxTime::eFrames30); ++i)
 			{
 				FbxTime currTime;
@@ -469,15 +449,6 @@ void FBXLoader::ProcessJointsAndAnmations(FbxNode* inNode)
 				(*currAnim)->frameName = i;
 				FbxAMatrix currentTransformOffset = inNode->EvaluateGlobalTransform(currTime) * gemotryTransform;
 				FbxAMatrix fbxGlobalTransform = currentTransformOffset.Inverse() * currCluster->GetLink()->EvaluateGlobalTransform(currTime);
-
-				/*XMMATRIX xmGlobalTr = XMMatrixIdentity();
-				FbxVector4 translation = fbxGlobalTransform.GetT();
-				FbxVector4 rotation = fbxGlobalTransform.GetR();
-
-				xmGlobalTr *= XMMatrixRotationX(-XMConvertToRadians(rotation.mData[0]));
-				xmGlobalTr *= XMMatrixRotationY(-XMConvertToRadians(rotation.mData[1]));
-				xmGlobalTr *= XMMatrixRotationZ(XMConvertToRadians(rotation.mData[2]));
-				xmGlobalTr *= XMMatrixTranslation(translation.mData[0], translation.mData[1], -translation.mData[2]);*/
 
 				XMFLOAT4X4 key;
 				for (int i = 0; i < 4; ++i)
@@ -545,7 +516,7 @@ void FBXLoader::ProcessAnimations(FbxNode* inNode)
 			mSaveAnimation->keyFrames[currJointIndex].resize(mAnimationLength);
 			mSaveAnimation->animationLength = mAnimationLength;
 
-			for (FbxLongLong i = start.GetFrameCount(FbxTime::eFrames30); i < end.GetFrameCount(FbxTime::eFrames30); ++i)
+			for (FbxLongLong i = start.GetFrameCount(FbxTime::eFrames30); i <= end.GetFrameCount(FbxTime::eFrames30); ++i)
 			{
 				FbxTime currTime;
 				currTime.SetFrame(i, FbxTime::eFrames30);

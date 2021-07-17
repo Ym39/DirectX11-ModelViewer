@@ -3,6 +3,8 @@
 #include "Component.h"
 #include "TransformComponent.h"
 #include "MeshRenderComponent.h"
+#include "SkinnedMeshRenderComponent.h"
+#include "AnimatorComponent.h"
 
 extern SystemClass* ApplicationHandle;
 extern Camera* gMainCamera;
@@ -37,6 +39,8 @@ GraphicsClass::~GraphicsClass()
 bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
     bool result;
+
+    AssetClass::Initialize();
 
     mScreenWidth = screenWidth;
     mScreenHeight = screenHeight;
@@ -237,7 +241,17 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     boost::archive::binary_iarchive in_archive(in); //연 스트림을 넘겨주어서 직렬화객체 초기화
     in_archive >> loadMesh; //읽기
     in.close();
-    
+
+    ifstream in2;
+    SaveAnimationData loadAnim; //받을 객체 생성
+    in2.open("Test.Animation", ios_base::binary); //바이너리모드로 파일을 열었습니다.
+    boost::archive::binary_iarchive in_archive2(in2); //연 스트림을 넘겨주어서 직렬화객체 초기화
+    in_archive2 >> loadAnim; //읽기
+    in2.close();
+
+    anim = new AnimationData;
+    *anim = loadAnim;
+
     /*mTempMesh = new TempMesh;
     mTempMesh->SetMesh(loadMesh);
 
@@ -252,11 +266,19 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     mCharacterMesh->operator=(loadMesh);
     mCharacterMesh->Initalize(mDirect->GetDevice());
 
-    MeshRenderComponent* rendercomp = new MeshRenderComponent();
-    rendercomp->Initalize(mCharacterMesh, mSpecularShader, mCharacterTexture);
+    /*MeshRenderComponent* rendercomp = new MeshRenderComponent();
+    rendercomp->Initalize(mCharacterMesh, mSpecularShader, mCharacterTexture);*/
+
+    SkinnedMeshRenderComponent* rendercomp = new SkinnedMeshRenderComponent();
+    rendercomp->Initalize(mCharacterMesh, mShader, mSkinnedDepthShader,mCharacterTexture);
 
     mGameObject->InsertComponent(rendercomp);
     
+    AnimatorComponent* animComp = new AnimatorComponent();
+    animComp->Play();
+    animComp->SetAnimation(anim);
+
+    mGameObject->InsertComponent(animComp);
     /*dummyBone.resize(120);
     for (auto& m : dummyBone)
     {
@@ -432,6 +454,12 @@ void GraphicsClass::Shutdown()
         delete mGameObject;
         mGameObject = nullptr;
     }
+
+    if (anim)
+    {
+        delete anim;
+        anim = nullptr;
+    }
 }
 
 bool GraphicsClass::Frame()
@@ -558,6 +586,8 @@ bool GraphicsClass::Frame()
             }
         }
     }
+
+    mGameObject->LateUpdate(ApplicationHandle->DeltaTime());
 
     result = Render();
     if (result == false)
@@ -762,6 +792,14 @@ bool GraphicsClass::RenderSceneToTexture()
                 return false;
             }
         }
+    }
+
+    MeshRenderComponent* currentRenderer;
+    currentRenderer = mGameObject->GetComponent<MeshRenderComponent>();
+
+    if (currentRenderer != nullptr)
+    {
+        currentRenderer->RenderDepth(mDirect->GetDeviceContext());
     }
 
     mDirect->GetWorldMatrix(worldMatrix);

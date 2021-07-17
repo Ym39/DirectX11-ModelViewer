@@ -75,8 +75,8 @@ public:
 
 public:
 	virtual void Start() = 0;
-	virtual void Update() = 0;
-	virtual void LateUpdate() = 0;
+	virtual void Update(float deltaTime) = 0;
+	virtual void LateUpdate(float deltaTime) = 0;
 	virtual void Destroy() = 0;
 
 public:
@@ -99,6 +99,24 @@ public:
 public:
 	GameObjectClass() = default;
 	~GameObjectClass() = default;
+
+	void Start()
+	{
+		for (const auto& comp : components) { comp.second->Start(); }
+	}
+
+    void Update(float deltaTime)
+	{
+		for (const auto& comp : components) { comp.second->Update(deltaTime); }
+	}
+    void LateUpdate(float deltaTime)
+	{
+		for (const auto& comp : components) { comp.second->LateUpdate(deltaTime); }
+	}
+    void Destroy()
+	{
+		for (const auto& comp : components) { comp.second->Destroy(); }
+	}
 
 public:
 	template<class component_t>

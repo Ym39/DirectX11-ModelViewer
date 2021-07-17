@@ -3,7 +3,11 @@
 #include"D3DClass.h"
 #include"MeshClass.h"
 #include"SpecularShaderClass.h"
+#include"DepthShaderClass.h"
+#include"TransformComponent.h"
 #include"Texture.h"
+#include"Camera.h"
+#include"Light.h"
 #include <d3d11.h>
 
 extern Camera* gMainCamera;
@@ -19,15 +23,29 @@ public:
 	MeshRenderComponent() :
 		mMesh(nullptr),
 		mShader(nullptr),
+		mDepthShader(nullptr),
 		mTexture(nullptr)
 	{}
 	~MeshRenderComponent() = default;
 
 public:
 	virtual void Start() override {};
-	virtual void Update() override {};
-	virtual void LateUpdate() override {};
+	virtual void Update(float deltaTime) override {};
+	virtual void LateUpdate(float deltaTime) override {};
 	virtual void Destroy() override {};
+
+	virtual void RenderDepth(ID3D11DeviceContext* deviceContext)
+	{
+		XMMATRIX lightViewMatrix, lightProjectionMatrix;
+		gMainLight->GetViewMatrix(lightViewMatrix);
+		gMainLight->GetProjectionMatrix(lightProjectionMatrix);
+
+		mMesh->Render(deviceContext);
+
+		TransformComponent* objectTransform = mOwnerGameObject->GetComponent<TransformComponent>();
+
+		mDepthShader->Render(deviceContext, mMesh->GetIndexCount(), objectTransform->GetTransform(), lightViewMatrix, lightProjectionMatrix);
+	}
 
 	virtual void Render(ID3D11DeviceContext* deviceContext)
 	{
@@ -43,9 +61,9 @@ public:
 	}
 
 public:
-	bool Initalize(MeshClass* mesh, SpecularShaderClass* shader, Texture* texture)
+	bool Initalize(MeshClass* mesh, SpecularShaderClass* shader, DepthShaderClass* depthShader, Texture* texture)
 	{
-		if (mesh == nullptr || shader == nullptr || texture == nullptr)
+		if (mesh == nullptr || shader == nullptr || texture == nullptr || depthShader == nullptr)
 			return false;
 
 		if (mesh->IsInitalized() == false)
@@ -54,6 +72,7 @@ public:
 		mMesh = mesh;
 		mShader = shader;
 		mTexture = texture;
+		mDepthShader = depthShader;
 
 		return true;
 	}
@@ -63,6 +82,7 @@ protected:
 
 private:
 	SpecularShaderClass* mShader;
+	DepthShaderClass* mDepthShader;
 	Texture* mTexture;
 };
 

@@ -40,7 +40,7 @@ private:
     Skeleton* mSkeleton;
 	FbxScene* mFbxScene;
 	FbxLongLong mAnimationLength;
-	AnimationData* mSaveAnimation;
+	SaveAnimationData* mSaveAnimation;
 
 	vector<VertexType> vertices;
 	unordered_map<VertexType, unsigned int> indexMapping;
