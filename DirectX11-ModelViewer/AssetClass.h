@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include "Texture.h"
 #include "Utility.h"
 #include "MeshClass.h"
 using namespace std;
@@ -11,10 +12,17 @@ using namespace std;
 class AssetClass
 {
 public:
-	static void Initialize();
+	~AssetClass();
 
-private:
+	static void Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext);
+
+	static const auto& GetMeshs() { return mMeshMap; }
+	static const auto& GetTextures() { return mTextureMap; }
+
+public:
 	static std::unordered_map<std::string, MeshClass*> mMeshMap;
+	static std::unordered_map<std::string, Texture*> mTextureMap;
+private:
 	static std::filesystem::path mRootPath;
 };
 

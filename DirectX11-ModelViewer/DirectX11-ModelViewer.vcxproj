@@ -171,6 +171,8 @@
     <ClInclude Include="FileBrowser.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameObjectBrowser.h" />
+    <ClInclude Include="Getter.h" />
     <ClInclude Include="GraphicsClass.h" />
     <ClInclude Include="GridClass.h" />
     <ClInclude Include="ImguiClass.h" />
@@ -191,6 +193,7 @@
     <ClInclude Include="MeshClass.h" />
     <ClInclude Include="MeshRenderComponent.h" />
     <ClInclude Include="ModelClass.h" />
+    <ClInclude Include="ModelListBrowser.h" />
     <ClInclude Include="RenderTextureClass.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ShadowShaderClass.h" />
@@ -225,6 +228,7 @@
     <ClCompile Include="FBXLoader.cpp" />
     <ClCompile Include="FileBrowser.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GameObjectBrowser.cpp" />
     <ClCompile Include="GraphicsClass.cpp" />
     <ClCompile Include="GridClass.cpp" />
     <ClCompile Include="ImguiClass.cpp" />
@@ -244,6 +248,7 @@
     <ClCompile Include="MeshClass.cpp" />
     <None Include="MeshRenderComponent.cpp" />
     <ClCompile Include="ModelClass.cpp" />
+    <ClCompile Include="ModelListBrowser.cpp" />
     <ClCompile Include="RenderTextureClass.cpp" />
     <ClCompile Include="ShadowShaderClass.cpp" />
     <ClCompile Include="SkinnedDepthShaderClass.cpp" />

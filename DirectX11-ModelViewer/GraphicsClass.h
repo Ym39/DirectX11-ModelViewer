@@ -23,6 +23,7 @@
 #include "TempMesh.h"
 #include "MeshClass.h"
 #include "AssetClass.h"
+#include "ModelListBrowser.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = false;
@@ -41,6 +42,7 @@ enum class PositionGizumoState
 };
 
 class GameObjectClass;
+class GameObjectBrowser;
 
 class GraphicsClass
 {
@@ -85,6 +87,9 @@ private:
 	BitmapClass* mMouseBitmap = nullptr;
 	TextureShaderClass* mTextureShader = nullptr;
 
+	ModelListBrowser modelListBrowser;
+	GameObjectBrowser* gameObjectBrowser;
+
 	Texture* mCharacterTexture;
 	MeshClass* mCharacterMesh;
 	GameObjectClass* mGameObject;
@@ -98,6 +103,8 @@ private:
 
 	std::unordered_map<std::string,GameObject> meshMap;
 	std::string mCurrentRenderMesh;
+
+	std::unordered_map<std::string, GameObjectClass*> mGameObejcts;
 
 	int mScreenWidth;
 	int mScreenHeight;

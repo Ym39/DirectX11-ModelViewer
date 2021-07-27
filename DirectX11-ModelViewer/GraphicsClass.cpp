@@ -5,6 +5,7 @@
 #include "MeshRenderComponent.h"
 #include "SkinnedMeshRenderComponent.h"
 #include "AnimatorComponent.h"
+#include "GameObjectBrowser.h"
 
 extern SystemClass* ApplicationHandle;
 extern Camera* gMainCamera;
@@ -23,7 +24,8 @@ GraphicsClass::GraphicsClass() :
     mShadowShader(nullptr),
     mGroundModel(nullptr),
     mSolidShader(nullptr),
-    mForwardArrowModel(nullptr)
+    mForwardArrowModel(nullptr),
+    mGameObject(nullptr)
 {
 }
 
@@ -39,8 +41,6 @@ GraphicsClass::~GraphicsClass()
 bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
     bool result;
-
-    AssetClass::Initialize();
 
     mScreenWidth = screenWidth;
     mScreenHeight = screenHeight;
@@ -232,8 +232,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     if (result == false)
         return false;
 
-    mGameObject = GameObjectClass::Create();
-    mGameObject->InsertComponent(new TransformComponent);
+   /* mGameObject = GameObjectClass::Create();
+    mGameObject->InsertComponent(new TransformComponent);*/
 
     ifstream in; //읽기 스트림 생성
     SkinnedMeshData loadMesh; //받을 객체 생성
@@ -269,7 +269,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     /*MeshRenderComponent* rendercomp = new MeshRenderComponent();
     rendercomp->Initalize(mCharacterMesh, mSpecularShader, mCharacterTexture);*/
 
-    SkinnedMeshRenderComponent* rendercomp = new SkinnedMeshRenderComponent();
+    /*SkinnedMeshRenderComponent* rendercomp = new SkinnedMeshRenderComponent();
     rendercomp->Initalize(mCharacterMesh, mShader, mSkinnedDepthShader,mCharacterTexture);
 
     mGameObject->InsertComponent(rendercomp);
@@ -278,12 +278,17 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     animComp->Play();
     animComp->SetAnimation(anim);
 
-    mGameObject->InsertComponent(animComp);
+    mGameObject->InsertComponent(animComp);*/
+
     /*dummyBone.resize(120);
     for (auto& m : dummyBone)
     {
         m = XMMatrixTranspose(XMMatrixIdentity());
     }*/
+
+    gameObjectBrowser = new GameObjectBrowser;
+
+    AssetClass::Initialize(mDirect->GetDevice(), mDirect->GetDeviceContext());
 
     return true;
 }
@@ -451,6 +456,7 @@ void GraphicsClass::Shutdown()
 
     if (mGameObject)
     {
+        mGameObject->Destroy();
         delete mGameObject;
         mGameObject = nullptr;
     }
@@ -587,7 +593,17 @@ bool GraphicsClass::Frame()
         }
     }
 
-    mGameObject->LateUpdate(ApplicationHandle->DeltaTime());
+    //mGameObject->LateUpdate(ApplicationHandle->DeltaTime());
+
+    for (const auto& gameObject : mGameObejcts)
+    {
+        gameObject.second->Update(ApplicationHandle->DeltaTime());
+    }
+
+    for (const auto& gameObject : mGameObejcts)
+    {
+        gameObject.second->LateUpdate(ApplicationHandle->DeltaTime());
+    }
 
     result = Render();
     if (result == false)
@@ -678,12 +694,18 @@ bool GraphicsClass::Render()
     mGroundMesh->Render(mDirect->GetDeviceContext());
     mShadowShader->Render(mDirect->GetDeviceContext(), mGroundMesh->GetIndexCount(), floorWorld, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix,mGroundTexture->GetTexture(), mRenderTexture->GetShaderResourceView(), mLight->GetPosition(), mLight->GetAmbientColor(), mLight->GetDiffuseColor());
 
-    MeshRenderComponent* currentRenderer;
+    /*MeshRenderComponent* currentRenderer;
     currentRenderer = mGameObject->GetComponent<MeshRenderComponent>();
 
     if (currentRenderer != nullptr)
     {
         currentRenderer->Render(mDirect->GetDeviceContext());
+    }*/
+
+    for (const auto& gameObject : mGameObejcts)
+    {
+        MeshRenderComponent* renderComp = gameObject.second->GetComponent<MeshRenderComponent>();
+        renderComp->Render(mDirect->GetDeviceContext());
     }
 
     //2D 렌더링
@@ -715,6 +737,10 @@ bool GraphicsClass::Render()
     bool loadAnim = false;
     fs::path loadPath;
 
+    ImGui_ImplDX11_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+
     //IMGUI 렌더링
     mImgui->Render(&loadFbx,loadPath, meshMap[mCurrentRenderMesh].Transfrom(),meshMap,mCurrentRenderMesh,*mCamera,mLight,mCurrentRenderMesh == "" ? nullptr : &(meshMap[mCurrentRenderMesh]), wmX, wmY, &loadAnim, loadPath);
 
@@ -744,6 +770,60 @@ bool GraphicsClass::Render()
     {
         mFbxLoader->LoadAnimation(const_cast<char*>(loadPath.string().c_str()));
     }
+
+    //modelListBrowser.Render();
+    static std::vector<std::string> gameObejctNames;
+    gameObejctNames.clear();
+    for (const auto& go : mGameObejcts)
+    {
+        gameObejctNames.push_back(go.first);
+    }
+
+    //gameObjectBrowser->Render(&addGameObject, gameObejctNames);
+
+
+    static bool addGameObject = false;
+    static std::string selectModelKey;
+    static std::string selectTextureKey;
+    modelListBrowser.RenderGameObjectList(&addGameObject,&selectModelKey,&selectTextureKey, gameObejctNames);
+
+    if (addGameObject == true)
+    {
+        GameObjectClass* newGameObejct = GameObjectClass::Create();
+
+        newGameObejct->InsertComponent(new TransformComponent());
+
+        if (AssetClass::mMeshMap[selectModelKey]->IsSkinning() == true)
+        {
+            SkinnedMeshRenderComponent* rendercomp = new SkinnedMeshRenderComponent();
+            rendercomp->Initalize(AssetClass::mMeshMap[selectModelKey], mShader, mSkinnedDepthShader, AssetClass::mTextureMap[selectTextureKey]);
+
+            newGameObejct->InsertComponent(rendercomp);
+
+            AnimatorComponent* animComp = new AnimatorComponent();
+            animComp->SetAnimation(anim);
+
+            newGameObejct->InsertComponent(animComp);
+
+            mGameObejcts[selectModelKey] = newGameObejct;
+        }
+        else
+        {
+            MeshRenderComponent* renderComp = new MeshRenderComponent();
+            renderComp->Initalize(AssetClass::mMeshMap[selectModelKey], mSpecularShader, mDepthShader, AssetClass::mTextureMap[selectTextureKey]);
+
+            newGameObejct->InsertComponent(renderComp);
+
+            mGameObejcts[selectModelKey] = newGameObejct;
+        }
+
+        addGameObject = false;
+        selectModelKey = "";
+        selectTextureKey = "";
+    }
+
+    ImGui::Render();
+    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
     mDirect->EndScene();
     
@@ -794,13 +874,20 @@ bool GraphicsClass::RenderSceneToTexture()
         }
     }
 
-    MeshRenderComponent* currentRenderer;
+    /*MeshRenderComponent* currentRenderer;
     currentRenderer = mGameObject->GetComponent<MeshRenderComponent>();
 
     if (currentRenderer != nullptr)
     {
         currentRenderer->RenderDepth(mDirect->GetDeviceContext());
+    }*/
+
+    for (const auto& gameObject : mGameObejcts)
+    {
+        MeshRenderComponent* renderComp = gameObject.second->GetComponent<MeshRenderComponent>();
+        renderComp->RenderDepth(mDirect->GetDeviceContext());
     }
+
 
     mDirect->GetWorldMatrix(worldMatrix);
 

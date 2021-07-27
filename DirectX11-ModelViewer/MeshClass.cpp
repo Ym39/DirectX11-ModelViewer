@@ -23,8 +23,11 @@ MeshClass& MeshClass::operator=(const SkinnedMeshData& meshData)
 	copy(meshData.indices.begin(), meshData.indices.end(), indices.begin());
 
 	if (meshData.bones.empty())
+	{
 		return *this;
+	}
 
+	mIsSkinning = true;
 	bones.resize(meshData.bones.size());
 	//copy(meshData.bones.begin(), meshData.bones.end(), bones.begin());
 	for (int i = 0; i < bones.size(); i++)

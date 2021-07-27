@@ -36,6 +36,9 @@ public:
 
 	virtual void RenderDepth(ID3D11DeviceContext* deviceContext)
 	{
+		if (mMesh == nullptr || mTexture == nullptr)
+			return;
+
 		XMMATRIX lightViewMatrix, lightProjectionMatrix;
 		gMainLight->GetViewMatrix(lightViewMatrix);
 		gMainLight->GetProjectionMatrix(lightProjectionMatrix);
@@ -49,6 +52,9 @@ public:
 
 	virtual void Render(ID3D11DeviceContext* deviceContext)
 	{
+		if (mMesh == nullptr || mTexture == nullptr)
+			return;
+
 		XMMATRIX viewMatrix, projectionMatrix;
 		gMainCamera->GetViewMatrix(viewMatrix);
 		gDirect->GetProjectionMatrix(projectionMatrix);

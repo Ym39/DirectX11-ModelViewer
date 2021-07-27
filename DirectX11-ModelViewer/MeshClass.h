@@ -15,11 +15,13 @@ public:
     
 	unsigned int GetIndexCount() const { return indices.size(); }
 	bool IsInitalized() const { return mIsInitialize; }
+	bool IsSkinning() const { return mIsSkinning; }
 
 	vector<Bone>& GetBones() { return bones; }
 	Bone& GetBone(int index) { return bones[index]; }
 private:
 	bool mIsInitialize = false;
+	bool mIsSkinning = false;
 
 	ID3D11Buffer* mVertexBuffer, * mIndexBuffer;
 	vector<InputVertex> vertices;

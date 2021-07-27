@@ -1,4 +1,5 @@
 #include "AnimationFileBrowser.h"
+#include "Getter.h"
 
 namespace ImGui
 {
@@ -14,6 +15,7 @@ namespace ImGui
 		return true;
 	}
 }
+
 
 AnimationFileBrowser::AnimationFileBrowser():
 	mIsLatest(false),
