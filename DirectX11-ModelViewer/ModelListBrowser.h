@@ -11,13 +11,15 @@ public:
 	ModelListBrowser();
 	~ModelListBrowser() = default;
 
-	void RenderGameObjectList(bool* addGameObject,std::string* outSelectedModelKey,std::string* outSelectedTextureKey, std::vector<std::string>& gameObejcts);
+	void RenderGameObjectList(bool* addGameObject,std::string* outSelectGameObject,std::string* outSelectedModelKey,std::string* outSelectedTextureKey, std::vector<std::string>& gameObejcts);
 
 	void RenderModelList(bool& select, std::string& selectModelKey);
 
 	void RenderAddGameObejctUI(bool* outAddGameObject, std::string* outSelectedModelKey, std::string* outSelectedTextureKey);
 
 	void RenderTextureList(bool& select, std::string& selectTextureKey);
+
+	void RenderInspector();
 
 private:
 	std::vector<std::string> mGameObjectNames;

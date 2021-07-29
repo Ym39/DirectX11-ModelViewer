@@ -431,5 +431,6 @@
     <None Include="MeshRenderComponent.cpp">
       <Filter>소스 파일\컴포넌트</Filter>
     </None>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

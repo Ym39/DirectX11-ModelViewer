@@ -20,27 +20,37 @@ ModelListBrowser::ModelListBrowser():
 
 void ModelListBrowser::RenderAddGameObejctUI(bool* outAddGameObject, std::string* outSelectedModelKey, std::string* outSelectedTextureKey)
 {
-
 	ImGui::Begin("AddGameObject", &mActiveAddGameObject, ImGuiWindowFlags_None);
 
-
 	ImGui::NewLine();
-	ImGui::PushItemWidth(20);
-	ImGui::Text("Selected Model : %s", selectedModelKey.c_str());
-	ImGui::SameLine();
-	if (ImGui::Button("Search Model"))
+	ImGui::PushItemWidth(-1);
+
+	ImGui::Text("Selected Model");
+
+	mModelFileNames.clear();
+
+	for (const auto& mesh : AssetClass::GetMeshs())
 	{
-		mActiveRenderModelList = true;
+		mModelFileNames.push_back(mesh.first);
 	}
 
+	bool selectModel = ImGui::Combo("ModelCombo", &mCurrentSeletedModelNumber, VectorGetter, static_cast<void*>(&mModelFileNames), mModelFileNames.size(),16);
+    selectedModelKey = mModelFileNames[mCurrentSeletedModelNumber];
+
 	ImGui::NewLine();
-	ImGui::PushItemWidth(20);
-	ImGui::Text("Selected Texture : %s", selectedTextureKey.c_str());
-	ImGui::SameLine();
-	if (ImGui::Button("Search Texture"))
+	ImGui::PushItemWidth(-1);
+
+	ImGui::Text("Selected Texture");
+
+	mTextureNames.clear();
+
+	for (const auto& texture : AssetClass::GetTextures())
 	{
-		mActiveTextureList = true;
+		mTextureNames.push_back(texture.first);
 	}
+
+	bool seletTexture = ImGui::Combo("TextureCombo", &mCurrentSeletedTextureNumber, VectorGetter, static_cast<void*>(&mTextureNames), mTextureNames.size(), 16);
+	selectedTextureKey = mTextureNames[mCurrentSeletedTextureNumber];
 
 	ImGui::NewLine();
 	if (ImGui::Button("Add"))
@@ -53,29 +63,18 @@ void ModelListBrowser::RenderAddGameObejctUI(bool* outAddGameObject, std::string
 
 			selectedModelKey = selectedTextureKey = "";
 		}
+		mActiveAddGameObject = false;
 	}
 
 	ImGui::End();
-
-	bool selectedModel = false;
-	if (mActiveRenderModelList == true)
-	{
-		RenderModelList(selectedModel, selectedModelKey);
-	}
-
-	bool selectedTexture = false;
-	if (mActiveTextureList == true)
-	{
-		RenderTextureList(selectedTexture, selectedTextureKey);
-	}
 }
 
-void ModelListBrowser::RenderGameObjectList(bool* addGameObject, std::string* outSelectedModelKey, std::string* outSelectedTextureKey, std::vector<std::string>& gameObejcts)
+void ModelListBrowser::RenderGameObjectList(bool* addGameObject, std::string* outSelectGameObject, std::string* outSelectedModelKey, std::string* outSelectedTextureKey, std::vector<std::string>& gameObejcts)
 {
 	ImGui::Begin("GameObject", &mActiveGameObjectList, ImGuiWindowFlags_MenuBar);
 	ImGui::NewLine();
 	ImGui::PushItemWidth(-1);
-	bool select = ImGui::ListBox("##listbox2", &mCurrentSeletedTextureNumber, VectorGetter, static_cast<void*>(&gameObejcts), (int)gameObejcts.size(), 16);
+	bool select = ImGui::ListBox("##listbox2", &mCurrentGameObjectNumber, VectorGetter, static_cast<void*>(&gameObejcts), (int)gameObejcts.size(), 16);
 
 	if (ImGui::Button("Add GameObject"))
 	{
@@ -88,6 +87,11 @@ void ModelListBrowser::RenderGameObjectList(bool* addGameObject, std::string* ou
 	{
 		RenderAddGameObejctUI(addGameObject,outSelectedModelKey,outSelectedTextureKey);
 	}
+
+	if (gameObejcts.size() == 0)
+		*outSelectGameObject = "";
+	else
+		*outSelectGameObject = gameObejcts[mCurrentGameObjectNumber];
 }
 
 void ModelListBrowser::RenderModelList(bool& select, std::string& selectModelKey)
@@ -128,6 +132,11 @@ void ModelListBrowser::RenderTextureList(bool& select, std::string& selectTextur
 		selectTextureKey = mTextureNames[mCurrentSeletedTextureNumber];
 	}
 	ImGui::End();
+}
+
+void ModelListBrowser::RenderInspector()
+{
+	
 }
 
 

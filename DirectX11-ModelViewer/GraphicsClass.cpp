@@ -781,11 +781,11 @@ bool GraphicsClass::Render()
 
     //gameObjectBrowser->Render(&addGameObject, gameObejctNames);
 
-
+    static std::string currentGameObject;
     static bool addGameObject = false;
     static std::string selectModelKey;
     static std::string selectTextureKey;
-    modelListBrowser.RenderGameObjectList(&addGameObject,&selectModelKey,&selectTextureKey, gameObejctNames);
+    modelListBrowser.RenderGameObjectList(&addGameObject,&currentGameObject,&selectModelKey,&selectTextureKey, gameObejctNames);
 
     if (addGameObject == true)
     {
@@ -820,6 +820,55 @@ bool GraphicsClass::Render()
         addGameObject = false;
         selectModelKey = "";
         selectTextureKey = "";
+    }
+
+    bool inspectorActive = true;
+    auto search = mGameObejcts.find(currentGameObject);
+    if (search != mGameObejcts.end())
+    {
+        ImGui::Begin("Inspector",&inspectorActive, ImGuiWindowFlags_None);
+
+        TransformComponent* transformComp = search->second->GetComponent<TransformComponent>();
+
+        if (transformComp != nullptr)
+        {
+            if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed))
+            {
+                XMFLOAT3 pos; 
+                XMStoreFloat3(&pos,transformComp->GetPosition());
+                float position[3] = {pos.x,pos.y,pos.z};
+                XMFLOAT3 rot = transformComp->GetRotation();
+                float rotation[3] = { rot.x,rot.y ,rot.z };
+                XMFLOAT3 s = transformComp->GetScale();
+                float scale[3] = { s.x,s.y,s.z };
+
+                ImGui::InputFloat3("Position", position);
+                ImGui::InputFloat3("Rotation", rotation);
+                ImGui::InputFloat3("Scale", scale);
+
+                transformComp->SetPosition(XMFLOAT3(position[0], position[1], position[2]));
+                transformComp->SetRotation(XMFLOAT3(rotation[0], rotation[1], rotation[2]));
+                transformComp->SetScale(XMFLOAT3(scale[0], scale[1], scale[2]));
+            }
+        }
+
+        AnimatorComponent* animatorComp = search->second->GetComponent<AnimatorComponent>();
+        if (animatorComp != nullptr)
+        {
+            if (ImGui::CollapsingHeader("Animator", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed))
+            {
+                if (ImGui::Button("Play"))
+                {
+                    animatorComp->Play();
+                }
+                if (ImGui::Button("Stop"))
+                {
+                    animatorComp->Stop();
+                }
+            }
+        }
+
+        ImGui::End();
     }
 
     ImGui::Render();

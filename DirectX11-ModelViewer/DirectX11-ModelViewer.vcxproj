@@ -246,6 +246,7 @@
     <ClCompile Include="MathHelper.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshClass.cpp" />
+    <None Include="cpp.hint" />
     <None Include="MeshRenderComponent.cpp" />
     <ClCompile Include="ModelClass.cpp" />
     <ClCompile Include="ModelListBrowser.cpp" />

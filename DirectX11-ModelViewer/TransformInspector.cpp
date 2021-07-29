@@ -5,7 +5,7 @@ void TransformInspector::Render(Transform& transform)
 	float position[3] = { transform.GetPosition().x,transform.GetPosition().y ,transform.GetPosition().z };
 	float rotation[3] = { transform.GetRotation().x,transform.GetRotation().y,transform.GetRotation().z };
 	float scale[3] = { transform.GetScale().x,transform.GetScale().y,transform.GetScale().z };
-	ImGui::Begin("Transform");
+	ImGui::Begin("Trans");
 
 	ImGui::InputFloat3("Position", position);
 	ImGui::InputFloat3("Rotation", rotation);
