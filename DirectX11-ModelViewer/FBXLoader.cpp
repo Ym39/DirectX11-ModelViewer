@@ -232,7 +232,10 @@ void FBXLoader::ProcessMesh(FbxMesh* mesh)
 			VertexType temp;
 			temp.position = currCtrlPoint->position;
 			temp.normal = ReadNormal(mesh, controlPointIndex, vertexCount);
+			temp.binormal = ReadBinormals(mesh, controlPointIndex, vertexCount);
+			temp.tangent = ReadTangents(mesh, controlPointIndex, vertexCount);
 			temp.texture = ReadUV(mesh, controlPointIndex, mesh->GetTextureUVIndex(i, j));
+			
 
 			for (unsigned int i = 0; i < currCtrlPoint->blendingInfo.size(); ++i)
 			{
@@ -264,6 +267,75 @@ void FBXLoader::ProcessMesh(FbxMesh* mesh)
 	}
 	mCtrlPoint.clear();
 
+}
+
+void FBXLoader::CalculateTangentAndBinormal()
+{
+	if (vertices.empty())
+		return;
+
+	int faceCount, index = 0;
+
+	faceCount = vertices.size() / 3;
+
+	for (int i = 0; i < faceCount; i++)
+	{
+		float vector1[3], vector2[3];
+		float tuVector[2], tvVector[2];
+		float den;
+		float length;
+
+		VertexType& vertex1 = vertices[index];
+		VertexType& vertex2 = vertices[index + 1];
+		VertexType& vertex3 = vertices[index + 2];
+		index += 3;
+
+		vector1[0] = vertex2.position.x - vertex1.position.x;
+		vector1[1] = vertex2.position.y - vertex1.position.y;
+		vector1[2] = vertex2.position.z - vertex1.position.z;
+
+		vector2[0] = vertex3.position.x - vertex1.position.x;
+		vector2[1] = vertex3.position.y - vertex1.position.y;
+		vector2[2] = vertex3.position.z - vertex1.position.z;
+
+		tuVector[0] = vertex2.texture.x - vertex1.texture.x;
+		tuVector[1] = vertex2.texture.y - vertex1.texture.y;
+
+		tvVector[0] = vertex3.texture.x - vertex1.texture.x;
+		tvVector[1] = vertex3.texture.y - vertex1.texture.y;
+
+		den = 1.0f / (tuVector[0] * tvVector[1] - tuVector[1] * tvVector[0]);
+
+		XMFLOAT3 tangent;
+		tangent.x = (tvVector[1] * vector1[0] - tvVector[0] * vector2[0]) * den;
+		tangent.y = (tvVector[1] * vector1[1] - tvVector[0] * vector2[1]) * den;
+		tangent.z = (tvVector[1] * vector1[2] - tvVector[0] * vector2[2]) * den;
+
+		length = sqrt((tangent.x * tangent.x) + (tangent.y * tangent.y) + (tangent.z * tangent.z));
+
+		tangent.x = tangent.x / length;
+		tangent.y = tangent.y / length;
+		tangent.z = tangent.z / length;
+
+		XMFLOAT3 binormal;
+		binormal.x = (tvVector[0] * vector2[0] - tvVector[1] * vector1[0]) * den;
+		binormal.y = (tvVector[0] * vector2[1] - tvVector[1] * vector1[1]) * den;
+		binormal.z = (tvVector[0] * vector2[2] - tvVector[1] * vector1[2]) * den;
+
+		length = sqrt((binormal.x * binormal.x) + (binormal.y * binormal.y) + (binormal.z * binormal.z));
+
+		binormal.x = binormal.x / length;
+		binormal.y = binormal.y / length;
+		binormal.z = binormal.z / length;
+
+		vertex1.tangent = tangent;
+		vertex2.tangent = tangent;
+		vertex3.tangent = tangent;
+
+		vertex1.binormal = binormal;
+		vertex2.binormal = binormal;
+		vertex3.binormal = binormal;
+	}
 }
 
 DirectX::XMFLOAT3 FBXLoader::ReadNormal(const FbxMesh* mesh, int controlPointIndex, int vertexCounter)
@@ -366,6 +438,124 @@ XMFLOAT2 FBXLoader::ReadUV(const FbxMesh* mesh, int controlPointIndex, int uvInd
 			result.y = 1.0f - static_cast<float>(vertexUV->GetDirectArray().GetAt(uvIndex).mData[1]);
 		}
 		break;		
+		}
+	}
+	break;
+	}
+
+	return result;
+}
+
+XMFLOAT3 FBXLoader::ReadBinormals(const FbxMesh* mesh, int controlPointIndex, int vertexCounter)
+{
+	if (mesh->GetElementBinormalCount() < 1)
+		return XMFLOAT3();
+
+	const FbxGeometryElementBinormal* vertexBinormal = mesh->GetElementBinormal(0);
+	XMFLOAT3 result;
+
+	switch (vertexBinormal->GetMappingMode())
+	{
+	case FbxGeometryElement::eByControlPoint:
+	{
+		switch (vertexBinormal->GetReferenceMode())
+		{
+		case FbxGeometryElement::eDirect:
+		{
+			result.x = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(controlPointIndex).mData[0]);
+			result.y = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(controlPointIndex).mData[1]);
+			result.z = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(controlPointIndex).mData[2]);
+		}
+		break;
+		case FbxGeometryElement::eIndexToDirect:
+		{
+			int index = vertexBinormal->GetIndexArray().GetAt(controlPointIndex);
+			result.x = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(index).mData[0]);
+			result.y = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(index).mData[1]);
+			result.z = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(index).mData[2]);
+		}
+		break;
+		}
+	}
+	break;
+	case FbxGeometryElement::eByPolygonVertex:
+	{
+		switch (vertexBinormal->GetReferenceMode())
+		{
+		case FbxGeometryElement::eDirect:
+		{
+			result.x = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(vertexCounter).mData[0]);
+			result.y = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(vertexCounter).mData[1]);
+			result.z = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(vertexCounter).mData[2]);
+		}
+		break;
+		case FbxGeometryElement::eIndexToDirect:
+		{
+			int index = vertexBinormal->GetIndexArray().GetAt(vertexCounter);
+			result.x = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(index).mData[0]);
+			result.y = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(index).mData[1]);
+			result.z = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(index).mData[2]);
+		}
+		break;
+		}
+	}
+	break;
+	}
+
+	return result;
+}
+
+XMFLOAT3 FBXLoader::ReadTangents(const FbxMesh* mesh, int controlPointIndex, int vertexCounter)
+{
+	if (mesh->GetElementTangentCount() < 1)
+		return XMFLOAT3();
+
+	const FbxGeometryElementTangent* vertexTangent = mesh->GetElementTangent(0);
+	XMFLOAT3 result;
+
+	switch (vertexTangent->GetMappingMode())
+	{
+	case FbxGeometryElement::eByControlPoint:
+	{
+		switch (vertexTangent->GetReferenceMode())
+		{
+		case FbxGeometryElement::eDirect:
+		{
+			result.x = static_cast<float>(vertexTangent->GetDirectArray().GetAt(controlPointIndex).mData[0]);
+			result.y = static_cast<float>(vertexTangent->GetDirectArray().GetAt(controlPointIndex).mData[1]);
+			result.z = static_cast<float>(vertexTangent->GetDirectArray().GetAt(controlPointIndex).mData[2]);
+		}
+		break;
+		case FbxGeometryElement::eIndexToDirect:
+		{
+			int index = vertexTangent->GetIndexArray().GetAt(controlPointIndex);
+			result.x = static_cast<float>(vertexTangent->GetDirectArray().GetAt(index).mData[0]);
+			result.y = static_cast<float>(vertexTangent->GetDirectArray().GetAt(index).mData[1]);
+			result.z = static_cast<float>(vertexTangent->GetDirectArray().GetAt(index).mData[2]);
+		}
+		break;
+		}
+	}
+	break;
+	case FbxGeometryElement::eByPolygonVertex:
+	{
+		switch (vertexTangent->GetReferenceMode())
+		{
+		case FbxGeometryElement::eDirect:
+		{
+			result.x = static_cast<float>(vertexTangent->GetDirectArray().GetAt(vertexCounter).mData[0]);
+			result.y = static_cast<float>(vertexTangent->GetDirectArray().GetAt(vertexCounter).mData[1]);
+			result.z = static_cast<float>(vertexTangent->GetDirectArray().GetAt(vertexCounter).mData[2]);
+		}
+		break;
+		case FbxGeometryElement::eIndexToDirect:
+		{
+			int index = vertexTangent->GetIndexArray().GetAt(vertexCounter);
+			result.x = static_cast<float>(vertexTangent->GetDirectArray().GetAt(index).mData[0]);
+			result.y = static_cast<float>(vertexTangent->GetDirectArray().GetAt(index).mData[1]);
+			result.z = static_cast<float>(vertexTangent->GetDirectArray().GetAt(index).mData[2]);
+		}
+		break;
 		}
 	}
 	break;

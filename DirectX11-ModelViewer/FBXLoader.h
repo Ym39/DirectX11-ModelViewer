@@ -25,8 +25,12 @@ private:
 	void ProcessControlPoints(FbxMesh* mesh, std::vector<XMFLOAT3>& positions);
 	void ProcessMesh(FbxMesh* mesh);
 
+	void CalculateTangentAndBinormal();
+
 	XMFLOAT3 ReadNormal(const FbxMesh* mesh, int controlPointIndex, int vertexCounter);
 	XMFLOAT2 ReadUV(const FbxMesh* mesh, int controlPointIndex, int uvIndex);
+	XMFLOAT3 ReadBinormals(const FbxMesh* mesh, int controlPointIndex, int vertexCounter);
+	XMFLOAT3 ReadTangents(const FbxMesh* mesh, int controlPointIndex, int vertexCounter);
 
 	void ProcessJointsAndAnmations(FbxNode* inNode);
 	void ProcessAnimations(FbxNode* inNode);

@@ -64,13 +64,13 @@ void MainInspector::Render(bool* pActiveModelBrowser, bool* pActiveAnimBrowser, 
 	}
 	
 
-	std::string selectString = "False";
+	/*std::string selectString = "False";
 	if (ImGui::Button("Play"))
 	{
 	   meshMap[mCurretModelKey].PlayAnimation(true);
 	   selectString = "true";
 	}
-	ImGui::Text("%s", selectString.c_str());
+	ImGui::Text("%s", selectString.c_str());*/
 
 	ImGui::End();
 }

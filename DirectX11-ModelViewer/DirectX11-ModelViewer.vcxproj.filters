@@ -225,6 +225,9 @@
     <ClInclude Include="Getter.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="SkinnedBumpShader.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX11-ModelViewer.rc">
@@ -380,6 +383,9 @@
     </ClCompile>
     <ClCompile Include="GameObjectBrowser.cpp">
       <Filter>소스 파일\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinnedBumpShader.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

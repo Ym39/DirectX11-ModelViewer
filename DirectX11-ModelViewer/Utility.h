@@ -282,6 +282,8 @@ struct VertexType
 	XMFLOAT3 position;
 	XMFLOAT2 texture;
 	XMFLOAT3 normal;
+	XMFLOAT3 binormal;
+	XMFLOAT3 tangent;
 	std::vector<BlendingIndexWeightPair> blendingInfo;
 	//unsigned int boneIndex[4];
 	//XMFLOAT3 boneWeight;
@@ -324,8 +326,10 @@ struct VertexType
 		bool result1 = MathHelper::CompareVector3WithEpsilon(position, rhs.position);
 		bool result2 = MathHelper::CompareVector3WithEpsilon(normal, rhs.normal);
 		bool result3 = MathHelper::CompareVector2WithEpsilon(texture, rhs.texture);
+		bool result4 = MathHelper::CompareVector3WithEpsilon(binormal, rhs.binormal);
+		bool resutl5 = MathHelper::CompareVector3WithEpsilon(tangent, rhs.tangent);
 
-		return result1 && result2 && result3 && sameBlendingInfo;
+		return result1 && result2 && result3 && result4 && resutl5 &&sameBlendingInfo;
 	}
 };
 
@@ -334,6 +338,8 @@ struct SaveVertexType
 	Float3 position;
 	Float2 texture;
 	Float3 normal;
+	Float3 binormal;
+	Float3 tangent;
 	Float3 weight;
 	unsigned int boneIndices[4] = { 0, };
 
@@ -344,6 +350,8 @@ struct SaveVertexType
 		ar& position;
 		ar& texture;
 		ar& normal;
+		ar& binormal;
+		ar& tangent;
 		ar& weight;
 		ar& boneIndices;
 	}
@@ -353,6 +361,8 @@ struct SaveVertexType
 		position = copy.position;
 		texture = copy.texture;
 		normal = copy.normal;
+		binormal = copy.binormal;
+		tangent = copy.tangent;
 
 		/*if (copy.blendingInfo.size() == 4)
 		{
@@ -402,6 +412,8 @@ struct InputVertex
 	XMFLOAT3 position;
 	XMFLOAT2 texture;
 	XMFLOAT3 normal;
+	XMFLOAT3 binormal;
+	XMFLOAT3 tangent;
 	XMFLOAT3 weight;
 	unsigned int boneIndices[4] = {0,};
 
@@ -417,6 +429,14 @@ struct InputVertex
 		this->normal.x = saveVertex.normal.x;
 		this->normal.y = saveVertex.normal.y;
 		this->normal.z = saveVertex.normal.z;
+
+		this->binormal.x = saveVertex.binormal.x;
+		this->binormal.y = saveVertex.binormal.y;
+		this->binormal.z = saveVertex.binormal.z;
+
+		this->tangent.x = saveVertex.tangent.x;
+		this->tangent.y = saveVertex.tangent.y;
+		this->tangent.z = saveVertex.tangent.z;
 
 		this->weight.x = saveVertex.weight.x;
 		this->weight.y = saveVertex.weight.y;

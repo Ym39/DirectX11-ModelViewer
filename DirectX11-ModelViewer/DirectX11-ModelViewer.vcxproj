@@ -197,6 +197,7 @@
     <ClInclude Include="RenderTextureClass.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ShadowShaderClass.h" />
+    <ClInclude Include="SkinnedBumpShader.h" />
     <ClInclude Include="SkinnedDepthShaderClass.h" />
     <ClInclude Include="SkinnedMeshRenderComponent.h" />
     <ClInclude Include="SkinnedMeshShader.h" />
@@ -252,6 +253,7 @@
     <ClCompile Include="ModelListBrowser.cpp" />
     <ClCompile Include="RenderTextureClass.cpp" />
     <ClCompile Include="ShadowShaderClass.cpp" />
+    <ClCompile Include="SkinnedBumpShader.cpp" />
     <ClCompile Include="SkinnedDepthShaderClass.cpp" />
     <ClCompile Include="SkinnedMeshShader.cpp" />
     <ClCompile Include="SolidColorShader.cpp" />
