@@ -44,6 +44,8 @@ Mesh* FBXLoader::LoadFbx(char* fbxFilename)
 
 	LoadNode(rootNode);
 
+	CalculateTangentAndBinormal();
+
 	finalMesh->SetAnimationLength(mAnimationLength);
 	finalMesh->SetMeshData(vertices,indices);
 
@@ -318,9 +320,9 @@ void FBXLoader::CalculateTangentAndBinormal()
 		tangent.z = tangent.z / length;
 
 		XMFLOAT3 binormal;
-		binormal.x = (tvVector[0] * vector2[0] - tvVector[1] * vector1[0]) * den;
-		binormal.y = (tvVector[0] * vector2[1] - tvVector[1] * vector1[1]) * den;
-		binormal.z = (tvVector[0] * vector2[2] - tvVector[1] * vector1[2]) * den;
+		binormal.x = (tuVector[0] * vector2[0] - tuVector[1] * vector1[0]) * den;
+		binormal.y = (tuVector[0] * vector2[1] - tuVector[1] * vector1[1]) * den;
+		binormal.z = (tuVector[0] * vector2[2] - tuVector[1] * vector1[2]) * den;
 
 		length = sqrt((binormal.x * binormal.x) + (binormal.y * binormal.y) + (binormal.z * binormal.z));
 
