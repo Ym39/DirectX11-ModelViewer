@@ -18,9 +18,15 @@ ModelListBrowser::ModelListBrowser():
 {
 }
 
-void ModelListBrowser::RenderAddGameObejctUI(bool* outAddGameObject, std::string* outSelectedModelKey, std::string* outSelectedTextureKey)
+void ModelListBrowser::RenderAddGameObejctUI(bool* outAddGameObject, std::string* outSelectedModelKey, std::string* outSelectedTextureKey,std::string& selectedBumpTexture, std::string& selectedSpecularTexture, RendererType& rendererType)
 {
 	ImGui::Begin("AddGameObject", &mActiveAddGameObject, ImGuiWindowFlags_None);
+
+	static const char* rendererItems[] = { "OnlySpecular", "Bump" };
+	static int currentRendererItem = 0;
+	static int itemSize = IM_ARRAYSIZE(rendererItems);
+
+	ImGui::Combo("RendererType", &currentRendererItem, rendererItems, itemSize);
 
 	ImGui::NewLine();
 	ImGui::PushItemWidth(-1);
@@ -52,6 +58,21 @@ void ModelListBrowser::RenderAddGameObejctUI(bool* outAddGameObject, std::string
 	bool seletTexture = ImGui::Combo("TextureCombo", &mCurrentSeletedTextureNumber, VectorGetter, static_cast<void*>(&mTextureNames), mTextureNames.size(), 16);
 	selectedTextureKey = mTextureNames[mCurrentSeletedTextureNumber];
 
+	
+	if (currentRendererItem == 1)
+	{
+		ImGui::NewLine();
+		ImGui::PushItemWidth(-1);
+		ImGui::Text("Selected Normal Map");
+		ImGui::Combo("BumpTextureCombo", &mCurrentSeletedBumpTextureNumber, VectorGetter, static_cast<void*>(&mTextureNames), mTextureNames.size(), 16);
+		selectedBumpTexture = mTextureNames[mCurrentSeletedBumpTextureNumber];
+		ImGui::NewLine();
+		ImGui::PushItemWidth(-1);
+		ImGui::Text("Selected Specular Map");
+		ImGui::Combo("SpecularTextureCombo", &mCurrentSeletedSpecularTextureNumber, VectorGetter, static_cast<void*>(&mTextureNames), mTextureNames.size(), 16);
+		selectedSpecularTexture = mTextureNames[mCurrentSeletedSpecularTextureNumber];
+	}
+
 	ImGui::NewLine();
 	if (ImGui::Button("Add"))
 	{
@@ -62,6 +83,16 @@ void ModelListBrowser::RenderAddGameObejctUI(bool* outAddGameObject, std::string
 			*outAddGameObject = true;
 
 			selectedModelKey = selectedTextureKey = "";
+			
+			switch (currentRendererItem)
+			{
+			case 0:
+				rendererType = RendererType::ONLYSPECULAR;
+				break;
+			case 1:
+				rendererType = RendererType::BUMP;
+				break;
+			}
 		}
 		mActiveAddGameObject = false;
 	}
@@ -69,7 +100,7 @@ void ModelListBrowser::RenderAddGameObejctUI(bool* outAddGameObject, std::string
 	ImGui::End();
 }
 
-void ModelListBrowser::RenderGameObjectList(bool* addGameObject, std::string* outSelectGameObject, std::string* outSelectedModelKey, std::string* outSelectedTextureKey, std::vector<std::string>& gameObejcts)
+void ModelListBrowser::RenderGameObjectList(bool* addGameObject, std::string* outSelectGameObject, std::string* outSelectedModelKey, std::string* outSelectedTextureKey, std::string& selectedBumpTexture, std::string& selectedSpecularTexture, std::vector<std::string>& gameObejcts, RendererType& rendererType)
 {
 	ImGui::Begin("GameObject", &mActiveGameObjectList, ImGuiWindowFlags_MenuBar);
 	ImGui::NewLine();
@@ -85,7 +116,7 @@ void ModelListBrowser::RenderGameObjectList(bool* addGameObject, std::string* ou
 
 	if (mActiveAddGameObject)
 	{
-		RenderAddGameObejctUI(addGameObject,outSelectedModelKey,outSelectedTextureKey);
+		RenderAddGameObejctUI(addGameObject,outSelectedModelKey,outSelectedTextureKey,selectedBumpTexture,selectedSpecularTexture,rendererType);
 	}
 
 	if (gameObejcts.size() == 0)

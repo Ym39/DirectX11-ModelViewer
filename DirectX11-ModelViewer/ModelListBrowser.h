@@ -5,17 +5,23 @@
 #include "Imgui/imgui_impl_win32.h"
 #include "Imgui/imgui_impl_dx11.h"
 
+enum class RendererType
+{
+	ONLYSPECULAR,
+	BUMP
+};
+
 class ModelListBrowser
 {
 public:
 	ModelListBrowser();
 	~ModelListBrowser() = default;
 
-	void RenderGameObjectList(bool* addGameObject,std::string* outSelectGameObject,std::string* outSelectedModelKey,std::string* outSelectedTextureKey, std::vector<std::string>& gameObejcts);
+	void RenderGameObjectList(bool* addGameObject,std::string* outSelectGameObject,std::string* outSelectedModelKey,std::string* outSelectedTextureKey,std::string& selectedBumpTexture, std::string& selectedSpecularTexture, std::vector<std::string>& gameObejcts, RendererType& rendererType);
 
 	void RenderModelList(bool& select, std::string& selectModelKey);
 
-	void RenderAddGameObejctUI(bool* outAddGameObject, std::string* outSelectedModelKey, std::string* outSelectedTextureKey);
+	void RenderAddGameObejctUI(bool* outAddGameObject, std::string* outSelectedModelKey, std::string* outSelectedTextureKey,std::string& selectedBumpTexture, std::string& selectedSpecularTexture, RendererType& rendererType);
 
 	void RenderTextureList(bool& select, std::string& selectTextureKey);
 
@@ -32,6 +38,8 @@ private:
 	int mCurrentGameObjectNumber = 0;
 	int mCurrentSeletedModelNumber = 0;
 	int mCurrentSeletedTextureNumber = 0;
+	int mCurrentSeletedBumpTextureNumber = 0;
+	int mCurrentSeletedSpecularTextureNumber = 0;
 
 	bool mSelectingModel = false;
 	bool mSelectingTexture = false;

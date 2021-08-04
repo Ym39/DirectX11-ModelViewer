@@ -4,6 +4,7 @@
 #include "TransformComponent.h"
 #include "MeshRenderComponent.h"
 #include "SkinnedMeshRenderComponent.h"
+#include "SkinnedMeshBumpRenderComponent.h"
 #include "AnimatorComponent.h"
 #include "GameObjectBrowser.h"
 
@@ -232,6 +233,11 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     if (result == false)
         return false;
 
+    mSkinnedBumpShader = new SkinnedBumpShader;
+    result = mSkinnedBumpShader->Initialize(mDirect->GetDevice(), hwnd);
+    if (result == false)
+        return false;
+
    /* mGameObject = GameObjectClass::Create();
     mGameObject->InsertComponent(new TransformComponent);*/
 
@@ -438,6 +444,13 @@ void GraphicsClass::Shutdown()
         mTextureShader->Shutdown();
         delete mTextureShader;
         mTextureShader = nullptr;
+    }
+
+    if (mSkinnedBumpShader)
+    {
+        mSkinnedBumpShader->Shutdown();
+        delete mSkinnedBumpShader;
+        mSkinnedBumpShader = nullptr;
     }
 
     if (mCharacterTexture)
@@ -785,7 +798,10 @@ bool GraphicsClass::Render()
     static bool addGameObject = false;
     static std::string selectModelKey;
     static std::string selectTextureKey;
-    modelListBrowser.RenderGameObjectList(&addGameObject,&currentGameObject,&selectModelKey,&selectTextureKey, gameObejctNames);
+    static std::string selectBumpTextureKey;
+    static std::string selectSpecularTextureKey;
+    static RendererType renderType = RendererType::ONLYSPECULAR;
+    modelListBrowser.RenderGameObjectList(&addGameObject,&currentGameObject,&selectModelKey,&selectTextureKey, selectBumpTextureKey,selectSpecularTextureKey, gameObejctNames, renderType);
 
     if (addGameObject == true)
     {
@@ -795,10 +811,24 @@ bool GraphicsClass::Render()
 
         if (AssetClass::mMeshMap[selectModelKey]->IsSkinning() == true)
         {
-            SkinnedMeshRenderComponent* rendercomp = new SkinnedMeshRenderComponent();
-            rendercomp->Initalize(AssetClass::mMeshMap[selectModelKey], mShader, mSkinnedDepthShader, AssetClass::mTextureMap[selectTextureKey]);
+            switch (renderType)
+            {
+            case RendererType::ONLYSPECULAR:
+            {
+                SkinnedMeshRenderComponent* rendercomp = new SkinnedMeshRenderComponent();
+                rendercomp->Initalize(AssetClass::mMeshMap[selectModelKey], mShader, mSkinnedDepthShader, AssetClass::mTextureMap[selectTextureKey]);
+                newGameObejct->InsertComponent(rendercomp);
+            }
+                break;
+            case RendererType::BUMP:
+            {
+                SkinnedMeshBumpRenderComponent* bumpcomp = new SkinnedMeshBumpRenderComponent();
+                bumpcomp->Initalize(AssetClass::mMeshMap[selectModelKey], mSkinnedBumpShader, mSkinnedDepthShader, AssetClass::mTextureMap[selectTextureKey], AssetClass::mTextureMap[selectBumpTextureKey], AssetClass::mTextureMap[selectSpecularTextureKey]);
+                newGameObejct->InsertComponent(bumpcomp);
+            }
+                break;
+            }
 
-            newGameObejct->InsertComponent(rendercomp);
 
             AnimatorComponent* animComp = new AnimatorComponent();
             animComp->SetAnimation(anim);

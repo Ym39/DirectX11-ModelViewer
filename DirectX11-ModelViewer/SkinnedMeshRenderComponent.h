@@ -111,7 +111,7 @@ public:
 
 	virtual void Destroy() override {};
 
-private:
+protected:
 	SkinnedMeshShader* mShader;
 	SkinnedDepthShaderClass* mDepthShader;
 	Texture* mTexture;

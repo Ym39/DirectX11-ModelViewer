@@ -24,6 +24,7 @@
 #include "MeshClass.h"
 #include "AssetClass.h"
 #include "ModelListBrowser.h"
+#include "SkinnedBumpShader.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = false;
@@ -86,6 +87,7 @@ private:
 	ArrowModel* mUpArrowModel;
 	BitmapClass* mMouseBitmap = nullptr;
 	TextureShaderClass* mTextureShader = nullptr;
+	SkinnedBumpShader* mSkinnedBumpShader = nullptr;
 
 	ModelListBrowser modelListBrowser;
 	GameObjectBrowser* gameObjectBrowser;

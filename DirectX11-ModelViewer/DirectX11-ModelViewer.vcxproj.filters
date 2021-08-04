@@ -186,9 +186,6 @@
     <ClInclude Include="DepthShaderClass.h">
       <Filter>헤더 파일\셰이더 클래스</Filter>
     </ClInclude>
-    <ClInclude Include="TextureShaderClass.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="AnimationFileBrowser.h">
       <Filter>헤더 파일\UI</Filter>
     </ClInclude>
@@ -226,7 +223,13 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SkinnedBumpShader.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>헤더 파일\셰이더 클래스</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureShaderClass.h">
+      <Filter>헤더 파일\셰이더 클래스</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinnedMeshBumpRenderComponent.h">
+      <Filter>헤더 파일\컴포넌트</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -385,7 +388,7 @@
       <Filter>소스 파일\UI</Filter>
     </ClCompile>
     <ClCompile Include="SkinnedBumpShader.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\셰이더 클래스</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -438,5 +441,11 @@
       <Filter>소스 파일\컴포넌트</Filter>
     </None>
     <None Include="cpp.hint" />
+    <None Include="SkinnedBumpVertexShader.hlsl">
+      <Filter>셰이더</Filter>
+    </None>
+    <None Include="SkinnedBumpPixelShader.hlsl">
+      <Filter>셰이더</Filter>
+    </None>
   </ItemGroup>
 </Project>
