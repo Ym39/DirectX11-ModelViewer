@@ -105,6 +105,23 @@ void MeshClass::Render(ID3D11DeviceContext* deviceContext)
 	return;
 }
 
+void MeshClass::Render(ID3D11DeviceContext* deviceContext, UINT bufferNumber)
+{
+	unsigned int stride;
+	unsigned int offset;
+
+	stride = sizeof(InputVertex);
+	offset = 0;
+
+	deviceContext->IASetVertexBuffers(bufferNumber, 1, &mVertexBuffer, &stride, &offset);
+
+	deviceContext->IASetIndexBuffer(mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	return;
+}
+
 void MeshClass::Shutdown()
 {
 	if (mVertexBuffer)
