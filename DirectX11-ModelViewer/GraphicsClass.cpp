@@ -759,7 +759,7 @@ bool GraphicsClass::Render()
 
     if (loadFbx == true)
     {
-        std::string meshKey = loadPath.filename().string();
+        /*std::string meshKey = loadPath.filename().string();
         GameObject loadObject;
         Mesh* loadMesh = mFbxLoader->LoadFbx(const_cast<char*>(loadPath.string().c_str()));
         bool result = loadMesh->Initialize(mDirect->GetDevice());
@@ -776,7 +776,8 @@ bool GraphicsClass::Render()
         }
         loadObject.SetTexture(texture);
 
-        meshMap.insert(std::pair<std::string, GameObject>(meshKey, loadObject));
+        meshMap.insert(std::pair<std::string, GameObject>(meshKey, loadObject));*/
+        mFbxLoader->LoadFbxFile(loadPath);
     }
 
     if (loadAnim == true)

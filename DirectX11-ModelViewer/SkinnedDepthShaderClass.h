@@ -21,7 +21,7 @@ private:
 
 	struct BoneBufferType
 	{
-		XMMATRIX boneTransforms[65];
+		XMMATRIX boneTransforms[200];
 	};
 
 public:

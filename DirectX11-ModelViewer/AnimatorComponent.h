@@ -47,6 +47,8 @@ public:
 
 	void Play() { mIsPlay = true; }
 	void Stop() { mIsPlay = false; }
+
+	bool IsPlay() const { return mIsPlay; }
 protected:
 	unsigned int mCurrentKeyframe;
 

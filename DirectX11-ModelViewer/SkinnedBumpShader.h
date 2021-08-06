@@ -36,7 +36,7 @@ private:
 
 	struct BoneBufferType
 	{
-		XMMATRIX boneTransforms[120];
+		XMMATRIX boneTransforms[200];
 	};
 public:
 	SkinnedBumpShader();

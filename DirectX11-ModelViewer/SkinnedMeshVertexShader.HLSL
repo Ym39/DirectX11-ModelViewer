@@ -22,7 +22,7 @@ cbuffer CameraBuffer
 
 cbuffer BoneBuffer
 {
-    matrix boneTransforms[120];
+    matrix boneTransforms[200];
 };
 
 

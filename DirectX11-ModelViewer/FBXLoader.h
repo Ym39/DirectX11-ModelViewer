@@ -3,6 +3,7 @@
 #include "Mesh.h"
 #include<fbxsdk.h>
 #include<fstream>
+#include <filesystem>
 using namespace DirectX;
 using namespace std;
 
@@ -13,6 +14,7 @@ public:
     ~FBXLoader();
   
     Mesh* LoadFbx(char* fbxFilename);
+	void LoadFbxFile(const filesystem::path& fbxFilePath);
 	void LoadAnimation(char* fbxFilename);
 private:
     void ProcessSkeletonHierarchy(FbxNode* inRootNode);

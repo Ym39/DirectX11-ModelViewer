@@ -1,4 +1,5 @@
 #include "FBXLoader.h"
+#include"AssetClass.h"
 
 FBXLoader::FBXLoader()
 {
@@ -71,6 +72,66 @@ Mesh* FBXLoader::LoadFbx(char* fbxFilename)
 	mFbxScene->Destroy();
     
 	return finalMesh;
+}
+
+void FBXLoader::LoadFbxFile(const filesystem::path& fbxFilePath)
+{
+	mImporter = FbxImporter::Create(mFbxManager, "");
+
+	bool status = mImporter->Initialize(fbxFilePath.string().c_str(), -1, mFbxManager->GetIOSettings());
+	if (status == false)
+	{
+		return;
+	}
+
+	mFbxScene = FbxScene::Create(mFbxManager, "scene");
+	mImporter->Import(mFbxScene);
+	mImporter->Destroy();
+
+	FbxNode* rootNode = mFbxScene->GetRootNode();
+
+	FbxAxisSystem sceneAxisSystem = mFbxScene->GetGlobalSettings().GetAxisSystem();
+	FbxAxisSystem::DirectX.ConvertScene(mFbxScene);
+
+	FbxGeometryConverter geometryConverter(mFbxManager);
+	geometryConverter.Triangulate(mFbxScene, true);
+
+
+	mSkeleton = new Skeleton;
+	ProcessSkeletonHierarchy(rootNode);
+	/*if (mSkeleton->joints.empty() == false)
+	{
+		finalMesh->SetSkeleton(mSkeleton);
+	}*/
+
+	LoadNode(rootNode);
+
+	CalculateTangentAndBinormal();
+
+	SkinnedMeshData saveMeshData;
+	saveMeshData = vertices;
+	saveMeshData = indices;
+	saveMeshData = *mSkeleton;
+
+	std::string modelFileName = fbxFilePath.stem().string();
+	modelFileName += ".SM";
+	std::string modelPathString = AssetClass::GetModelPath().string();
+	modelPathString += "\\";
+	modelPathString += modelFileName;
+
+
+	ofstream out; //쓰기 스트림 생성
+	out.open(modelPathString.c_str(), ios_base::binary); //바이너리 모드로 파일을 열었습니다.
+	boost::archive::binary_oarchive out_archive(out); //연 스트림을 넘겨주어서 직렬화객체 초기화
+	out_archive << saveMeshData; //쓰기
+	out.close();
+
+	vertices.clear();
+	indices.clear();
+
+	mFbxScene->Destroy();
+
+	AssetClass::Update();
 }
 
 void FBXLoader::LoadAnimation(char* fbxFilename)
@@ -149,10 +210,12 @@ void FBXLoader::LoadNode(FbxNode* node)
 {	
 	FbxNodeAttribute* nodeAttribute = node->GetNodeAttribute();
 
+	string name;
 	if (nodeAttribute != nullptr)
 	{
 		if (nodeAttribute->GetAttributeType() == FbxNodeAttribute::eMesh)
 		{
+			name = node->GetMesh()->GetName();
 			FbxMesh* mesh = node->GetMesh();
 
 			std::vector<XMFLOAT3> positions;
@@ -621,40 +684,40 @@ void FBXLoader::ProcessJointsAndAnmations(FbxNode* inNode)
 				mCtrlPoint[currCluster->GetControlPointIndices()[i]]->blendingInfo.push_back(currBlendingIndexWeightPair);
 			}
 
-			FbxAnimStack* currAnimStack = mFbxScene->GetSrcObject<FbxAnimStack>(0);
-			FbxString animStackName = currAnimStack->GetName();
-			string anmationName = animStackName.Buffer();
-			FbxTakeInfo* takeInfo = mFbxScene->GetTakeInfo(animStackName);
-			FbxTime start = takeInfo->mLocalTimeSpan.GetStart();
-			FbxTime end = takeInfo->mLocalTimeSpan.GetStop();
-			mAnimationLength = end.GetFrameCount(FbxTime::eFrames30) - start.GetFrameCount(FbxTime::eFrames30) + 1;
-			Keyframe** currAnim = &mSkeleton->joints[currJointIndex].animation;
+			//FbxAnimStack* currAnimStack = mFbxScene->GetSrcObject<FbxAnimStack>(0);
+			//FbxString animStackName = currAnimStack->GetName();
+			//string anmationName = animStackName.Buffer();
+			//FbxTakeInfo* takeInfo = mFbxScene->GetTakeInfo(animStackName);
+			//FbxTime start = takeInfo->mLocalTimeSpan.GetStart();
+			//FbxTime end = takeInfo->mLocalTimeSpan.GetStop();
+			//mAnimationLength = end.GetFrameCount(FbxTime::eFrames30) - start.GetFrameCount(FbxTime::eFrames30) + 1;
+			//Keyframe** currAnim = &mSkeleton->joints[currJointIndex].animation;
 
-			int startCount = start.GetFrameCount(FbxTime::eFrames30);
-			int endCount = end.GetFrameCount(FbxTime::eFrames30);
+			//int startCount = start.GetFrameCount(FbxTime::eFrames30);
+			//int endCount = end.GetFrameCount(FbxTime::eFrames30);
 
-			for (FbxLongLong i = start.GetFrameCount(FbxTime::eFrames30); i < end.GetFrameCount(FbxTime::eFrames30); ++i)
-			{
-				FbxTime currTime;
-				currTime.SetFrame(i, FbxTime::eFrames30);
-				*currAnim = new Keyframe();
-				(*currAnim)->frameName = i;
-				FbxAMatrix currentTransformOffset = inNode->EvaluateGlobalTransform(currTime) * gemotryTransform;
-				FbxAMatrix fbxGlobalTransform = currentTransformOffset.Inverse() * currCluster->GetLink()->EvaluateGlobalTransform(currTime);
+			//for (FbxLongLong i = start.GetFrameCount(FbxTime::eFrames30); i < end.GetFrameCount(FbxTime::eFrames30); ++i)
+			//{
+			//	FbxTime currTime;
+			//	currTime.SetFrame(i, FbxTime::eFrames30);
+			//	*currAnim = new Keyframe();
+			//	(*currAnim)->frameName = i;
+			//	FbxAMatrix currentTransformOffset = inNode->EvaluateGlobalTransform(currTime) * gemotryTransform;
+			//	FbxAMatrix fbxGlobalTransform = currentTransformOffset.Inverse() * currCluster->GetLink()->EvaluateGlobalTransform(currTime);
 
-				XMFLOAT4X4 key;
-				for (int i = 0; i < 4; ++i)
-				{
-					for (int j = 0; j < 4; ++j)
-					{
-						key.m[i][j] = fbxGlobalTransform.Get(i, j);
-					}
-				}
+			//	XMFLOAT4X4 key;
+			//	for (int i = 0; i < 4; ++i)
+			//	{
+			//		for (int j = 0; j < 4; ++j)
+			//		{
+			//			key.m[i][j] = fbxGlobalTransform.Get(i, j);
+			//		}
+			//	}
 
-				(*currAnim)->globalTransfrom = key;
-				//(*currAnim)->globalTransfrom = XMMatrixTranspose(xmGlobalTr);
-				currAnim = &((*currAnim)->next);
-			}
+			//	(*currAnim)->globalTransfrom = key;
+			//	//(*currAnim)->globalTransfrom = XMMatrixTranspose(xmGlobalTr);
+			//	currAnim = &((*currAnim)->next);
+			//}
 		}
 	}
 

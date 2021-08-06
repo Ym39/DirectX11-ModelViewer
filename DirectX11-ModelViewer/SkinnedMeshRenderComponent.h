@@ -92,6 +92,9 @@ public:
 		if (animator == nullptr)
 			return;
 
+		if (animator->IsPlay() == false)
+			return;
+
 		lateTime += deltaTime;
 
 		if (lateTime >= 1000.0f / 30.0f)
