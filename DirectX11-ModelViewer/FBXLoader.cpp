@@ -214,17 +214,23 @@ void FBXLoader::LoadNode(FbxNode* node ,SkinnedMeshData& meshData)
 			string name = node->GetMesh()->GetName();
 			FbxMesh* mesh = node->GetMesh();
 
-			int numOfMat = node->GetMaterialCount();
-			
 			std::vector<XMFLOAT3> positions;
 			ProcessControlPoints(mesh, positions);
 			if (mSkeleton->joints.empty()==false)
 			{
 				ProcessJointsAndAnmations(node);
 			}
-			ProcessMesh(mesh);
-			CalculateTangentAndBinormal();
-			meshData.SetSubMesh(name, vertices, indices);
+			SaveMesh saveMesh;
+			saveMesh.submeshs.resize(node->GetMaterialCount() == 0? 1: node->GetMaterialCount());
+
+			ProcessMesh(mesh, saveMesh);
+			//CalculateTangentAndBinormal();
+			for (auto& submesh : saveMesh.submeshs)
+			{
+				submesh.CalculateTangentAndBinormal();
+			}
+
+			meshData.AddMesh(name, saveMesh);
 			vertices.clear();
 			indices.clear();
 			indexMapping.clear();
@@ -285,11 +291,13 @@ void FBXLoader::ProcessControlPoints(FbxMesh* mesh, std::vector<XMFLOAT3>& posit
 	}
 }
 
-void FBXLoader::ProcessMesh(FbxMesh* mesh)
+void FBXLoader::ProcessMesh(FbxMesh* mesh,SaveMesh& saveMesh)
 {
 	mTriangleCount = mesh->GetPolygonCount();
 	int vertexCount = 0;
-
+	vector<unordered_map<VertexType, unsigned int>> indexMapping;
+	indexMapping.resize(saveMesh.submeshs.size());
+	
 	for (unsigned int i = 0; i < mTriangleCount; ++i)
 	{
 		for (unsigned int j = 0; j < 3; ++j)
@@ -304,12 +312,12 @@ void FBXLoader::ProcessMesh(FbxMesh* mesh)
 			temp.tangent = ReadTangents(mesh, controlPointIndex, vertexCount);
 			temp.texture = ReadUV(mesh, controlPointIndex, mesh->GetTextureUVIndex(i, j));
 			
-			int matCount = mesh->GetElementMaterialCount();
-			int part = 0;
-			for (int k = 0; k < matCount; ++k)
+			int elementMatCount = mesh->GetElementMaterialCount();
+			int subMeshIndex = 0;
+			for (int k = 0; k < elementMatCount; ++k)
 			{
 				FbxGeometryElementMaterial* elementMaterial = mesh->GetElementMaterial(k);
-				part = elementMaterial->GetIndexArray().GetAt(i);
+				subMeshIndex = elementMaterial->GetIndexArray().GetAt(i);
 			}
 
 			for (unsigned int i = 0; i < currCtrlPoint->blendingInfo.size(); ++i)
@@ -320,18 +328,18 @@ void FBXLoader::ProcessMesh(FbxMesh* mesh)
 				temp.blendingInfo.push_back(currBlendingInfo);
 			}
 
-			auto lookup = indexMapping.find(temp);
+			auto lookup = indexMapping[subMeshIndex].find(temp);
 
-			if (lookup != indexMapping.end())
+			if (lookup != indexMapping[subMeshIndex].end())
 			{
-				indices.push_back(lookup->second);
+				saveMesh.submeshs[subMeshIndex].AddIndex(lookup->second);
 			}
 			else
 			{
-				unsigned int index = vertices.size();
-				indexMapping[temp] = index;
-				indices.push_back(index);
-				vertices.push_back(temp);
+				unsigned int index = saveMesh.submeshs[subMeshIndex].vertices.size();
+				indexMapping[subMeshIndex][temp] = index;
+				saveMesh.submeshs[subMeshIndex].AddIndex(index);
+				saveMesh.submeshs[subMeshIndex].AddVertex(temp);
 			}
 		}
 	}
@@ -412,6 +420,7 @@ void FBXLoader::CalculateTangentAndBinormal()
 		vertex3.binormal = binormal;
 	}
 }
+
 
 DirectX::XMFLOAT3 FBXLoader::ReadNormal(const FbxMesh* mesh, int controlPointIndex, int vertexCounter)
 {

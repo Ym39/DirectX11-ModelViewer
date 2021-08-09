@@ -911,22 +911,35 @@ bool GraphicsClass::Render()
             SkinnedMeshRenderComponent* comp = search->second->GetComponent<SkinnedMeshRenderComponent>();
             if (ImGui::CollapsingHeader("SkinnedMeshRender", ImGuiTreeNodeFlags_Framed))
             {
-                for (const auto& mat : comp->GetObjectMaterials())
-                {
-                    if (ImGui::CollapsingHeader(mat.first.c_str(), ImGuiTreeNodeFlags_Framed))
+                auto& subObjectMats = comp->GetObjectMaterials();
+                for (int i = 0; i< subObjectMats.size(); i++)
+                {   
+                    string meshGroupLabel = "MeshGroup";
+                    string num = to_string(i);
+                    meshGroupLabel += num;
+                    if (ImGui::CollapsingHeader(meshGroupLabel.c_str(), ImGuiTreeNodeFlags_Framed))
                     {
-                        int selectTextureCount = 0;
-                        for (int i = 0; i < textureNames.size(); i++)
+                        for (int j = 0; j < subObjectMats[i].size(); j++)
                         {
-                            if (mat.second.GetTextureKey() == textureNames[i])
+                            string subMeshLabel = "Material";
+                            string num = to_string(j);
+                            subMeshLabel += num;
+                            if (ImGui::CollapsingHeader(subMeshLabel.c_str(), ImGuiTreeNodeFlags_Framed))
                             {
-                                selectTextureCount = i;
-                                break;
+                                int selectTextureCount = 0;
+                                for (int textIdx = 0; textIdx < textureNames.size(); textIdx++)
+                                {
+                                    if (subObjectMats[i][j].GetTextureKey() == textureNames[textIdx])
+                                    {
+                                        selectTextureCount = textIdx;
+                                        break;
+                                    }
+                                }
+                                if (ImGui::Combo("Diffuse", &selectTextureCount, VectorGetter2,             static_cast<void*>(&textureNames), textureNames.size(), 16))
+                                {
+                                    comp->SetMaterial(i,j, textureNames[selectTextureCount]);
+                                }
                             }
-                        }
-                        if (ImGui::Combo("Diffuse", &selectTextureCount, VectorGetter2, static_cast<void*>(&textureNames), textureNames.size(), 16))
-                        {
-                            comp->SetMaterial(mat.first, textureNames[selectTextureCount]);
                         }
                     }
                 }
@@ -937,22 +950,35 @@ bool GraphicsClass::Render()
             MeshRenderComponent* comp = search->second->GetComponent<MeshRenderComponent>();
             if (ImGui::CollapsingHeader("MeshRender", ImGuiTreeNodeFlags_Framed))
             {
-                for (const auto& mat : comp->GetObjectMaterials())
+                auto& subObjectMats = comp->GetObjectMaterials();
+                for (int i = 0; i < subObjectMats.size(); i++)
                 {
-                    if (ImGui::CollapsingHeader(mat.first.c_str(), ImGuiTreeNodeFlags_Framed))
+                    string meshGroupLabel = "MeshGroup";
+                    string num = to_string(i);
+                    meshGroupLabel += num;
+                    if (ImGui::CollapsingHeader(meshGroupLabel.c_str(), ImGuiTreeNodeFlags_Framed))
                     {
-                        int selectTextureCount = 0;
-                        for (int i = 0; i < textureNames.size(); i++)
+                        for (int j = 0; j < subObjectMats[i].size(); j++)
                         {
-                            if (mat.second.GetTextureKey() == textureNames[i])
+                            string subMeshLabel = "Material";
+                            string num = to_string(j);
+                            subMeshLabel += num;
+                            if (ImGui::CollapsingHeader(subMeshLabel.c_str(), ImGuiTreeNodeFlags_Framed))
                             {
-                                selectTextureCount = i;
-                                break;
+                                int selectTextureCount = 0;
+                                for (int textIdx = 0; textIdx < textureNames.size(); textIdx++)
+                                {
+                                    if (subObjectMats[i][j].GetTextureKey() == textureNames[textIdx])
+                                    {
+                                        selectTextureCount = textIdx;
+                                        break;
+                                    }
+                                }
+                                if (ImGui::Combo("Diffuse", &selectTextureCount, VectorGetter2, static_cast<void*>(&textureNames), textureNames.size(), 16))
+                                {
+                                    comp->SetMaterial(i, j, textureNames[selectTextureCount]);
+                                }
                             }
-                        }
-                        if (ImGui::Combo("Diffuse", &selectTextureCount, VectorGetter2, static_cast<void*>(&textureNames), textureNames.size(), 16))
-                        {
-                            comp->SetMaterial(mat.first, textureNames[selectTextureCount]);
                         }
                     }
                 }
@@ -963,39 +989,54 @@ bool GraphicsClass::Render()
             SkinnedMeshBumpRenderComponent* comp = search->second->GetComponent<SkinnedMeshBumpRenderComponent>();
             if (ImGui::CollapsingHeader("BumpSkinnedMeshRender",  ImGuiTreeNodeFlags_Framed))
             {
-                for (const auto& mat : comp->GetObjectMaterials())
+               auto& subObjectMats = comp->GetObjectMaterials();
+                for (int i = 0; i < subObjectMats.size(); i++)
                 {
-                    if (ImGui::CollapsingHeader(mat.first.c_str()))
+                    string meshGroupLabel = "MeshGroup";
+                    string num = to_string(i);
+                    meshGroupLabel += num;
+                    if (ImGui::CollapsingHeader(meshGroupLabel.c_str(), ImGuiTreeNodeFlags_Framed))
                     {
-                        int selectTextureCount = 0;
-                        int selectNormalCount = 0;
-                        int selectSpecularCount = 0;
-                        for (int i = 0; i < textureNames.size(); i++)
+                        for (int j = 0; j < subObjectMats[i].size(); j++)
                         {
-                            if (mat.second.GetTextureKey() == textureNames[i])
+                            string subMeshLabel = "Material";
+                            string num = to_string(j);
+                            subMeshLabel += num;
+                            if (ImGui::CollapsingHeader(subMeshLabel.c_str(), ImGuiTreeNodeFlags_Framed))
                             {
-                                selectTextureCount = i;
+                                int selectTextureCount = 0;
+                                int selectNormalCount = 0;
+                                int selectSpecularCount = 0;
+                                for (int textIdx = 0; textIdx < textureNames.size(); textIdx++)
+                                {
+                                    if (subObjectMats[i][j].GetTextureKey() == textureNames[textIdx])
+                                    {
+                                        selectTextureCount = textIdx;
+                                    }
+                                    if (subObjectMats[i][j].GetNormalKey() == textureNames[textIdx])
+                                    {
+                                        selectNormalCount = textIdx;
+                                        break;
+                                    }
+                                    if (subObjectMats[i][j].GetSpecularKey() == textureNames[textIdx])
+                                    {
+                                        selectSpecularCount = textIdx;
+                                        break;
+                                    }
+                                }
+                                if (ImGui::Combo("Diffuse", &selectTextureCount, VectorGetter2, static_cast<void*>(&textureNames), textureNames.size(), 16))
+                                {
+                                    comp->SetMaterial(i, j, textureNames[selectTextureCount], subObjectMats[i][j].GetNormalKey(), subObjectMats[i][j].GetSpecularKey());
+                                }
+                                if (ImGui::Combo("Normal", &selectTextureCount, VectorGetter2, static_cast<void*>(&textureNames), textureNames.size(), 16))
+                                {
+                                    comp->SetMaterial(i, j, subObjectMats[i][j].GetTextureKey(), textureNames[selectNormalCount], subObjectMats[i][j].GetSpecularKey());
+                                }
+                                if (ImGui::Combo("Specular", &selectTextureCount, VectorGetter2, static_cast<void*>(&textureNames), textureNames.size(), 16))
+                                {
+                                    comp->SetMaterial(i, j, subObjectMats[i][j].GetTextureKey(), subObjectMats[i][j].GetNormalKey(), textureNames[selectSpecularCount]);
+                                }
                             }
-                            if (mat.second.GetNormalKey() == textureNames[i])
-                            {
-                                selectNormalCount = i;
-                            }
-                            if (mat.second.GetSpecularKey() == textureNames[i])
-                            {
-                                selectSpecularCount = i;
-                            }
-                        }
-                        if (ImGui::Combo("Diffuse", &selectTextureCount, VectorGetter2, static_cast<void*>(&textureNames), textureNames.size(), 16))
-                        {
-                            comp->SetMaterial(mat.first, textureNames[selectTextureCount], mat.second.GetNormalKey(), mat.second.GetSpecularKey());
-                        }
-                        if (ImGui::Combo("Normal", &selectNormalCount, VectorGetter2, static_cast<void*>(&textureNames), textureNames.size(), 16))
-                        {
-                            comp->SetMaterial(mat.first, mat.second.GetTextureKey(), textureNames[selectNormalCount], mat.second.GetSpecularKey());
-                        }
-                        if (ImGui::Combo("Specular", &selectSpecularCount, VectorGetter2, static_cast<void*>(&textureNames), textureNames.size(), 16))
-                        {
-                            comp->SetMaterial(mat.first, mat.second.GetTextureKey(), mat.second.GetNormalKey(), textureNames[selectSpecularCount]);
                         }
                     }
                 }

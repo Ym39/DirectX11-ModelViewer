@@ -35,9 +35,10 @@ public:
 			b = XMMatrixTranspose(XMMatrixIdentity());
 		}
 
-		for (int i = 0; i < mMesh->GetSubMeshCount(); i++)
+		mSubObjectMats.resize(mMesh->GetSubMeshGroupCount());
+		for (int i = 0; i < mSubObjectMats.size(); i++)
 		{
-			mSubObjectMats[mMesh->GetSubMeshName(i)] = BumpSpacularMaterial();
+			mSubObjectMats[i].resize(mMesh->GetSubMeshCount(i));
 		}
 
 		return true;
@@ -59,22 +60,25 @@ public:
 
 		TransformComponent* objectTransform = mOwnerGameObject->GetComponent<TransformComponent>();
 
-		for (int i = 0; i < mMesh->GetSubMeshCount(); i++)
+		for (int i = 0; i < mMesh->GetSubMeshGroupCount(); i++)
 		{
-			mMesh->Render(deviceContext, i);
+			for (int j = 0; j < mMesh->GetSubMeshCount(i); j++)
+			{
+				mMesh->Render(deviceContext, i, j);
 
-			BumpSpacularMaterial& mat = mSubObjectMats[mMesh->GetSubMeshName(i)];
+				BumpSpacularMaterial& mat = mSubObjectMats[i][j];
 
-			mBumpShader->Render(deviceContext, mMesh->GetSubMeshIndexCount(i), objectTransform->GetTransform(), viewMatrix, projectionMatrix, AssetClass::mTextureMap[mat.GetTextureKey()]->GetTexture(), AssetClass::mTextureMap[mat.GetNormalKey()]->GetTexture(), AssetClass::mTextureMap[mat.GetSpecularKey()]->GetTexture(), gMainLight->GetPosition(), gMainLight->GetDiffuseColor(), gMainLight->GetAmbientColor(), gMainCamera->GetPosition(), gMainLight->GetSpecularColor(), gMainLight->GetSpecularPower(), mUpdateBone);
+				mBumpShader->Render(deviceContext, mMesh->GetSubMeshIndexCount(i,j), objectTransform->GetTransform(), viewMatrix, projectionMatrix, AssetClass::mTextureMap[mat.GetTextureKey()]->GetTexture(), AssetClass::mTextureMap[mat.GetNormalKey()]->GetTexture(), AssetClass::mTextureMap[mat.GetSpecularKey()]->GetTexture(), gMainLight->GetPosition(), gMainLight->GetDiffuseColor(), gMainLight->GetAmbientColor(), gMainCamera->GetPosition(), gMainLight->GetSpecularColor(), gMainLight->GetSpecularPower(), mUpdateBone);
+			}
 		}
 	}
 
 	const auto& GetObjectMaterials() const { return mSubObjectMats; }
-	void SetMaterial(string key, string textureKey, string normalKey, string specularKey)
+	void SetMaterial(int groupIndex, int submeshIndex,string textureKey, string normalKey, string specularKey)
 	{
-		mSubObjectMats[key].SetTextureKey(textureKey);
-		mSubObjectMats[key].SetNormalKey(normalKey);
-		mSubObjectMats[key].SetSpecularKey(specularKey);
+		mSubObjectMats[groupIndex][submeshIndex].SetTextureKey(textureKey);
+		mSubObjectMats[groupIndex][submeshIndex].SetNormalKey(normalKey);
+		mSubObjectMats[groupIndex][submeshIndex].SetSpecularKey(specularKey);
 	}
 public:
 	virtual void Start() override {};
@@ -88,7 +92,8 @@ public:
 protected:
 	SkinnedBumpShader* mBumpShader;
 private:
-	unordered_map<string, BumpSpacularMaterial> mSubObjectMats;
+	vector<vector<BumpSpacularMaterial>> mSubObjectMats;
+
 };
 
 DECLARE_COMPONENT(SkinnedMeshBumpRenderComponent);

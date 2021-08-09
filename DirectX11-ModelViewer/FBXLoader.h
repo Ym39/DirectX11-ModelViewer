@@ -25,7 +25,7 @@ private:
 	void LoadNodeJointAndAnimation(FbxNode* node);
 
 	void ProcessControlPoints(FbxMesh* mesh, std::vector<XMFLOAT3>& positions);
-	void ProcessMesh(FbxMesh* mesh);
+	void ProcessMesh(FbxMesh* mesh, SaveMesh& saveMesh);
 
 	void CalculateTangentAndBinormal();
 

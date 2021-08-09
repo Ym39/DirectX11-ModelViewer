@@ -7,10 +7,10 @@ MeshClass::MeshClass():
 
 void MeshClass::SetMeshData(const SkinnedMeshData& skinnedMeshData)
 {
-	for (const auto& submesh : skinnedMeshData.meshs)
+	for (const auto& submeshGroups : skinnedMeshData.meshs)
 	{
-		SubMesh current(submesh.first, submesh.second);
-		mSubMeshs.push_back(current);
+		SubMeshGroup current(submeshGroups.first, submeshGroups.second);
+		mSubmeshGroups.push_back(current);
 	}
 
 	if (skinnedMeshData.bones.empty())
@@ -28,9 +28,9 @@ void MeshClass::SetMeshData(const SkinnedMeshData& skinnedMeshData)
 bool MeshClass::Initalize(ID3D11Device* device)
 {
 	bool result;
-	for (auto& submesh : mSubMeshs)
+	for (auto& submeshGroup : mSubmeshGroups)
 	{
-		result = submesh.Initalize(device);
+		result = submeshGroup.Initalize(device);
 		if (result == false)
 			return false;
 	}
@@ -39,18 +39,18 @@ bool MeshClass::Initalize(ID3D11Device* device)
 }
 
 
-void MeshClass::Render(ID3D11DeviceContext* deviceContext, unsigned int subMeshIndex)
+void MeshClass::Render(ID3D11DeviceContext* deviceContext, unsigned int submeshGroupIndex, unsigned int submeshIndex)
 {
-	if (mSubMeshs.size() <= subMeshIndex)
+	if (submeshGroupIndex >= mSubmeshGroups.size() || submeshIndex >= mSubmeshGroups[submeshGroupIndex].GetSubmeshIndexCount(submeshIndex))
 		return;
 
-	mSubMeshs[subMeshIndex].Render(deviceContext);
+	mSubmeshGroups[submeshGroupIndex].Render(deviceContext, submeshIndex);
 }
 
 
 void MeshClass::Shutdown()
 {
-	for (auto& submesh : mSubMeshs)
+	for (auto& submesh : mSubmeshGroups)
 	{
 		submesh.Shutdown();
 	}

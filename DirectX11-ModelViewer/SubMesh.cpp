@@ -1,9 +1,7 @@
 #include "SubMesh.h"
 
-SubMesh::SubMesh(std::string name, const SaveSubMesh& submesh)
+SubMesh::SubMesh(const SaveSubMesh& submesh)
 {
-	mName = name;
-
 	vertices.resize(submesh.vertices.size());
 	for (int i = 0; i < vertices.size(); i++)
 	{

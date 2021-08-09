@@ -46,9 +46,10 @@ public:
 			b = XMMatrixTranspose(XMMatrixIdentity());
 		}
 
-		for (int i = 0; i < mMesh->GetSubMeshCount(); i++)
+		mSubObjectMats.resize(mMesh->GetSubMeshGroupCount());
+		for (int i = 0; i < mSubObjectMats.size(); i++)
 		{
-			mSubObjectMats[mMesh->GetSubMeshName(i)] = SpcularMaterial();
+			mSubObjectMats[i].resize(mMesh->GetSubMeshCount(i));
 		}
 
 		return true;
@@ -66,11 +67,13 @@ public:
 	
 		TransformComponent* objectTransform = mOwnerGameObject->GetComponent<TransformComponent>();
 
-		for (int i = 0; i < mMesh->GetSubMeshCount(); i++)
+		for (int i = 0; i < mMesh->GetSubMeshGroupCount(); i++)
 		{
-			mMesh->Render(deviceContext, i);
-
-			mDepthShader->Render(deviceContext, mMesh->GetSubMeshIndexCount(i), objectTransform->GetTransform(), lightViewMatrix, lightProjectionMatrix, mUpdateBone);
+			for (int j = 0; j < mMesh->GetSubMeshCount(i); j++)
+			{
+				mMesh->Render(deviceContext, i , j);
+				mDepthShader->Render(deviceContext, mMesh->GetSubMeshIndexCount(i,j), objectTransform->GetTransform(), lightViewMatrix, lightProjectionMatrix,mUpdateBone);
+			}
 		}
 	}
 
@@ -85,19 +88,22 @@ public:
 
 		TransformComponent* objectTransform = mOwnerGameObject->GetComponent<TransformComponent>();
 
-		for (int i = 0; i < mMesh->GetSubMeshCount(); i++)
+		for (int i = 0; i < mMesh->GetSubMeshGroupCount(); i++)
 		{
-			mMesh->Render(deviceContext, i);
+			for (int j = 0; j < mMesh->GetSubMeshCount(i); j++)
+			{
+				mMesh->Render(deviceContext, i,j);
 
-			SpcularMaterial& mat = mSubObjectMats[mMesh->GetSubMeshName(i)];
+				SpcularMaterial& mat = mSubObjectMats[i][j];
 
-			mShader->Render(deviceContext, mMesh->GetSubMeshIndexCount(i), objectTransform->GetTransform(), viewMatrix, projectionMatrix, AssetClass::mTextureMap[mat.GetTextureKey()]->GetTexture(), gMainLight->GetPosition(), gMainLight->GetDiffuseColor(), gMainLight->GetAmbientColor(), gMainCamera->GetPosition(), gMainLight->GetSpecularColor(), gMainLight->GetSpecularPower(), mUpdateBone);
+				mShader->Render(deviceContext, mMesh->GetSubMeshIndexCount(i,j), objectTransform->GetTransform(), viewMatrix, projectionMatrix, AssetClass::mTextureMap[mat.GetTextureKey()]->GetTexture(), gMainLight->GetPosition(), gMainLight->GetDiffuseColor(), gMainLight->GetAmbientColor(), gMainCamera->GetPosition(), gMainLight->GetSpecularColor(), gMainLight->GetSpecularPower(), mUpdateBone);
+			}
 		}
 	}
 	const auto& GetObjectMaterials() const { return mSubObjectMats; }
-	void SetMaterial(string key, string textureKey)
+	void SetMaterial(int groupIndex, int submeshIndex, string textureKey)
 	{
-		mSubObjectMats[key].SetTextureKey(textureKey);
+		mSubObjectMats[groupIndex][submeshIndex].SetTextureKey(textureKey);
 	}
 public:
 	virtual void Start() override {};
@@ -138,7 +144,7 @@ protected:
 	SkinnedDepthShaderClass* mDepthShader;
 	vector<XMMATRIX> mUpdateBone;
 private:
-	unordered_map<string, SpcularMaterial> mSubObjectMats;
+	vector<vector<SpcularMaterial>> mSubObjectMats;
 };
 
 DECLARE_COMPONENT(SkinnedMeshRenderComponent);

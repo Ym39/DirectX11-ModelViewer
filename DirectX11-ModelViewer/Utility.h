@@ -471,6 +471,87 @@ struct SaveSubMesh
 		copy(index.begin(), index.end(), indices.begin());
 	}
 
+	void AddVertex(const VertexType& vertex)
+	{
+		SaveVertexType vert;
+		vert = vertex;
+		vertices.push_back(vert);
+	}
+
+	void AddIndex(const unsigned int index)
+	{
+		indices.push_back(index);
+	}
+
+	void CalculateTangentAndBinormal()
+	{
+		if (vertices.empty())
+			return;
+
+		int faceCount, index = 0;
+
+		faceCount = vertices.size() / 3;
+
+		for (int i = 0; i < faceCount; i++)
+		{
+			float vector1[3], vector2[3];
+			float tuVector[2], tvVector[2];
+			float den;
+			float length;
+
+			SaveVertexType& vertex1 = vertices[index];
+			SaveVertexType& vertex2 = vertices[index + 1];
+			SaveVertexType& vertex3 = vertices[index + 2];
+			index += 3;
+
+			vector1[0] = vertex2.position.x - vertex1.position.x;
+			vector1[1] = vertex2.position.y - vertex1.position.y;
+			vector1[2] = vertex2.position.z - vertex1.position.z;
+
+			vector2[0] = vertex3.position.x - vertex1.position.x;
+			vector2[1] = vertex3.position.y - vertex1.position.y;
+			vector2[2] = vertex3.position.z - vertex1.position.z;
+
+			tuVector[0] = vertex2.texture.x - vertex1.texture.x;
+			tuVector[1] = vertex2.texture.y - vertex1.texture.y;
+
+			tvVector[0] = vertex3.texture.x - vertex1.texture.x;
+			tvVector[1] = vertex3.texture.y - vertex1.texture.y;
+
+			den = 1.0f / (tuVector[0] * tvVector[1] - tuVector[1] * tvVector[0]);
+
+			XMFLOAT3 tangent;
+			tangent.x = (tvVector[1] * vector1[0] - tvVector[0] * vector2[0]) * den;
+			tangent.y = (tvVector[1] * vector1[1] - tvVector[0] * vector2[1]) * den;
+			tangent.z = (tvVector[1] * vector1[2] - tvVector[0] * vector2[2]) * den;
+
+			length = sqrt((tangent.x * tangent.x) + (tangent.y * tangent.y) + (tangent.z * tangent.z));
+
+			tangent.x = tangent.x / length;
+			tangent.y = tangent.y / length;
+			tangent.z = tangent.z / length;
+
+			XMFLOAT3 binormal;
+			binormal.x = (tuVector[0] * vector2[0] - tuVector[1] * vector1[0]) * den;
+			binormal.y = (tuVector[0] * vector2[1] - tuVector[1] * vector1[1]) * den;
+			binormal.z = (tuVector[0] * vector2[2] - tuVector[1] * vector1[2]) * den;
+
+			length = sqrt((binormal.x * binormal.x) + (binormal.y * binormal.y) + (binormal.z * binormal.z));
+
+			binormal.x = binormal.x / length;
+			binormal.y = binormal.y / length;
+			binormal.z = binormal.z / length;
+
+			vertex1.tangent = tangent;
+			vertex2.tangent = tangent;
+			vertex3.tangent = tangent;
+
+			vertex1.binormal = binormal;
+			vertex2.binormal = binormal;
+			vertex3.binormal = binormal;
+		}
+	}
+
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
@@ -480,16 +561,26 @@ struct SaveSubMesh
 	}
 };
 
+struct SaveMesh
+{
+	vector<SaveSubMesh> submeshs;
+
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive& ar, const unsigned int version)
+	{
+		ar& submeshs;
+	}
+};
+
 struct SkinnedMeshData
 {
-	unordered_map<std::string, SaveSubMesh> meshs;
+	unordered_map<std::string, SaveMesh> meshs;
 	vector<BoneData> bones;
 
-	void SetSubMesh(std::string key, const vector<VertexType>& vertex, const vector<unsigned int>& index)
+	void AddMesh(std::string key, SaveMesh& mesh)
 	{
-		SaveSubMesh submesh;
-		submesh.SetData(vertex, index);
-		meshs[key] = submesh;
+		meshs[key] = mesh;
 	}
 
 	SkinnedMeshData& operator=(const Skeleton& skeleton)

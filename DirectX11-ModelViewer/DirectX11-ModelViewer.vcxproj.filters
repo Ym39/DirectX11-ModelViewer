@@ -234,6 +234,9 @@
     <ClInclude Include="Material.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="SubMeshGroup.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX11-ModelViewer.rc">
@@ -394,6 +397,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Material.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SubMeshGroup.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
