@@ -189,9 +189,6 @@
     <ClInclude Include="AnimationFileBrowser.h">
       <Filter>헤더 파일\UI</Filter>
     </ClInclude>
-    <ClInclude Include="TempMesh.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="MeshClass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -230,6 +227,12 @@
     </ClInclude>
     <ClInclude Include="SkinnedMeshBumpRenderComponent.h">
       <Filter>헤더 파일\컴포넌트</Filter>
+    </ClInclude>
+    <ClInclude Include="SubMesh.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -372,9 +375,6 @@
     <ClCompile Include="AnimationFileBrowser.cpp">
       <Filter>소스 파일\UI</Filter>
     </ClCompile>
-    <ClCompile Include="TempMesh.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="MeshClass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -389,6 +389,12 @@
     </ClCompile>
     <ClCompile Include="SkinnedBumpShader.cpp">
       <Filter>소스 파일\셰이더 클래스</Filter>
+    </ClCompile>
+    <ClCompile Include="SubMesh.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

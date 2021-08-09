@@ -20,7 +20,6 @@
 #include "ArrowModel.h"
 #include "TextureShaderClass.h"
 #include "BitmapClass.h"
-#include "TempMesh.h"
 #include "MeshClass.h"
 #include "AssetClass.h"
 #include "ModelListBrowser.h"
@@ -78,9 +77,9 @@ private:
 	DepthShaderClass* mDepthShader;
 	ShadowShaderClass* mShadowShader;
 	SkinnedDepthShaderClass* mSkinnedDepthShader;
-	ModelClass* mGroundModel;
-	Mesh* mGroundMesh;
-	Texture* mGroundTexture;
+	ModelClass* mGroundModel = nullptr;
+	Mesh* mGroundMesh = nullptr;
+	Texture* mGroundTexture = nullptr;
 	SolidColorShader* mSolidShader;
 	ArrowModel* mForwardArrowModel;
 	ArrowModel* mRightArrowModel;
@@ -92,8 +91,8 @@ private:
 	ModelListBrowser modelListBrowser;
 	GameObjectBrowser* gameObjectBrowser;
 
-	Texture* mCharacterTexture;
-	MeshClass* mCharacterMesh;
+	Texture* mCharacterTexture = nullptr;
+	MeshClass* mCharacterMesh = nullptr;
 	GameObjectClass* mGameObject;
 	AnimationData* anim;
 	//TempMesh* mTempMesh = nullptr;

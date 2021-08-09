@@ -1,49 +1,24 @@
-#include "TempMesh.h"
+#include "SubMesh.h"
 
-TempMesh::TempMesh():
-	mVertexBuffer(nullptr),
-	mIndexBuffer(nullptr)
+SubMesh::SubMesh(std::string name, const SaveSubMesh& submesh)
 {
-}
+	mName = name;
 
-void TempMesh::SetMesh(const SkinnedMeshData& data)
-{
-	vertices.resize(data.vertices.size());
+	vertices.resize(submesh.vertices.size());
 	for (int i = 0; i < vertices.size(); i++)
 	{
-		vertices[i] = data.vertices[i];
+		vertices[i] = submesh.vertices[i];
 	}
 
-	for (unsigned int index : data.indices)
-	{
-		indices.push_back(index);
-	}
+	indices.resize(submesh.indices.size());
+	std::copy(submesh.indices.begin(), submesh.indices.end(), indices.begin());
 }
 
-void TempMesh::Shutdown()
+bool SubMesh::Initalize(ID3D11Device* device)
 {
-	ShutdownBuffers();
-}
+	if (vertices.empty() == true || indices.empty() == true)
+		return false;
 
-void TempMesh::Render(ID3D11DeviceContext* deviceContext)
-{
-	unsigned int stride;
-	unsigned int offset;
-
-	stride = sizeof(InputVertex);
-	offset = 0;
-
-	deviceContext->IASetVertexBuffers(0, 1, &mVertexBuffer, &stride, &offset);
-
-	deviceContext->IASetIndexBuffer(mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	return;
-}
-
-bool TempMesh::InitializeBuffer(ID3D11Device* device)
-{
 	D3D11_BUFFER_DESC vertexBufferDesc;
 	D3D11_SUBRESOURCE_DATA vertexData;
 	HRESULT result;
@@ -88,7 +63,24 @@ bool TempMesh::InitializeBuffer(ID3D11Device* device)
 	return true;
 }
 
-void TempMesh::ShutdownBuffers()
+void SubMesh::Render(ID3D11DeviceContext* deviceContext)
+{
+	unsigned int stride;
+	unsigned int offset;
+
+	stride = sizeof(InputVertex);
+	offset = 0;
+
+	deviceContext->IASetVertexBuffers(0, 1, &mVertexBuffer, &stride, &offset);
+
+	deviceContext->IASetIndexBuffer(mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	return;
+}
+
+void SubMesh::Shutdown()
 {
 	if (mVertexBuffer)
 	{
@@ -101,6 +93,4 @@ void TempMesh::ShutdownBuffers()
 		mIndexBuffer->Release();
 		mIndexBuffer = nullptr;
 	}
-
-	return;
 }

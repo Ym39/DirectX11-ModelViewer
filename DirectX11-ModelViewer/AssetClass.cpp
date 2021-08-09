@@ -48,7 +48,7 @@ void AssetClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCon
 				in.close();
 
 				MeshClass* loadMesh = new MeshClass;
-				loadMesh->operator=(mesh);
+				loadMesh->SetMeshData(mesh);
 
 				if (loadMesh->Initalize(device) == false)
 					continue;
@@ -107,7 +107,7 @@ void AssetClass::Update()
 				in.close();
 
 				MeshClass* loadMesh = new MeshClass;
-				loadMesh->operator=(mesh);
+				loadMesh->SetMeshData(mesh);
 
 				if (loadMesh->Initalize(gDirect->GetDevice()) == false)
 					continue;

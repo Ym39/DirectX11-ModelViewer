@@ -43,9 +43,9 @@ Mesh* FBXLoader::LoadFbx(char* fbxFilename)
 	    finalMesh->SetSkeleton(mSkeleton);
 	}*/
 
-	LoadNode(rootNode);
+	//LoadNode(rootNode);
 
-	CalculateTangentAndBinormal();
+	//CalculateTangentAndBinormal();
 
 	finalMesh->SetAnimationLength(mAnimationLength);
 	finalMesh->SetMeshData(vertices,indices);
@@ -56,8 +56,8 @@ Mesh* FBXLoader::LoadFbx(char* fbxFilename)
 	}
 
 	SkinnedMeshData saveMeshData;
-	saveMeshData = vertices;
-	saveMeshData = indices;
+	//saveMeshData = vertices;
+	//saveMeshData = indices;
 	saveMeshData = *mSkeleton;
 
 	//ofstream out; //쓰기 스트림 생성
@@ -104,13 +104,10 @@ void FBXLoader::LoadFbxFile(const filesystem::path& fbxFilePath)
 		finalMesh->SetSkeleton(mSkeleton);
 	}*/
 
-	LoadNode(rootNode);
-
-	CalculateTangentAndBinormal();
-
 	SkinnedMeshData saveMeshData;
-	saveMeshData = vertices;
-	saveMeshData = indices;
+
+	LoadNode(rootNode, saveMeshData);
+
 	saveMeshData = *mSkeleton;
 
 	std::string modelFileName = fbxFilePath.stem().string();
@@ -206,18 +203,19 @@ void FBXLoader::ProcessSkeletonHierarchyRecursively(FbxNode* inNode, int inDepth
 	}
 }
 
-void FBXLoader::LoadNode(FbxNode* node)
+void FBXLoader::LoadNode(FbxNode* node ,SkinnedMeshData& meshData)
 {	
 	FbxNodeAttribute* nodeAttribute = node->GetNodeAttribute();
 
-	string name;
 	if (nodeAttribute != nullptr)
 	{
 		if (nodeAttribute->GetAttributeType() == FbxNodeAttribute::eMesh)
 		{
-			name = node->GetMesh()->GetName();
+			string name = node->GetMesh()->GetName();
 			FbxMesh* mesh = node->GetMesh();
 
+			int numOfMat = node->GetMaterialCount();
+			
 			std::vector<XMFLOAT3> positions;
 			ProcessControlPoints(mesh, positions);
 			if (mSkeleton->joints.empty()==false)
@@ -225,13 +223,18 @@ void FBXLoader::LoadNode(FbxNode* node)
 				ProcessJointsAndAnmations(node);
 			}
 			ProcessMesh(mesh);
+			CalculateTangentAndBinormal();
+			meshData.SetSubMesh(name, vertices, indices);
+			vertices.clear();
+			indices.clear();
+			indexMapping.clear();
 		}
 	}
 
 	const int childCount = node->GetChildCount();
 	for (unsigned i = 0; i < childCount; ++i)
 	{
-		LoadNode(node->GetChild(i));
+		LoadNode(node->GetChild(i),meshData);
 	}
 }
 
@@ -293,7 +296,7 @@ void FBXLoader::ProcessMesh(FbxMesh* mesh)
 		{
 			int controlPointIndex = mesh->GetPolygonVertex(i, j);
 			CtrlPoint* currCtrlPoint = mCtrlPoint[controlPointIndex];
-
+			
 			VertexType temp;
 			temp.position = currCtrlPoint->position;
 			temp.normal = ReadNormal(mesh, controlPointIndex, vertexCount);
@@ -301,6 +304,13 @@ void FBXLoader::ProcessMesh(FbxMesh* mesh)
 			temp.tangent = ReadTangents(mesh, controlPointIndex, vertexCount);
 			temp.texture = ReadUV(mesh, controlPointIndex, mesh->GetTextureUVIndex(i, j));
 			
+			int matCount = mesh->GetElementMaterialCount();
+			int part = 0;
+			for (int k = 0; k < matCount; ++k)
+			{
+				FbxGeometryElementMaterial* elementMaterial = mesh->GetElementMaterial(k);
+				part = elementMaterial->GetIndexArray().GetAt(i);
+			}
 
 			for (unsigned int i = 0; i < currCtrlPoint->blendingInfo.size(); ++i)
 			{

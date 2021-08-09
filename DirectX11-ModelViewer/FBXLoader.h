@@ -20,7 +20,7 @@ private:
     void ProcessSkeletonHierarchy(FbxNode* inRootNode);
     void ProcessSkeletonHierarchyRecursively(FbxNode* inNode, int inDepth, int myIndex, int inParentIndex);
 
-	void LoadNode(FbxNode* node);
+	void LoadNode(FbxNode* node, SkinnedMeshData& meshData);
 	void LoadNodeForAnimation(FbxNode* node);
 	void LoadNodeJointAndAnimation(FbxNode* node);
 

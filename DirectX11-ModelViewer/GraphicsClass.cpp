@@ -7,11 +7,24 @@
 #include "SkinnedMeshBumpRenderComponent.h"
 #include "AnimatorComponent.h"
 #include "GameObjectBrowser.h"
+#include <typeinfo>
 
 extern SystemClass* ApplicationHandle;
 extern Camera* gMainCamera;
 extern Light* gMainLight;
 extern D3DClass* gDirect;
+
+bool VectorGetter2(void* list, int count, const char** outText)
+{
+    std::vector<std::string>& vector = *static_cast<std::vector<std::string>*>(list);
+    if (count < 0 || count > vector.size())
+    {
+        return false;
+    }
+    *outText = vector[count].c_str();
+
+    return true;
+}
 
 GraphicsClass::GraphicsClass() :
     mDirect(nullptr),
@@ -175,7 +188,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
         return false;
     }
     
-    mGroundModel = new ModelClass;
+    /*mGroundModel = new ModelClass;
     result = mGroundModel->Initialize(mDirect->GetDevice(), "Model\\plane01.txt");
     if (result == false)
     {
@@ -184,14 +197,14 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     mGroundTexture = new Texture;
     mGroundTexture->Initialize(mDirect->GetDevice(), mDirect->GetDeviceContext(), "Texture\\White.dds");
     mGroundModel->SetTexture(mGroundTexture);
-    mGroundModel->SetPosition(0.f, 0.f, 0.f);
+    mGroundModel->SetPosition(0.f, 0.f, 0.f);*/
 
-    mGroundMesh = mFbxLoader->LoadFbx("Model\\floor.fbx");
+    /*mGroundMesh = mFbxLoader->LoadFbx("Model\\floor.fbx");
     result = mGroundMesh->Initialize(mDirect->GetDevice());
     if (result == false)
     {
         return false;
-    }
+    }*/
 
     mDirect->GetWorldMatrix(floorWorld);
     floorWorld *= XMMatrixRotationRollPitchYaw(XMConvertToRadians(90.0f), 0.0f, 0.0f);
@@ -241,12 +254,12 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
    /* mGameObject = GameObjectClass::Create();
     mGameObject->InsertComponent(new TransformComponent);*/
 
-    ifstream in; //읽기 스트림 생성
-    SkinnedMeshData loadMesh; //받을 객체 생성
-    in.open("Character.SM", ios_base::binary); //바이너리모드로 파일을 열었습니다.
-    boost::archive::binary_iarchive in_archive(in); //연 스트림을 넘겨주어서 직렬화객체 초기화
-    in_archive >> loadMesh; //읽기
-    in.close();
+    //ifstream in; //읽기 스트림 생성
+    //SkinnedMeshData loadMesh; //받을 객체 생성
+    //in.open("Character.SM", ios_base::binary); //바이너리모드로 파일을 열었습니다.
+    //boost::archive::binary_iarchive in_archive(in); //연 스트림을 넘겨주어서 직렬화객체 초기화
+    //in_archive >> loadMesh; //읽기
+    //in.close();
 
     ifstream in2;
     SaveAnimationData loadAnim; //받을 객체 생성
@@ -264,13 +277,13 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     if (mTempMesh->InitializeBuffer(mDirect->GetDevice()) == false)
         return false;*/
 
-    mCharacterTexture = new Texture;
+    /*mCharacterTexture = new Texture;
     if (mCharacterTexture->Initialize(mDirect->GetDevice(), mDirect->GetDeviceContext(), "Texture\\vanguard_diffuse.png") == false)
         return false;
 
     mCharacterMesh = new MeshClass;
     mCharacterMesh->operator=(loadMesh);
-    mCharacterMesh->Initalize(mDirect->GetDevice());
+    mCharacterMesh->Initalize(mDirect->GetDevice());*/
 
     /*MeshRenderComponent* rendercomp = new MeshRenderComponent();
     rendercomp->Initalize(mCharacterMesh, mSpecularShader, mCharacterTexture);*/
@@ -704,8 +717,8 @@ bool GraphicsClass::Render()
     mShader->Render(mDirect->GetDeviceContext(), mTempMesh->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, mCharacterTexture->GetTexture(), mLight->GetPosition(), mLight->GetDiffuseColor(), mLight->GetAmbientColor(), mCamera->GetPosition(), mLight->GetSpecularColor(), mLight->GetSpecularPower(), dummyBone);*/
 
     mDirect->GetWorldMatrix(worldMatrix);
-    mGroundMesh->Render(mDirect->GetDeviceContext());
-    mShadowShader->Render(mDirect->GetDeviceContext(), mGroundMesh->GetIndexCount(), floorWorld, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix,mGroundTexture->GetTexture(), mRenderTexture->GetShaderResourceView(), mLight->GetPosition(), mLight->GetAmbientColor(), mLight->GetDiffuseColor());
+    /*mGroundMesh->Render(mDirect->GetDeviceContext());
+    mShadowShader->Render(mDirect->GetDeviceContext(), mGroundMesh->GetIndexCount(), floorWorld, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix,mGroundTexture->GetTexture(), mRenderTexture->GetShaderResourceView(), mLight->GetPosition(), mLight->GetAmbientColor(), mLight->GetDiffuseColor());*/
 
     /*MeshRenderComponent* currentRenderer;
     currentRenderer = mGameObject->GetComponent<MeshRenderComponent>();
@@ -817,19 +830,18 @@ bool GraphicsClass::Render()
             case RendererType::ONLYSPECULAR:
             {
                 SkinnedMeshRenderComponent* rendercomp = new SkinnedMeshRenderComponent();
-                rendercomp->Initalize(AssetClass::mMeshMap[selectModelKey], mShader, mSkinnedDepthShader, AssetClass::mTextureMap[selectTextureKey]);
+                rendercomp->Initalize(AssetClass::mMeshMap[selectModelKey], mShader, mSkinnedDepthShader);
                 newGameObejct->InsertComponent(rendercomp);
             }
                 break;
             case RendererType::BUMP:
             {
                 SkinnedMeshBumpRenderComponent* bumpcomp = new SkinnedMeshBumpRenderComponent();
-                bumpcomp->Initalize(AssetClass::mMeshMap[selectModelKey], mSkinnedBumpShader, mSkinnedDepthShader, AssetClass::mTextureMap[selectTextureKey], AssetClass::mTextureMap[selectBumpTextureKey], AssetClass::mTextureMap[selectSpecularTextureKey]);
+                bumpcomp->Initalize(AssetClass::mMeshMap[selectModelKey], mSkinnedBumpShader, mSkinnedDepthShader);
                 newGameObejct->InsertComponent(bumpcomp);
             }
                 break;
             }
-
 
             AnimatorComponent* animComp = new AnimatorComponent();
             animComp->SetAnimation(anim);
@@ -841,7 +853,7 @@ bool GraphicsClass::Render()
         else
         {
             MeshRenderComponent* renderComp = new MeshRenderComponent();
-            renderComp->Initalize(AssetClass::mMeshMap[selectModelKey], mSpecularShader, mDepthShader, AssetClass::mTextureMap[selectTextureKey]);
+            renderComp->Initalize(AssetClass::mMeshMap[selectModelKey], mSpecularShader, mDepthShader);
 
             newGameObejct->InsertComponent(renderComp);
 
@@ -882,6 +894,114 @@ bool GraphicsClass::Render()
                 transformComp->SetScale(XMFLOAT3(scale[0], scale[1], scale[2]));
             }
         }
+
+        static vector<string> textureNames;
+
+        if (textureNames.size() != AssetClass::GetTextures().size())
+        {
+            for (const auto& texture : AssetClass::GetTextures())
+            {
+                textureNames.push_back(texture.first);
+            }
+        }
+
+
+        if (search->second->GetComponent<MeshRenderComponent>() != nullptr && search->second->GetComponent<MeshRenderComponent>()->GetRenderType()==eRendererType::SkinnedMeshRenderer)
+        {
+            SkinnedMeshRenderComponent* comp = search->second->GetComponent<SkinnedMeshRenderComponent>();
+            if (ImGui::CollapsingHeader("SkinnedMeshRender", ImGuiTreeNodeFlags_Framed))
+            {
+                for (const auto& mat : comp->GetObjectMaterials())
+                {
+                    if (ImGui::CollapsingHeader(mat.first.c_str(), ImGuiTreeNodeFlags_Framed))
+                    {
+                        int selectTextureCount = 0;
+                        for (int i = 0; i < textureNames.size(); i++)
+                        {
+                            if (mat.second.GetTextureKey() == textureNames[i])
+                            {
+                                selectTextureCount = i;
+                                break;
+                            }
+                        }
+                        if (ImGui::Combo("Diffuse", &selectTextureCount, VectorGetter2, static_cast<void*>(&textureNames), textureNames.size(), 16))
+                        {
+                            comp->SetMaterial(mat.first, textureNames[selectTextureCount]);
+                        }
+                    }
+                }
+            }
+        }
+        else if (search->second->GetComponent<MeshRenderComponent>() != nullptr && search->second->GetComponent<MeshRenderComponent>()->GetRenderType() == eRendererType::MeshRenderer)
+        {
+            MeshRenderComponent* comp = search->second->GetComponent<MeshRenderComponent>();
+            if (ImGui::CollapsingHeader("MeshRender", ImGuiTreeNodeFlags_Framed))
+            {
+                for (const auto& mat : comp->GetObjectMaterials())
+                {
+                    if (ImGui::CollapsingHeader(mat.first.c_str(), ImGuiTreeNodeFlags_Framed))
+                    {
+                        int selectTextureCount = 0;
+                        for (int i = 0; i < textureNames.size(); i++)
+                        {
+                            if (mat.second.GetTextureKey() == textureNames[i])
+                            {
+                                selectTextureCount = i;
+                                break;
+                            }
+                        }
+                        if (ImGui::Combo("Diffuse", &selectTextureCount, VectorGetter2, static_cast<void*>(&textureNames), textureNames.size(), 16))
+                        {
+                            comp->SetMaterial(mat.first, textureNames[selectTextureCount]);
+                        }
+                    }
+                }
+            }
+        }
+        else if (search->second->GetComponent<MeshRenderComponent>() != nullptr && search->second->GetComponent<MeshRenderComponent>()->GetRenderType() == eRendererType::SkinnedBumpRenderer)
+        {
+            SkinnedMeshBumpRenderComponent* comp = search->second->GetComponent<SkinnedMeshBumpRenderComponent>();
+            if (ImGui::CollapsingHeader("BumpSkinnedMeshRender",  ImGuiTreeNodeFlags_Framed))
+            {
+                for (const auto& mat : comp->GetObjectMaterials())
+                {
+                    if (ImGui::CollapsingHeader(mat.first.c_str()))
+                    {
+                        int selectTextureCount = 0;
+                        int selectNormalCount = 0;
+                        int selectSpecularCount = 0;
+                        for (int i = 0; i < textureNames.size(); i++)
+                        {
+                            if (mat.second.GetTextureKey() == textureNames[i])
+                            {
+                                selectTextureCount = i;
+                            }
+                            if (mat.second.GetNormalKey() == textureNames[i])
+                            {
+                                selectNormalCount = i;
+                            }
+                            if (mat.second.GetSpecularKey() == textureNames[i])
+                            {
+                                selectSpecularCount = i;
+                            }
+                        }
+                        if (ImGui::Combo("Diffuse", &selectTextureCount, VectorGetter2, static_cast<void*>(&textureNames), textureNames.size(), 16))
+                        {
+                            comp->SetMaterial(mat.first, textureNames[selectTextureCount], mat.second.GetNormalKey(), mat.second.GetSpecularKey());
+                        }
+                        if (ImGui::Combo("Normal", &selectNormalCount, VectorGetter2, static_cast<void*>(&textureNames), textureNames.size(), 16))
+                        {
+                            comp->SetMaterial(mat.first, mat.second.GetTextureKey(), textureNames[selectNormalCount], mat.second.GetSpecularKey());
+                        }
+                        if (ImGui::Combo("Specular", &selectSpecularCount, VectorGetter2, static_cast<void*>(&textureNames), textureNames.size(), 16))
+                        {
+                            comp->SetMaterial(mat.first, mat.second.GetTextureKey(), mat.second.GetNormalKey(), textureNames[selectSpecularCount]);
+                        }
+                    }
+                }
+            }
+        }
+        
 
         AnimatorComponent* animatorComp = search->second->GetComponent<AnimatorComponent>();
         if (animatorComp != nullptr)
@@ -981,12 +1101,12 @@ bool GraphicsClass::RenderSceneToTexture()
         return false;
     }*/
 
-    mGroundMesh->Render(mDirect->GetDeviceContext());
+ /*   mGroundMesh->Render(mDirect->GetDeviceContext());
     result = mDepthShader->Render(mDirect->GetDeviceContext(), mGroundMesh->GetIndexCount(), floorWorld, lightViewMatrix, lightProjectionMatrix);
     if (result == false)
     {
         return false;
-    }
+    }*/
 
     mDirect->SetBackBufferRenderTarget();
 

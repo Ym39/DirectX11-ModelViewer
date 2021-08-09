@@ -1,138 +1,58 @@
 #include "MeshClass.h"
 
 MeshClass::MeshClass():
-	mVertexBuffer(nullptr),
-	mIndexBuffer(nullptr),
 	mIsInitialize(false)
 {
 }
 
-MeshClass& MeshClass::operator=(const SkinnedMeshData& meshData)
+void MeshClass::SetMeshData(const SkinnedMeshData& skinnedMeshData)
 {
-	if (meshData.vertices.empty() || meshData.indices.empty())
-		return *this;
-
-	vertices.resize(meshData.vertices.size());
-	//copy(meshData.vertices.begin(), meshData.vertices.end(), vertices.begin());
-	for (int i = 0; i < vertices.size(); i++)
+	for (const auto& submesh : skinnedMeshData.meshs)
 	{
-		vertices[i] = meshData.vertices[i];
+		SubMesh current(submesh.first, submesh.second);
+		mSubMeshs.push_back(current);
 	}
 
-	indices.resize(meshData.indices.size());
-	copy(meshData.indices.begin(), meshData.indices.end(), indices.begin());
-
-	if (meshData.bones.empty())
-	{
-		return *this;
-	}
+	if (skinnedMeshData.bones.empty())
+		return;
 
 	mIsSkinning = true;
-	bones.resize(meshData.bones.size());
-	//copy(meshData.bones.begin(), meshData.bones.end(), bones.begin());
+	bones.resize(skinnedMeshData.bones.size());
 	for (int i = 0; i < bones.size(); i++)
 	{
-		bones[i] = meshData.bones[i];
+		bones[i] = skinnedMeshData.bones[i];
 	}
-
-	return *this;
 }
+
 
 bool MeshClass::Initalize(ID3D11Device* device)
 {
-	if (vertices.empty() == true || indices.empty() == true)
-		return false;
-
-	D3D11_BUFFER_DESC vertexBufferDesc;
-	D3D11_SUBRESOURCE_DATA vertexData;
-	HRESULT result;
-
-	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexBufferDesc.ByteWidth = sizeof(InputVertex) * vertices.size();
-	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vertexBufferDesc.CPUAccessFlags = 0;
-	vertexBufferDesc.MiscFlags = 0;
-	vertexBufferDesc.StructureByteStride = 0;
-
-	vertexData.pSysMem = &(vertices.front());
-	vertexData.SysMemPitch = 0;
-	vertexData.SysMemSlicePitch = 0;
-
-	result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &mVertexBuffer);
-	if (FAILED(result))
+	bool result;
+	for (auto& submesh : mSubMeshs)
 	{
-		return false;
+		result = submesh.Initalize(device);
+		if (result == false)
+			return false;
 	}
-
-	D3D11_BUFFER_DESC indexBufferDesc;
-	D3D11_SUBRESOURCE_DATA indexData;
-
-	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	indexBufferDesc.ByteWidth = sizeof(unsigned int) * indices.size();
-	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	indexBufferDesc.CPUAccessFlags = 0;
-	indexBufferDesc.MiscFlags = 0;
-	indexBufferDesc.StructureByteStride = 0;
-
-	indexData.pSysMem = &(indices.front());
-	indexData.SysMemPitch = 0;
-	indexData.SysMemSlicePitch = 0;
-
-	result = device->CreateBuffer(&indexBufferDesc, &indexData, &mIndexBuffer);
-	if (FAILED(result))
-	{
-		return false;
-	}
-
 	mIsInitialize = true;
 	return true;
 }
 
-void MeshClass::Render(ID3D11DeviceContext* deviceContext)
+
+void MeshClass::Render(ID3D11DeviceContext* deviceContext, unsigned int subMeshIndex)
 {
-	unsigned int stride;
-	unsigned int offset;
+	if (mSubMeshs.size() <= subMeshIndex)
+		return;
 
-	stride = sizeof(InputVertex);
-	offset = 0;
-
-	deviceContext->IASetVertexBuffers(0, 1, &mVertexBuffer, &stride, &offset);
-
-	deviceContext->IASetIndexBuffer(mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	return;
+	mSubMeshs[subMeshIndex].Render(deviceContext);
 }
 
-void MeshClass::Render(ID3D11DeviceContext* deviceContext, UINT bufferNumber)
-{
-	unsigned int stride;
-	unsigned int offset;
-
-	stride = sizeof(InputVertex);
-	offset = 0;
-
-	deviceContext->IASetVertexBuffers(bufferNumber, 1, &mVertexBuffer, &stride, &offset);
-
-	deviceContext->IASetIndexBuffer(mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	return;
-}
 
 void MeshClass::Shutdown()
 {
-	if (mVertexBuffer)
+	for (auto& submesh : mSubMeshs)
 	{
-		mVertexBuffer->Release();
-		mVertexBuffer = nullptr;
+		submesh.Shutdown();
 	}
-
-	if (mIndexBuffer)
-	{
-		mIndexBuffer->Release();
-		mIndexBuffer = nullptr;
-	}
+	return;
 }

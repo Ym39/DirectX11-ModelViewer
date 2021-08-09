@@ -6,6 +6,7 @@
 #include"Camera.h"
 #include"Light.h"
 #include"AnimatorComponent.h"
+#include"Material.h"
 
 extern Camera* gMainCamera;
 extern Light* gMainLight;
@@ -20,14 +21,15 @@ public:
 	SkinnedMeshRenderComponent():
 		MeshRenderComponent(),
 		mShader(nullptr),
-		mDepthShader(nullptr),
-		mTexture(nullptr)
-	{}
+		mDepthShader(nullptr)
+	{
+		mRendererType = eRendererType::SkinnedMeshRenderer;
+	}
 	~SkinnedMeshRenderComponent() = default;
 
-	bool Initalize(MeshClass* mesh, SkinnedMeshShader* shader, SkinnedDepthShaderClass* depthShader, Texture* texture)
+	bool Initalize(MeshClass* mesh, SkinnedMeshShader* shader, SkinnedDepthShaderClass* depthShader)
 	{
-		if (mesh == nullptr || shader == nullptr || texture == nullptr || depthShader == nullptr)
+		if (mesh == nullptr || shader == nullptr || depthShader == nullptr)
 			return false;
 
 		if (mesh->IsInitalized() == false)
@@ -35,7 +37,6 @@ public:
 
 		mMesh = mesh;
 		mShader = shader;
-		mTexture = texture;
 		mDepthShader = depthShader;
 
 		mUpdateBone.resize(mMesh->GetBones().size());
@@ -45,41 +46,59 @@ public:
 			b = XMMatrixTranspose(XMMatrixIdentity());
 		}
 
+		for (int i = 0; i < mMesh->GetSubMeshCount(); i++)
+		{
+			mSubObjectMats[mMesh->GetSubMeshName(i)] = SpcularMaterial();
+		}
+
 		return true;
 	}
 
 	virtual void RenderDepth(ID3D11DeviceContext* deviceContext) override
 	{
-		if (mMesh == nullptr || mTexture == nullptr)
+		if (mMesh == nullptr )
 			return;
 
 		XMMATRIX lightViewMatrix, lightProjectionMatrix;
 		gMainLight->GetViewMatrix(lightViewMatrix);
 		gMainLight->GetProjectionMatrix(lightProjectionMatrix);
 
-		mMesh->Render(deviceContext);
-
+	
 		TransformComponent* objectTransform = mOwnerGameObject->GetComponent<TransformComponent>();
 
-		mDepthShader->Render(deviceContext, mMesh->GetIndexCount(), objectTransform->GetTransform(), lightViewMatrix, lightProjectionMatrix, mUpdateBone);
+		for (int i = 0; i < mMesh->GetSubMeshCount(); i++)
+		{
+			mMesh->Render(deviceContext, i);
+
+			mDepthShader->Render(deviceContext, mMesh->GetSubMeshIndexCount(i), objectTransform->GetTransform(), lightViewMatrix, lightProjectionMatrix, mUpdateBone);
+		}
 	}
 
 	virtual void Render(ID3D11DeviceContext* deviceContext) override
 	{
-		if (mMesh == nullptr || mTexture == nullptr)
+		if (mMesh == nullptr)
 			return;
 
 		XMMATRIX viewMatrix, projectionMatrix;
 		gMainCamera->GetViewMatrix(viewMatrix);
 		gDirect->GetProjectionMatrix(projectionMatrix);
 
-		mMesh->Render(deviceContext);
-
 		TransformComponent* objectTransform = mOwnerGameObject->GetComponent<TransformComponent>();
 
-		mShader->Render(deviceContext, mMesh->GetIndexCount(), objectTransform->GetTransform(), viewMatrix, projectionMatrix, mTexture->GetTexture(), gMainLight->GetPosition(), gMainLight->GetDiffuseColor(), gMainLight->GetAmbientColor(), gMainCamera->GetPosition(), gMainLight->GetSpecularColor(), gMainLight->GetSpecularPower(), mUpdateBone);
-	}
+		for (int i = 0; i < mMesh->GetSubMeshCount(); i++)
+		{
+			mMesh->Render(deviceContext, i);
 
+			SpcularMaterial& mat = mSubObjectMats[mMesh->GetSubMeshName(i)];
+
+			mShader->Render(deviceContext, mMesh->GetSubMeshIndexCount(i), objectTransform->GetTransform(), viewMatrix, projectionMatrix, AssetClass::mTextureMap[mat.GetTextureKey()]->GetTexture(), gMainLight->GetPosition(), gMainLight->GetDiffuseColor(), gMainLight->GetAmbientColor(), gMainCamera->GetPosition(), gMainLight->GetSpecularColor(), gMainLight->GetSpecularPower(), mUpdateBone);
+		}
+	}
+	const auto& GetObjectMaterials() const { return mSubObjectMats; }
+	void SetMaterial(string key, string textureKey)
+	{
+		mSubObjectMats[key].SetTextureKey(textureKey);
+	}
 public:
 	virtual void Start() override {};
 	virtual void Update(float deltaTime) override {};
@@ -117,9 +136,9 @@ public:
 protected:
 	SkinnedMeshShader* mShader;
 	SkinnedDepthShaderClass* mDepthShader;
-	Texture* mTexture;
-
 	vector<XMMATRIX> mUpdateBone;
+private:
+	unordered_map<string, SpcularMaterial> mSubObjectMats;
 };
 
 DECLARE_COMPONENT(SkinnedMeshRenderComponent);

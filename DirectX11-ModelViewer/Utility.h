@@ -10,6 +10,7 @@
 #include <boost\archive\binary_iarchive.hpp>
 #include <boost\serialization\vector.hpp>
 #include <boost\serialization\string.hpp>
+#include <boost\serialization\unordered_map.hpp>
 
 using namespace DirectX;
 using namespace std;
@@ -451,39 +452,13 @@ struct InputVertex
 	}
 };
 
-
-struct SkinnedMeshData
+struct SaveSubMesh
 {
 	vector<SaveVertexType> vertices;
 	vector<unsigned int> indices;
-	vector<BoneData> bones;
 
-	SkinnedMeshData& operator=(const vector<VertexType>& vertex)
+	void SetData(const vector<VertexType>& vertex, const vector<unsigned int>& index)
 	{
-		/*vertices.resize(vertex.size());
-		for (int i = 0; i < vertices.size(); i++)
-		{
-			vertices[i].position = vertex[i].position;
-			vertices[i].normal = vertex[i].normal;
-			vertices[i].texture = vertex[i].texture;
-
-			for (int j = 0; j < vertex[i].blendingInfo.size(); ++j)
-			{
-				vertices[i].boneIndices[j] = vertex[i].blendingInfo[j].blendingIndex;
-				switch (j)
-				{
-				case 0:
-					vertices[i].weight.x = vertex[i].blendingInfo[j].blendingWeight;
-					break;
-				case 1:
-					vertices[i].weight.y = vertex[i].blendingInfo[j].blendingWeight;
-					break;
-				case 2:
-					vertices[i].weight.z = vertex[i].blendingInfo[j].blendingWeight;
-					break;
-				}
-			}
-		}*/
 		vertices.reserve(vertex.size());
 		for (const auto& v : vertex)
 		{
@@ -492,14 +467,29 @@ struct SkinnedMeshData
 			vertices.push_back(newVertex);
 		}
 
-		return *this;
-	}
-
-	SkinnedMeshData& operator=(const vector<unsigned int>& index)
-	{
 		indices.resize(index.size());
 		copy(index.begin(), index.end(), indices.begin());
-		return *this;
+	}
+
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive& ar, const unsigned int version)
+	{
+		ar& vertices;
+		ar& indices;
+	}
+};
+
+struct SkinnedMeshData
+{
+	unordered_map<std::string, SaveSubMesh> meshs;
+	vector<BoneData> bones;
+
+	void SetSubMesh(std::string key, const vector<VertexType>& vertex, const vector<unsigned int>& index)
+	{
+		SaveSubMesh submesh;
+		submesh.SetData(vertex, index);
+		meshs[key] = submesh;
 	}
 
 	SkinnedMeshData& operator=(const Skeleton& skeleton)
@@ -522,8 +512,7 @@ struct SkinnedMeshData
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 	{
-		ar& vertices;
-		ar& indices;
+		ar& meshs;
 		ar& bones;
 	}
 };

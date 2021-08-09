@@ -188,6 +188,7 @@
     <ClInclude Include="Light.h" />
     <ClInclude Include="LightState.h" />
     <ClInclude Include="MainInspector.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="MathHelper.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshClass.h" />
@@ -204,9 +205,9 @@
     <ClInclude Include="SkinnedMeshShader.h" />
     <ClInclude Include="SolidColorShader.h" />
     <ClInclude Include="SpecularShaderClass.h" />
+    <ClInclude Include="SubMesh.h" />
     <ClInclude Include="SystemClass.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="TempMesh.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureShaderClass.h" />
     <ClInclude Include="Time.h" />
@@ -245,6 +246,7 @@
     <ClCompile Include="LightState.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainInspector.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="MathHelper.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshClass.cpp" />
@@ -258,8 +260,8 @@
     <ClCompile Include="SkinnedMeshShader.cpp" />
     <ClCompile Include="SolidColorShader.cpp" />
     <ClCompile Include="SpecularShaderClass.cpp" />
+    <ClCompile Include="SubMesh.cpp" />
     <ClCompile Include="SystemClass.cpp" />
-    <ClCompile Include="TempMesh.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureShaderClass.cpp" />
     <ClCompile Include="Time.cpp" />
