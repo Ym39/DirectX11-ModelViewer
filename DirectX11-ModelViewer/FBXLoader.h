@@ -16,6 +16,7 @@ public:
     Mesh* LoadFbx(char* fbxFilename);
 	void LoadFbxFile(const filesystem::path& fbxFilePath);
 	void LoadAnimation(char* fbxFilename);
+	void LoadAnimation(const filesystem::path& fbxFilePath);
 private:
     void ProcessSkeletonHierarchy(FbxNode* inRootNode);
     void ProcessSkeletonHierarchyRecursively(FbxNode* inNode, int inDepth, int myIndex, int inParentIndex);

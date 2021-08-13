@@ -795,7 +795,7 @@ bool GraphicsClass::Render()
 
     if (loadAnim == true)
     {
-        mFbxLoader->LoadAnimation(const_cast<char*>(loadPath.string().c_str()));
+        mFbxLoader->LoadAnimation(loadPath);
     }
 
     //modelListBrowser.Render();
@@ -809,12 +809,15 @@ bool GraphicsClass::Render()
     //gameObjectBrowser->Render(&addGameObject, gameObejctNames);
 
     static std::string currentGameObject;
+    static std::string prevGameObject = "";
     static bool addGameObject = false;
     static std::string selectModelKey;
     static std::string selectTextureKey;
     static std::string selectBumpTextureKey;
     static std::string selectSpecularTextureKey;
     static RendererType renderType = RendererType::ONLYSPECULAR;
+
+    prevGameObject = currentGameObject;
     modelListBrowser.RenderGameObjectList(&addGameObject,&currentGameObject,&selectModelKey,&selectTextureKey, selectBumpTextureKey,selectSpecularTextureKey, gameObejctNames, renderType);
 
     if (addGameObject == true)
@@ -844,7 +847,7 @@ bool GraphicsClass::Render()
             }
 
             AnimatorComponent* animComp = new AnimatorComponent();
-            animComp->SetAnimation(anim);
+            //animComp->SetAnimation(anim);
 
             newGameObejct->InsertComponent(animComp);
 
@@ -865,10 +868,36 @@ bool GraphicsClass::Render()
         selectTextureKey = "";
     }
 
+
+    static vector<string> currentSelectAbleAnimation;
+    static int currentAnimIndex = 0;
+
     bool inspectorActive = true;
     auto search = mGameObejcts.find(currentGameObject);
     if (search != mGameObejcts.end())
     {
+        MeshRenderComponent* renderComp = search->second->GetComponent<MeshRenderComponent>();
+        if (currentGameObject != prevGameObject && AssetClass::GetAnimationCount() != 0 && renderComp->GetMesh()->IsSkinning())
+        {
+            int boneCount = renderComp->GetMesh()->GetBones().size();
+
+            currentSelectAbleAnimation.clear();
+            currentSelectAbleAnimation.push_back("None");
+            int idx = 0;
+            currentAnimIndex = 0;
+            const AnimationData* currentSetAnim = search->second->GetComponent<AnimatorComponent>()->GetAnimation();
+            for (const auto& anim : AssetClass::mAnimationMap)
+            {
+                if (anim.second->keyFrames.size() == boneCount)
+                {
+                    idx++;
+                    currentSelectAbleAnimation.push_back(anim.first);
+                    if (currentSetAnim == anim.second)
+                        currentAnimIndex = idx;
+                }
+            }
+        }
+
         ImGui::Begin("Inspector",&inspectorActive, ImGuiWindowFlags_None);
 
         TransformComponent* transformComp = search->second->GetComponent<TransformComponent>();
@@ -993,15 +1022,15 @@ bool GraphicsClass::Render()
                 for (int i = 0; i < subObjectMats.size(); i++)
                 {
                     string meshGroupLabel = "MeshGroup";
-                    string num = to_string(i);
-                    meshGroupLabel += num;
+                    string meshGroupNum = to_string(i);
+                    meshGroupLabel += meshGroupNum;
                     if (ImGui::CollapsingHeader(meshGroupLabel.c_str(), ImGuiTreeNodeFlags_Framed))
                     {
                         for (int j = 0; j < subObjectMats[i].size(); j++)
                         {
                             string subMeshLabel = "Material";
                             string num = to_string(j);
-                            subMeshLabel += num;
+                            subMeshLabel += meshGroupNum +"_"+num;
                             if (ImGui::CollapsingHeader(subMeshLabel.c_str(), ImGuiTreeNodeFlags_Framed))
                             {
                                 int selectTextureCount = 0;
@@ -1016,23 +1045,21 @@ bool GraphicsClass::Render()
                                     if (subObjectMats[i][j].GetNormalKey() == textureNames[textIdx])
                                     {
                                         selectNormalCount = textIdx;
-                                        break;
                                     }
                                     if (subObjectMats[i][j].GetSpecularKey() == textureNames[textIdx])
                                     {
                                         selectSpecularCount = textIdx;
-                                        break;
                                     }
                                 }
                                 if (ImGui::Combo("Diffuse", &selectTextureCount, VectorGetter2, static_cast<void*>(&textureNames), textureNames.size(), 16))
                                 {
                                     comp->SetMaterial(i, j, textureNames[selectTextureCount], subObjectMats[i][j].GetNormalKey(), subObjectMats[i][j].GetSpecularKey());
                                 }
-                                if (ImGui::Combo("Normal", &selectTextureCount, VectorGetter2, static_cast<void*>(&textureNames), textureNames.size(), 16))
+                                if (ImGui::Combo("Normal", &selectNormalCount, VectorGetter2, static_cast<void*>(&textureNames), textureNames.size(), 16))
                                 {
                                     comp->SetMaterial(i, j, subObjectMats[i][j].GetTextureKey(), textureNames[selectNormalCount], subObjectMats[i][j].GetSpecularKey());
                                 }
-                                if (ImGui::Combo("Specular", &selectTextureCount, VectorGetter2, static_cast<void*>(&textureNames), textureNames.size(), 16))
+                                if (ImGui::Combo("Specular", &selectSpecularCount, VectorGetter2, static_cast<void*>(&textureNames), textureNames.size(), 16))
                                 {
                                     comp->SetMaterial(i, j, subObjectMats[i][j].GetTextureKey(), subObjectMats[i][j].GetNormalKey(), textureNames[selectSpecularCount]);
                                 }
@@ -1049,6 +1076,17 @@ bool GraphicsClass::Render()
         {
             if (ImGui::CollapsingHeader("Animator", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed))
             {
+                if (currentSelectAbleAnimation.size() > 0)
+                {
+                    if (ImGui::Combo("SetAnimation", &currentAnimIndex, VectorGetter2, static_cast<void*>(&currentSelectAbleAnimation), currentSelectAbleAnimation.size(), 16))
+                    {
+                        if (currentAnimIndex == 0)
+                            animatorComp->SetAnimation(AssetClass::GetAnimation(nullptr));
+                        else
+                            animatorComp->SetAnimation(AssetClass::GetAnimation(currentSelectAbleAnimation[currentAnimIndex]));
+                    }
+                }
+
                 if (ImGui::Button("Play"))
                 {
                     animatorComp->Play();

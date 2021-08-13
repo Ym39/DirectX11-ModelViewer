@@ -178,6 +178,58 @@ void FBXLoader::LoadAnimation(char* fbxFilename)
 	mFbxScene->Destroy();
 }
 
+void FBXLoader::LoadAnimation(const filesystem::path& fbxFilePath)
+{
+	mImporter = FbxImporter::Create(mFbxManager, "");
+	bool status = mImporter->Initialize(fbxFilePath.string().c_str(), -1, mFbxManager->GetIOSettings());
+	if (status == false)
+	{
+		return;
+	}
+
+	mFbxScene = FbxScene::Create(mFbxManager, "scene");
+	mImporter->Import(mFbxScene);
+	mImporter->Destroy();
+
+	FbxNode* rootNode = mFbxScene->GetRootNode();
+
+	FbxAxisSystem sceneAxisSystem = mFbxScene->GetGlobalSettings().GetAxisSystem();
+	FbxAxisSystem::DirectX.ConvertScene(mFbxScene);
+
+	FbxGeometryConverter geometryConverter(mFbxManager);
+	geometryConverter.Triangulate(mFbxScene, true);
+
+	mSkeleton = new Skeleton;
+	ProcessSkeletonHierarchy(rootNode);
+
+	if (mSkeleton->joints.empty() == true)
+		return;
+
+	mSaveAnimation = new SaveAnimationData;
+	mSaveAnimation->keyFrames.resize(mSkeleton->joints.size());
+
+	LoadNodeForAnimation(rootNode);
+
+	string fileName = fbxFilePath.stem().string();
+	fileName += ".Animation";
+	string animPathString = AssetClass::GetAnimationPath().string();
+	animPathString += "\\";
+	animPathString += fileName;
+
+	ofstream out;
+	out.open(animPathString.c_str(), ios_base::binary); //바이너리 모드로 파일을 열었습니다.
+	boost::archive::binary_oarchive out_archive(out); //연 스트림을 넘겨주어서 직렬화객체 초기화
+	out_archive << *mSaveAnimation; //쓰기
+	out.close();
+
+	delete mSaveAnimation;
+	mSaveAnimation = nullptr;
+
+	mFbxScene->Destroy();
+
+	AssetClass::Update();
+}
+
 
 void FBXLoader::ProcessSkeletonHierarchy(FbxNode* inRootNode)
 {

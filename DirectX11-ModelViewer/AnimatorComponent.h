@@ -40,6 +40,7 @@ public:
 		mAnimationData = animation;
 		mCurrentKeyframe = 0;
 	}
+	const AnimationData* GetAnimation() const { return mAnimationData; }
 
 	const KeyFrameData& GetCurrentKeyAnimation(int index) const
 	{

@@ -116,6 +116,7 @@ public:
 	{
 		mSubObjectMats[groupIndex][submeshIndex].SetTextureKey(textureKey);
 	}
+	MeshClass* GetMesh() { return mMesh; }
 
 	eRendererType GetRenderType() const { return mRendererType; }
 
