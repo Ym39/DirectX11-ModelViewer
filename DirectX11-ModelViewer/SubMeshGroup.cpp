@@ -38,3 +38,14 @@ void SubMeshGroup::Shutdown()
 		submesh.Shutdown();
 	}
 }
+
+void SubMeshGroup::GetSubMesh(int index, SubMesh** outSubmesh)
+{
+	if (mSubmeshs.size() <= index)
+	{
+		outSubmesh = nullptr;
+		return;
+	}
+
+	*outSubmesh = &(mSubmeshs[index]);
+}

@@ -22,6 +22,8 @@ void MeshClass::SetMeshData(const SkinnedMeshData& skinnedMeshData)
 	{
 		bones[i] = skinnedMeshData.bones[i];
 	}
+
+	ComputeBounds();
 }
 
 
@@ -55,4 +57,40 @@ void MeshClass::Shutdown()
 		submesh.Shutdown();
 	}
 	return;
+}
+
+void MeshClass::ComputeBounds()
+{
+	float minX = 0.0f, maxX = 0.0f;
+	float minY = 0.0f, maxY = 0.0f;
+	float minZ = 0.0f, maxZ = 0.0f;
+
+	for (auto& submeshGroup : mSubmeshGroups)
+	{
+		int numOfsubmesh = submeshGroup.GetSubmeshCount();
+		for (int submeshCount = 0; submeshCount < numOfsubmesh; submeshCount++)
+		{
+			SubMesh* submesh = nullptr;
+			submeshGroup.GetSubMesh(submeshCount, &submesh);
+			if (submesh != nullptr)
+			{
+				const auto& vertices = submesh->GetVertices();
+				for (const auto& vertex : vertices)
+				{
+					minX = minX > vertex.position.x ? vertex.position.x : minX;
+					maxX = maxX < vertex.position.x ? vertex.position.x : maxX;
+					minY = minY > vertex.position.y ? vertex.position.y : minY;
+					maxY = maxY < vertex.position.y ? vertex.position.y : maxY;
+					minZ = minZ > vertex.position.z ? vertex.position.z : minZ;
+					maxZ = maxZ < vertex.position.z ? vertex.position.z : maxZ;
+				}
+			}
+		}
+	}
+
+	XMFLOAT3 center((maxX + minX) * 0.5f, (maxY + minY) * 0.5f, (maxZ + minZ) * 0.5f);
+	mBounds.SetCenter(center);
+	XMFLOAT3 exents(maxX - center.x, maxY - center.y, maxZ - center.z);
+	mBounds.SetExents(exents);
+
 }

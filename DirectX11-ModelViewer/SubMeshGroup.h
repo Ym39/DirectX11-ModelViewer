@@ -15,6 +15,8 @@ public:
 	unsigned int GetSubmeshCount() const { return mSubmeshs.size(); }
 	unsigned int GetSubmeshIndexCount(int index) const { return mSubmeshs[index].GetIndexCount(); }
 	string GetName() const { return mName; }
+
+	void GetSubMesh(int index, SubMesh** outSubmesh);
 private:
 	vector<SubMesh> mSubmeshs;
 	string mName = "";

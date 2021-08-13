@@ -1,6 +1,7 @@
 #pragma once
 #include <d3d11.h>
 #include "Utility.h"
+#include "Bounds.h"
 #include "SubMeshGroup.h"
 
 class MeshClass
@@ -25,11 +26,16 @@ public:
 		 
 	vector<Bone>& GetBones() { return bones; }
 	Bone& GetBone(int index) { return bones[index]; }
+	const Bounds& GetBounds() const { return mBounds; }
+private:
+	void ComputeBounds();
+
 private:
 	bool mIsInitialize = false;
 	bool mIsSkinning = false;
 
 	std::vector<SubMeshGroup> mSubmeshGroups;
 	vector<Bone> bones;
+	Bounds mBounds;
 };
 
