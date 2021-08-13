@@ -9,6 +9,7 @@ public:
 
 public:
 	AnimatorComponent():
+		mCurrentKeyframe(0),
 		mAnimationData(nullptr),
 		mIsPlay(false)
 	{}
@@ -45,7 +46,7 @@ public:
 		return mAnimationData->keyFrames[index][mCurrentKeyframe];
 	}
 
-	void Play() { mIsPlay = true; }
+	void Play() { if (mAnimationData == nullptr) return;  mIsPlay = true; }
 	void Stop() { mIsPlay = false; }
 
 	bool IsPlay() const { return mIsPlay; }

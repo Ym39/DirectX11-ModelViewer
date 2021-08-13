@@ -11,7 +11,8 @@ public:
 	void SetMeshData(const SkinnedMeshData& skinnedMeshData);
 
 	bool Initalize(ID3D11Device* device);
-	void Render(ID3D11DeviceContext* deviceContext, unsigned int submeshGroupIndex, unsigned int submeshIndex);
+	void Render(ID3D11DeviceContext* deviceContext);
+	void Render(ID3D11DeviceContext* deviceContext, UINT bufferNumber);
 	void Shutdown();
     
 	bool IsInitalized() const { return mIsInitialize; }

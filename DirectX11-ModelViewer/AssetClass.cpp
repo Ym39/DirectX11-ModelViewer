@@ -3,8 +3,10 @@
 
 std::filesystem::path AssetClass::mRootPath = filesystem::current_path();
 std::filesystem::path AssetClass::mModelPath = filesystem::current_path();
+std::filesystem::path AssetClass::mAnimPath = filesystem::current_path();
 std::unordered_map<std::string, MeshClass*> AssetClass::mMeshMap = {};
 std::unordered_map<std::string, Texture*> AssetClass::mTextureMap = {};
+std::unordered_map<std::string, AnimationData*> AssetClass::mAnimationMap = {};
 
 extern D3DClass* gDirect;
 
@@ -30,6 +32,11 @@ void AssetClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCon
 		if (entry.path().filename().string() == "Model" && entry.is_directory())
 		{
 			mModelPath = entry.path();
+		}
+
+		if (entry.path().filename().string() == "Animation" && entry.is_directory())
+		{
+			mAnimPath = entry.path();
 		}
 	}
 
@@ -84,6 +91,28 @@ void AssetClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCon
 			}
 		}
 	}
+
+	if (mAnimPath.empty() == false)
+	{
+		for (const auto entry : filesystem::directory_iterator(mAnimPath))
+		{
+			filesystem::path path = entry.path();
+			if (entry.path().extension() == ".Animation")
+			{
+				ifstream in;
+				SaveAnimationData animationData;
+				in.open(entry.path().c_str(), ios_base::binary);
+				boost::archive::binary_iarchive in_archive(in);
+				in_archive >> animationData;
+				in.close();
+
+				AnimationData* loadAnimationData = new AnimationData;
+				*loadAnimationData = animationData;
+
+				mAnimationMap[path.stem().string()] = loadAnimationData;
+			}
+		}
+	}
 }
 
 void AssetClass::Update()
@@ -116,4 +145,39 @@ void AssetClass::Update()
 			}
 		}
 	}
+
+	if (mAnimPath.empty() == false)
+	{
+		for (const auto entry : filesystem::directory_iterator(mAnimPath))
+		{
+			filesystem::path path = entry.path();
+
+			if (mAnimationMap.find(path.stem().string()) != mAnimationMap.end())
+				continue;
+
+			if (entry.path().extension() == ".Animation")
+			{
+				ifstream in;
+				SaveAnimationData animationData;
+				in.open(entry.path().c_str(), ios_base::binary);
+				boost::archive::binary_iarchive in_archive(in);
+				in_archive >> animationData;
+				in.close();
+
+				AnimationData* loadAnimationData = new AnimationData;
+				*loadAnimationData = animationData;
+
+				mAnimationMap[path.stem().string()] = loadAnimationData;
+			}
+		}
+	}
+}
+
+AnimationData* AssetClass::GetAnimation(string key)
+{
+	auto iter = mAnimationMap.find(key);
+	if (iter == mAnimationMap.end())
+		return nullptr;
+
+	return mAnimationMap[key];
 }

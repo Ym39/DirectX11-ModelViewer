@@ -22,11 +22,14 @@ public:
 
 	static const auto& GetModelPath() { return mModelPath; }
 
+	static AnimationData* GetAnimation(string key);
 public:
 	static std::unordered_map<std::string, MeshClass*> mMeshMap;
 	static std::unordered_map<std::string, Texture*> mTextureMap;
 private:
 	static std::filesystem::path mRootPath;
 	static std::filesystem::path mModelPath;
+	static std::filesystem::path mAnimPath;
+	static std::unordered_map<std::string, AnimationData*> mAnimationMap;
 };
 
