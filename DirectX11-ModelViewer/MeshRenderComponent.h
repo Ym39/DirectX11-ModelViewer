@@ -9,11 +9,14 @@
 #include"Camera.h"
 #include"Light.h"
 #include"Material.h"
+#include"BoundModel.h"
+#include"SimpleColorShader.h"
 #include <d3d11.h>
 
 extern Camera* gMainCamera;
 extern Light* gMainLight;
 extern D3DClass* gDirect;
+extern SimpleColorShader* gSimpleColorShader;
 
 enum class eRendererType
 {
@@ -41,7 +44,14 @@ public:
 	virtual void Start() override {};
 	virtual void Update(float deltaTime) override {};
 	virtual void LateUpdate(float deltaTime) override {};
-	virtual void Destroy() override {};
+	virtual void Destroy() override 
+	{
+		if (mBoundModel)
+		{
+			delete mBoundModel;
+			mBoundModel = nullptr;
+		}
+	};
 
 	virtual void RenderDepth(ID3D11DeviceContext* deviceContext)
 	{
@@ -87,6 +97,8 @@ public:
 				mShader->Render(deviceContext, mMesh->GetSubMeshIndexCount(i,j), objectTransform->GetTransform(), viewMatrix, projectionMatrix, AssetClass::mTextureMap[mat.GetTextureKey()]->GetTexture(), gMainLight->GetPosition(), gMainLight->GetDiffuseColor(), gMainLight->GetAmbientColor(), gMainCamera->GetPosition(), gMainLight->GetSpecularColor(), gMainLight->GetSpecularPower());
 			}
 		}
+
+		RenderBoundBox(deviceContext, objectTransform->GetTransform(), viewMatrix, projectionMatrix);
 	}
 
 public:
@@ -108,6 +120,8 @@ public:
 			mSubObjectMats[i].resize(mMesh->GetSubMeshCount(i));
 		}
 
+		mBoundModel = new BoundModel(gDirect->GetDevice(), mMesh->GetBounds());
+
 		return true;
 	}
 
@@ -119,10 +133,17 @@ public:
 	MeshClass* GetMesh() { return mMesh; }
 
 	eRendererType GetRenderType() const { return mRendererType; }
+protected:
+	void RenderBoundBox(ID3D11DeviceContext* deviceContext,XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
+	{
+		mBoundModel->Render(deviceContext);
+		gSimpleColorShader->Render(deviceContext, mBoundModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, XMFLOAT4(0.f, 1.f, 0.f, 1.f));
+	}
 
 protected:
 	MeshClass* mMesh;
 	eRendererType mRendererType;
+	BoundModel* mBoundModel;
 private:
 	SpecularShaderClass* mShader;
 	DepthShaderClass* mDepthShader;

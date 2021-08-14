@@ -237,6 +237,12 @@
     <ClInclude Include="SubMeshGroup.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="BoundModel.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleColorShader.h">
+      <Filter>헤더 파일\셰이더 클래스</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX11-ModelViewer.rc">
@@ -402,6 +408,12 @@
     <ClCompile Include="SubMeshGroup.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="BoundModel.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleColorShader.cpp">
+      <Filter>소스 파일\셰이더 클래스</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="DirectXTex\DirectXTex.inl">
@@ -451,6 +463,9 @@
       <Filter>셰이더</Filter>
     </None>
     <None Include="SkinnedBumpPixelShader.hlsl">
+      <Filter>셰이더</Filter>
+    </None>
+    <None Include="SimpleColorShader.hlsl">
       <Filter>셰이더</Filter>
     </None>
   </ItemGroup>

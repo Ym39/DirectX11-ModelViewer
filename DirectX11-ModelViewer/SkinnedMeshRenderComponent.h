@@ -52,6 +52,8 @@ public:
 			mSubObjectMats[i].resize(mMesh->GetSubMeshCount(i));
 		}
 
+		mBoundModel = new BoundModel(gDirect->GetDevice(), mMesh->GetBounds());
+
 		return true;
 	}
 
@@ -99,6 +101,8 @@ public:
 				mShader->Render(deviceContext, mMesh->GetSubMeshIndexCount(i,j), objectTransform->GetTransform(), viewMatrix, projectionMatrix, AssetClass::mTextureMap[mat.GetTextureKey()]->GetTexture(), gMainLight->GetPosition(), gMainLight->GetDiffuseColor(), gMainLight->GetAmbientColor(), gMainCamera->GetPosition(), gMainLight->GetSpecularColor(), gMainLight->GetSpecularPower(), mUpdateBone);
 			}
 		}
+
+		RenderBoundBox(deviceContext, objectTransform->GetTransform(), viewMatrix, projectionMatrix);
 	}
 	const auto& GetObjectMaterials() const { return mSubObjectMats; }
 	void SetMaterial(int groupIndex, int submeshIndex, string textureKey)

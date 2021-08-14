@@ -13,6 +13,7 @@ extern SystemClass* ApplicationHandle;
 extern Camera* gMainCamera;
 extern Light* gMainLight;
 extern D3DClass* gDirect;
+extern SimpleColorShader* gSimpleColorShader;
 
 bool VectorGetter2(void* list, int count, const char** outText)
 {
@@ -250,6 +251,12 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     result = mSkinnedBumpShader->Initialize(mDirect->GetDevice(), hwnd);
     if (result == false)
         return false;
+
+    mSimpleColorShader = new SimpleColorShader;
+    result = mSimpleColorShader->Initialize(mDirect->GetDevice(), hwnd);
+    if (result == false)
+        return false;
+    gSimpleColorShader = mSimpleColorShader;
 
    /* mGameObject = GameObjectClass::Create();
     mGameObject->InsertComponent(new TransformComponent);*/
@@ -492,6 +499,14 @@ void GraphicsClass::Shutdown()
         delete anim;
         anim = nullptr;
     }
+
+    if (mSimpleColorShader)
+    {
+        mSimpleColorShader->Shutdown();
+        delete mSimpleColorShader;
+        mSimpleColorShader = nullptr;
+    }
+        
 }
 
 bool GraphicsClass::Frame()
