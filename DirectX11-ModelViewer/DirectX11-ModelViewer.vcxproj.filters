@@ -243,6 +243,9 @@
     <ClInclude Include="SimpleColorShader.h">
       <Filter>헤더 파일\셰이더 클래스</Filter>
     </ClInclude>
+    <ClInclude Include="Physics.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX11-ModelViewer.rc">

@@ -108,6 +108,8 @@ private:
 	std::string mCurrentRenderMesh;
 
 	std::unordered_map<std::string, GameObjectClass*> mGameObejcts;
+	std::string mCurrentGameObject;
+	std::string mPrevGameObject = "";
 
 	int mScreenWidth;
 	int mScreenHeight;

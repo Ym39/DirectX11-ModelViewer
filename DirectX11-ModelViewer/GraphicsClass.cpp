@@ -8,6 +8,7 @@
 #include "AnimatorComponent.h"
 #include "GameObjectBrowser.h"
 #include <typeinfo>
+#include "Physics.h"
 
 extern SystemClass* ApplicationHandle;
 extern Camera* gMainCamera;
@@ -570,7 +571,7 @@ bool GraphicsClass::Frame()
 
     }
 
-    if (mCurrentRenderMesh != "")
+    /*if (mCurrentRenderMesh != "")
     {
         meshMap[mCurrentRenderMesh].Update(ApplicationHandle->DeltaTime());
 
@@ -632,9 +633,14 @@ bool GraphicsClass::Frame()
                 mCurrentPositionGizumoState = PositionGizumoState::NONE;
             }
         }
-    }
+    }*/
 
     //mGameObject->LateUpdate(ApplicationHandle->DeltaTime());
+
+    XMMATRIX worldMatrix, viewMarix, projectionMatrix;
+    mDirect->GetWorldMatrix(worldMatrix);
+    mDirect->GetProjectionMatrix(projectionMatrix);
+    mCamera->GetViewMatrix(viewMarix);
 
     for (const auto& gameObject : mGameObejcts)
     {
@@ -645,6 +651,85 @@ bool GraphicsClass::Frame()
     {
         gameObject.second->LateUpdate(ApplicationHandle->DeltaTime());
     }
+
+    if (InputClass::GetInstance()->IsMouse0Pressed())
+    {
+        InputClass::GetInstance()->GetWMMouseLocation(mouseX, mouseY);
+
+        if (mCurrentGameObject != "")
+        {
+            TransformComponent* transform = mGameObejcts[mCurrentGameObject]->GetComponent<TransformComponent>();
+            if (Physics::TestIntersectionBoundBox(mouseX, mouseY, mScreenWidth, mScreenHeight, mCamera->GetPosition(), worldMatrix, viewMarix, projectionMatrix, transform->GetTransform(), mForwardArrowModel->GetBounds()))
+                mCurrentPositionGizumoState = PositionGizumoState::FORWARD;
+            else if(Physics::TestIntersectionBoundBox(mouseX, mouseY, mScreenWidth, mScreenHeight, mCamera->GetPosition(), worldMatrix, viewMarix, projectionMatrix, transform->GetTransform(), mRightArrowModel->GetBounds()))               
+                mCurrentPositionGizumoState = PositionGizumoState::RIGHT;
+            else if (Physics::TestIntersectionBoundBox(mouseX, mouseY, mScreenWidth, mScreenHeight, mCamera->GetPosition(), worldMatrix, viewMarix, projectionMatrix, transform->GetTransform(), mUpArrowModel->GetBounds()))       
+                mCurrentPositionGizumoState = PositionGizumoState::UP;
+        }
+
+        if (mCurrentPositionGizumoState == PositionGizumoState::NONE)
+        {
+            for (const auto& gameObject : mGameObejcts)
+            {
+                MeshRenderComponent* renderComp = gameObject.second->GetComponent<MeshRenderComponent>();
+                if (renderComp != nullptr)
+                {
+                    if (Physics::TestIntersectionBoundBox(mouseX, mouseY, mScreenWidth, mScreenHeight, mCamera->GetPosition(), worldMatrix, viewMarix, projectionMatrix, gameObject.second->GetComponent<TransformComponent>()->GetTransform(), renderComp->GetMesh()->GetBounds()))
+                        mCurrentGameObject = gameObject.first;
+                }
+            }
+        }
+    }
+    else
+    {
+        mCurrentPositionGizumoState = PositionGizumoState::NONE;
+    }
+
+    XMVECTOR cameraForward;
+    XMVECTOR arrowDirection;
+    float yWeight = 0.0f;
+    float xWeight = 0.0f;
+
+    if (mCurrentGameObject != "")
+    {
+        TransformComponent* transform = mGameObejcts[mCurrentGameObject]->GetComponent<TransformComponent>();
+        switch (mCurrentPositionGizumoState)
+        {
+        case PositionGizumoState::FORWARD:
+        {
+            cameraForward = XMLoadFloat3(&mCamera->GetTransform().Forward());
+            arrowDirection = XMVectorSet(0.f, 0.f, 1.f, 0.f);
+            XMVECTOR dot = XMVector3Dot(cameraForward, arrowDirection);
+            yWeight = XMVectorGetX(dot);
+            xWeight = 1.0f - abs(yWeight);
+            float deltaWeight = (ApplicationHandle->Input().GetMouseY() * yWeight) + (ApplicationHandle->Input().GetMouseX() * xWeight);
+            transform->Translate(XMFLOAT3(0.f, 0.f, 1.f * deltaWeight));
+        }
+
+        break;
+        case PositionGizumoState::RIGHT:
+        {
+            cameraForward = XMLoadFloat3(&mCamera->GetTransform().Forward());
+            arrowDirection = XMVectorSet(1.f, 0.f, 0.f, 0.f);
+            XMVECTOR dot = XMVector3Dot(cameraForward, arrowDirection);
+            yWeight = XMVectorGetX(dot);
+            xWeight = 1.0f - abs(yWeight);
+            float deltaWeight = (ApplicationHandle->Input().GetMouseY() * yWeight) + (ApplicationHandle->Input().GetMouseX() * xWeight);
+            transform->Translate(XMFLOAT3(1.f * deltaWeight, 0.f, 0.f));
+
+        }
+        break;
+        case PositionGizumoState::UP:
+        {
+            cameraForward = XMLoadFloat3(&mCamera->GetTransform().Forward());
+            arrowDirection = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+            float deltaWeight = -(ApplicationHandle->Input().GetMouseY());
+            transform->Translate(XMFLOAT3(0.f, 1.f * deltaWeight, 0.f));
+        }
+        break;
+        }
+    }
+
 
     result = Render();
     if (result == false)
@@ -749,6 +834,24 @@ bool GraphicsClass::Render()
         renderComp->Render(mDirect->GetDeviceContext());
     }
 
+    auto gameobject = mGameObejcts.find(mCurrentGameObject);
+    if (gameobject != mGameObejcts.end())
+    {
+        TransformComponent* transform = mGameObejcts[mCurrentGameObject]->GetComponent<TransformComponent>();
+        XMFLOAT3 position;
+        XMStoreFloat3(&position, transform->GetPosition());
+        XMMATRIX positionMat = XMMatrixTranslation(position.x, position.y, position.z);
+
+        mForwardArrowModel->Render(mDirect->GetDeviceContext());
+        mSolidShader->Render(mDirect->GetDeviceContext(), mForwardArrowModel->GetIndexCount(), positionMat, viewMatrix, projectionMatrix, XMFLOAT4(0.0f, 0.0f, 1.f, 1.f));
+
+        mRightArrowModel->Render(mDirect->GetDeviceContext());
+        mSolidShader->Render(mDirect->GetDeviceContext(), mRightArrowModel->GetIndexCount(), positionMat, viewMatrix, projectionMatrix, XMFLOAT4(1.0f, 0.0f, 0.f, 1.f));
+
+        mUpArrowModel->Render(mDirect->GetDeviceContext());
+        mSolidShader->Render(mDirect->GetDeviceContext(), mUpArrowModel->GetIndexCount(), positionMat, viewMatrix, projectionMatrix, XMFLOAT4(0.0f, 1.f, 0.f, 1.f));
+    }
+
     //2D ·»´õ¸µ
     mDirect->TurnZBufferOff();
     mDirect->TurnOnAlphaBlending();
@@ -832,8 +935,8 @@ bool GraphicsClass::Render()
     static std::string selectSpecularTextureKey;
     static RendererType renderType = RendererType::ONLYSPECULAR;
 
-    prevGameObject = currentGameObject;
-    modelListBrowser.RenderGameObjectList(&addGameObject,&currentGameObject,&selectModelKey,&selectTextureKey, selectBumpTextureKey,selectSpecularTextureKey, gameObejctNames, renderType);
+    mPrevGameObject = mCurrentGameObject;
+    modelListBrowser.RenderGameObjectList(&addGameObject,&mCurrentGameObject,&selectModelKey,&selectTextureKey, selectBumpTextureKey,selectSpecularTextureKey, gameObejctNames, renderType);
 
     if (addGameObject == true)
     {
@@ -888,11 +991,11 @@ bool GraphicsClass::Render()
     static int currentAnimIndex = 0;
 
     bool inspectorActive = true;
-    auto search = mGameObejcts.find(currentGameObject);
+    auto search = mGameObejcts.find(mCurrentGameObject);
     if (search != mGameObejcts.end())
     {
         MeshRenderComponent* renderComp = search->second->GetComponent<MeshRenderComponent>();
-        if (currentGameObject != prevGameObject && AssetClass::GetAnimationCount() != 0 && renderComp->GetMesh()->IsSkinning())
+        if (mCurrentGameObject != mPrevGameObject && AssetClass::GetAnimationCount() != 0 && renderComp->GetMesh()->IsSkinning())
         {
             int boneCount = renderComp->GetMesh()->GetBones().size();
 
@@ -979,7 +1082,7 @@ bool GraphicsClass::Render()
                                         break;
                                     }
                                 }
-                                if (ImGui::Combo("Diffuse", &selectTextureCount, VectorGetter2,             static_cast<void*>(&textureNames), textureNames.size(), 16))
+                                if (ImGui::Combo("Diffuse", &selectTextureCount, VectorGetter2,static_cast<void*>(&textureNames), textureNames.size(), 16))
                                 {
                                     comp->SetMaterial(i,j, textureNames[selectTextureCount]);
                                 }
@@ -987,6 +1090,9 @@ bool GraphicsClass::Render()
                         }
                     }
                 }
+                bool visible = comp->IsVisibleBoundsBox();
+                if (ImGui::Checkbox("Visible Bounds", &visible))
+                    comp->SetVisibleBoundsBox(visible);
             }
         }
         else if (search->second->GetComponent<MeshRenderComponent>() != nullptr && search->second->GetComponent<MeshRenderComponent>()->GetRenderType() == eRendererType::MeshRenderer)
@@ -1026,6 +1132,9 @@ bool GraphicsClass::Render()
                         }
                     }
                 }
+                bool visible = comp->IsVisibleBoundsBox();
+                if (ImGui::Checkbox("Visible Bounds", &visible))
+                    comp->SetVisibleBoundsBox(visible);
             }
         }
         else if (search->second->GetComponent<MeshRenderComponent>() != nullptr && search->second->GetComponent<MeshRenderComponent>()->GetRenderType() == eRendererType::SkinnedBumpRenderer)
@@ -1082,6 +1191,9 @@ bool GraphicsClass::Render()
                         }
                     }
                 }
+                bool visible = comp->IsVisibleBoundsBox();
+                if (ImGui::Checkbox("Visible Bounds", &visible))
+                    comp->SetVisibleBoundsBox(visible);
             }
         }
         

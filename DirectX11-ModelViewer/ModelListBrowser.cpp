@@ -122,7 +122,10 @@ void ModelListBrowser::RenderGameObjectList(bool* addGameObject, std::string* ou
 	if (gameObejcts.size() == 0)
 		*outSelectGameObject = "";
 	else
+	{
+		if(select == true)
 		*outSelectGameObject = gameObejcts[mCurrentGameObjectNumber];
+	}
 }
 
 void ModelListBrowser::RenderModelList(bool& select, std::string& selectModelKey)

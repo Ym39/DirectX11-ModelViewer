@@ -52,6 +52,8 @@ public:
 
 	bool RayIntersect(XMFLOAT3 rayOrigin, XMFLOAT3 rayDirection, XMFLOAT3 position , XMFLOAT3 arrowScale);
 
+	const Bounds& GetBounds() const { return mBounds; }
+
 private:
 	bool InitializeBuffers(ID3D11Device* device,XMFLOAT3 scale);
 	void ShutdownBuffers();

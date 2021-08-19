@@ -149,7 +149,7 @@ bool ArrowModel::InitializeBuffers(ID3D11Device* device, XMFLOAT3 scale)
 		break;
 	case ArrowDirection::Right:
 		for(auto& curPos : position)
-		   XMStoreFloat3(&curPos,(XMVector3Transform(XMLoadFloat3(&curPos), XMMatrixRotationY(XMConvertToRadians(90.f))*XMMatrixScaling(scale.x, scale.y, scale.z))));
+		   XMStoreFloat3(&curPos,(XMVector3Transform(XMLoadFloat3(&curPos), XMMatrixRotationY(XMConvertToRadians(90.f)) * XMMatrixScaling(scale.x, scale.y, scale.z))));
 		break;
 	case ArrowDirection::Up:
 		for (auto& curPos : position)

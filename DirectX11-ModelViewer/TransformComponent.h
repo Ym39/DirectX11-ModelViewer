@@ -28,6 +28,7 @@ public:
 	XMFLOAT3 GetRotation() const { return mRotation; }
 	XMFLOAT3 GetScale() const { return mScale; }
 	XMMATRIX GetTransform() const { return mTransform; }
+	void Translate(XMFLOAT3 delta) { mPosition.x += delta.x; mPosition.y += delta.y; mPosition.z += delta.z; }
 
 	void SetPosition(XMFLOAT3 position)
 	{

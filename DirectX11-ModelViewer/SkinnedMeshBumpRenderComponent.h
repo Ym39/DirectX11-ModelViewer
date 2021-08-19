@@ -74,7 +74,8 @@ public:
 			}
 		}
 
-		RenderBoundBox(deviceContext, objectTransform->GetTransform(), viewMatrix, projectionMatrix);
+		if (mVisibleBoundBox == true)
+		     RenderBoundBox(deviceContext, objectTransform->GetTransform(), viewMatrix, projectionMatrix);
 	}
 
 	const auto& GetObjectMaterials() const { return mSubObjectMats; }

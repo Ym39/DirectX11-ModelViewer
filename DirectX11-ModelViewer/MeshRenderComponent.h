@@ -34,7 +34,8 @@ public:
 	MeshRenderComponent() :
 		mMesh(nullptr),
 		mShader(nullptr),
-		mDepthShader(nullptr)
+		mDepthShader(nullptr),
+		mVisibleBoundBox(false)
 	{
 		mRendererType = eRendererType::MeshRenderer;
 	}
@@ -98,7 +99,8 @@ public:
 			}
 		}
 
-		RenderBoundBox(deviceContext, objectTransform->GetTransform(), viewMatrix, projectionMatrix);
+		if(mVisibleBoundBox == true)
+		   RenderBoundBox(deviceContext, objectTransform->GetTransform(), viewMatrix, projectionMatrix);
 	}
 
 public:
@@ -133,6 +135,9 @@ public:
 	MeshClass* GetMesh() { return mMesh; }
 
 	eRendererType GetRenderType() const { return mRendererType; }
+
+	void SetVisibleBoundsBox(bool visible) { mVisibleBoundBox = visible; }
+	bool IsVisibleBoundsBox()const { return mVisibleBoundBox; }
 protected:
 	void RenderBoundBox(ID3D11DeviceContext* deviceContext,XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
 	{
@@ -144,6 +149,8 @@ protected:
 	MeshClass* mMesh;
 	eRendererType mRendererType;
 	BoundModel* mBoundModel;
+
+	bool mVisibleBoundBox;
 private:
 	SpecularShaderClass* mShader;
 	DepthShaderClass* mDepthShader;
