@@ -25,6 +25,7 @@
 #include "ModelListBrowser.h"
 #include "SkinnedBumpShader.h"
 #include"SimpleColorShader.h"
+#include"BoundModel.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = false;
@@ -89,6 +90,7 @@ private:
 	TextureShaderClass* mTextureShader = nullptr;
 	SkinnedBumpShader* mSkinnedBumpShader = nullptr;
 	SimpleColorShader* mSimpleColorShader = nullptr;
+	BoundModel* mForwardArrowBound = nullptr;
 
 	ModelListBrowser modelListBrowser;
 	GameObjectBrowser* gameObjectBrowser;

@@ -20,7 +20,6 @@ bool ArrowModel::Initialize(ID3D11Device* device, ArrowDirection direction,XMFLO
 	mVertexCount = arrowPositions.size();
 	mIndexCount = arrowIndice.size();
 
-	ComputeBounds();
 
 	return true;
 }
@@ -145,15 +144,15 @@ bool ArrowModel::InitializeBuffers(ID3D11Device* device, XMFLOAT3 scale)
 	{
 	case ArrowDirection::Forward:
 		for (auto& curPos : position)
-			XMStoreFloat3(&curPos, (XMVector3Transform(XMLoadFloat3(&curPos),XMMatrixScaling(scale.x, scale.y, scale.z))));
+			XMStoreFloat3(&curPos, (XMVector3TransformCoord(XMLoadFloat3(&curPos),XMMatrixScaling(scale.x, scale.y, scale.z))));
 		break;
 	case ArrowDirection::Right:
 		for(auto& curPos : position)
-		   XMStoreFloat3(&curPos,(XMVector3Transform(XMLoadFloat3(&curPos), XMMatrixRotationY(XMConvertToRadians(90.f)) * XMMatrixScaling(scale.x, scale.y, scale.z))));
+		   XMStoreFloat3(&curPos,(XMVector3TransformCoord(XMLoadFloat3(&curPos), XMMatrixRotationY(XMConvertToRadians(90.f)) * XMMatrixScaling(scale.x, scale.y, scale.z))));
 		break;
 	case ArrowDirection::Up:
 		for (auto& curPos : position)
-			XMStoreFloat3(&curPos, (XMVector3Transform(XMLoadFloat3(&curPos), XMMatrixRotationX(XMConvertToRadians(-90.f)) * XMMatrixScaling(scale.x, scale.y, scale.z))));
+			XMStoreFloat3(&curPos, (XMVector3TransformCoord(XMLoadFloat3(&curPos), XMMatrixRotationX(XMConvertToRadians(-90.f)) * XMMatrixScaling(scale.x, scale.y, scale.z))));
 		break;
 	}
 
@@ -193,6 +192,8 @@ bool ArrowModel::InitializeBuffers(ID3D11Device* device, XMFLOAT3 scale)
 		return false;
 	}
 
+	ComputeBounds(position);
+
 	delete[] indices;
 	indices = 0;
 
@@ -226,11 +227,11 @@ void ArrowModel::RenderBuffers(ID3D11DeviceContext* deviceContext)
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
-void ArrowModel::ComputeBounds()
+void ArrowModel::ComputeBounds(std::array<XMFLOAT3, 29> positionArray)
 {
 	float maxX = 0.f, maxY = 0.f, maxZ = 0.f, minX = 0.f, minY = 0.f, minZ = 0.f;
 
-	for (const auto& vertex : arrowPositions)
+	for (const auto& vertex : positionArray)
 	{
 		if (maxX < vertex.x) maxX = vertex.x;
 		if (maxY < vertex.y) maxY = vertex.y;

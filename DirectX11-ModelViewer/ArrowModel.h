@@ -59,7 +59,7 @@ private:
 	void ShutdownBuffers();
 	void RenderBuffers(ID3D11DeviceContext* deviceContext);
 
-	void ComputeBounds();
+	void ComputeBounds(std::array<XMFLOAT3, 29> positionArray);
 
 private:
 	ID3D11Buffer* mVertexBuffer;

@@ -259,6 +259,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
         return false;
     gSimpleColorShader = mSimpleColorShader;
 
+    mForwardArrowBound = new BoundModel(mDirect->GetDevice(),mForwardArrowModel->GetBounds());
+
    /* mGameObject = GameObjectClass::Create();
     mGameObject->InsertComponent(new TransformComponent);*/
 
@@ -269,15 +271,15 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     //in_archive >> loadMesh; //읽기
     //in.close();
 
-    ifstream in2;
-    SaveAnimationData loadAnim; //받을 객체 생성
-    in2.open("Test.Animation", ios_base::binary); //바이너리모드로 파일을 열었습니다.
-    boost::archive::binary_iarchive in_archive2(in2); //연 스트림을 넘겨주어서 직렬화객체 초기화
-    in_archive2 >> loadAnim; //읽기
-    in2.close();
+    //ifstream in2;
+    //SaveAnimationData loadAnim; //받을 객체 생성
+    //in2.open("Test.Animation", ios_base::binary); //바이너리모드로 파일을 열었습니다.
+    //boost::archive::binary_iarchive in_archive2(in2); //연 스트림을 넘겨주어서 직렬화객체 초기화
+    //in_archive2 >> loadAnim; //읽기
+    //in2.close();
 
-    anim = new AnimationData;
-    *anim = loadAnim;
+    //anim = new AnimationData;
+    //*anim = loadAnim;
 
     /*mTempMesh = new TempMesh;
     mTempMesh->SetMesh(loadMesh);
@@ -844,6 +846,9 @@ bool GraphicsClass::Render()
 
         mForwardArrowModel->Render(mDirect->GetDeviceContext());
         mSolidShader->Render(mDirect->GetDeviceContext(), mForwardArrowModel->GetIndexCount(), positionMat, viewMatrix, projectionMatrix, XMFLOAT4(0.0f, 0.0f, 1.f, 1.f));
+
+        mForwardArrowBound->Render(mDirect->GetDeviceContext());
+        mSimpleColorShader->Render(mDirect->GetDeviceContext(), mForwardArrowBound->GetIndexCount(), positionMat, viewMatrix, projectionMatrix, XMFLOAT4(0.f, 1.f, 0.f, 1.f));
 
         mRightArrowModel->Render(mDirect->GetDeviceContext());
         mSolidShader->Render(mDirect->GetDeviceContext(), mRightArrowModel->GetIndexCount(), positionMat, viewMatrix, projectionMatrix, XMFLOAT4(1.0f, 0.0f, 0.f, 1.f));
