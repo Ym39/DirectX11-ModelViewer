@@ -35,6 +35,9 @@ public:
 	bool IsMouse0Pressed();
 	bool IsMouse1Pressed();
 
+	bool IsMouse0Down();
+	bool IsMouse1Down();
+
 	float GetMouseX();
 	float GetMouseY();
 	
@@ -59,6 +62,8 @@ private:
 
 	unsigned char m_keyboardState[256];
 	DIMOUSESTATE m_mouseState;
+
+	BYTE mMouseButtonGetKeyDownFlag[4] = {0,};
 
 	int m_screenWidth, m_screenHeight;
 	int m_mouseX, m_mouseY;

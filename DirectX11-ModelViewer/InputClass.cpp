@@ -248,6 +248,32 @@ bool InputClass::IsMouse1Pressed()
 	return false;
 }
 
+bool InputClass::IsMouse0Down()
+{
+	if (mMouseButtonGetKeyDownFlag[0] == 1)
+		return false;
+	if (m_mouseState.rgbButtons[0] & 0x80)
+	{
+		mMouseButtonGetKeyDownFlag[0] = 1;
+		return true;
+	}
+	
+	return false;
+}
+
+bool InputClass::IsMouse1Down()
+{
+	if (mMouseButtonGetKeyDownFlag[1] == 1)
+		return false;
+	if (m_mouseState.rgbButtons[1] & 0x80)
+	{
+		mMouseButtonGetKeyDownFlag[1] == 1;
+		return true;
+	}
+
+	return false;
+}
+
 float InputClass::GetMouseX()
 {
 	return static_cast<float>(m_mouseState.lX);
@@ -285,7 +311,6 @@ bool InputClass::ReadMouse()
 {
 	HRESULT result;
 
-
 	// Read the mouse device.
 	result = m_mouse->GetDeviceState(sizeof(DIMOUSESTATE), (LPVOID)&m_mouseState);
 	if (FAILED(result))
@@ -298,6 +323,14 @@ bool InputClass::ReadMouse()
 		else
 		{
 			return false;
+		}
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		if (!(m_mouseState.rgbButtons[i] & 0x80))
+		{
+			mMouseButtonGetKeyDownFlag[i] = 0;
 		}
 	}
 

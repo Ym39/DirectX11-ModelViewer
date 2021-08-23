@@ -259,7 +259,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
         return false;
     gSimpleColorShader = mSimpleColorShader;
 
-    mForwardArrowBound = new BoundModel(mDirect->GetDevice(),mForwardArrowModel->GetBounds());
+    mForwardArrowBound = new BoundModel(mDirect->GetDevice(),mRightArrowModel->GetBounds());
 
    /* mGameObject = GameObjectClass::Create();
     mGameObject->InsertComponent(new TransformComponent);*/
@@ -654,7 +654,7 @@ bool GraphicsClass::Frame()
         gameObject.second->LateUpdate(ApplicationHandle->DeltaTime());
     }
 
-    if (InputClass::GetInstance()->IsMouse0Pressed())
+    if (InputClass::GetInstance()->IsMouse0Down())
     {
         InputClass::GetInstance()->GetWMMouseLocation(mouseX, mouseY);
 
@@ -682,7 +682,7 @@ bool GraphicsClass::Frame()
             }
         }
     }
-    else
+    if (InputClass::GetInstance()->IsMouse0Pressed() == false)
     {
         mCurrentPositionGizumoState = PositionGizumoState::NONE;
     }
@@ -717,7 +717,7 @@ bool GraphicsClass::Frame()
             yWeight = XMVectorGetX(dot);
             xWeight = 1.0f - abs(yWeight);
             float deltaWeight = (ApplicationHandle->Input().GetMouseY() * yWeight) + (ApplicationHandle->Input().GetMouseX() * xWeight);
-            transform->Translate(XMFLOAT3(1.f * deltaWeight, 0.f, 0.f));
+            transform->Translate(XMFLOAT3(-1.f * deltaWeight, 0.f, 0.f));
 
         }
         break;

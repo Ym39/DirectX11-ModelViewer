@@ -238,7 +238,7 @@ void ArrowModel::ComputeBounds(std::array<XMFLOAT3, 29> positionArray)
 		if (maxZ < vertex.z) maxZ = vertex.z;
 		if (minX > vertex.x) minX = vertex.x;
 		if (minY > vertex.y) minY = vertex.y;
-		if (minZ > vertex.z) maxZ = vertex.z;
+		if (minZ > vertex.z) minZ = vertex.z;
 	}
 
 	XMFLOAT3 center((maxX + minX) * 0.5f, (maxY + minY) * 0.5f, (maxZ + minZ) * 0.5f);
