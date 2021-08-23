@@ -1,0 +1,11 @@
+#pragma once
+#include"SolidColorShader.h"
+#include"TextureShaderClass.h"
+#include"SpecularShaderClass.h"
+#include"SimpleColorShader.h"
+#include"DepthShaderClass.h"
+#include"ShadowShaderClass.h"
+#include"SkinnedBumpShader.h"
+#include"SkinnedDepthShaderClass.h"
+#include"SkinnedMeshShader.h"
+#include"ColorShader.h"

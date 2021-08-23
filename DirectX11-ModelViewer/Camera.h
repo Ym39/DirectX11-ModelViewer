@@ -13,8 +13,8 @@ public:
 	void SetPosition(float x, float y, float z);
 	void SetRotation(float x, float y, float z);
 
-	XMFLOAT3 GetPosition();
-	XMFLOAT3 GetRotation();
+	XMFLOAT3 GetPosition() const;
+	XMFLOAT3 GetRotation() const;
 
 	void Render();
 	void GetViewMatrix(XMMATRIX&);

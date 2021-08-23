@@ -1,9 +1,12 @@
 #pragma once
 #include<vector>
 #include<string>
+#include<filesystem>
 #include "Imgui/imgui.h"
 #include "Imgui/imgui_impl_win32.h"
 #include "Imgui/imgui_impl_dx11.h"
+#include "Camera.h"
+#include "Light.h"
 
 enum class RendererType
 {
@@ -27,6 +30,15 @@ public:
 
 	void RenderInspector();
 
+	void RenderLoadFileWindow(bool* pActiveModelBrowser, bool* pActiveAnimBrowser);
+
+	void RenderModelFileBrowser(bool* pLoadFbx, std::filesystem::path& filePath, bool* pActive);
+
+	void RenderModelAnimationBrowser(bool* pLoadAnim, std::filesystem::path& filePath, bool* pActive);
+
+	void RenderCameraWindow(Camera& camera);
+
+	void RenderLightState(Light& light);
 private:
 	std::vector<std::string> mGameObjectNames;
 	std::vector<std::string> mModelFileNames;

@@ -4,28 +4,18 @@
 #include "Mesh.h"
 #include "Light.h"
 #include "Camera.h"
-#include "SkinnedMeshShader.h"
-#include "SpecularShaderClass.h"
-#include "ColorShader.h"
 #include "Texture.h"
 #include "GameObject.h"
 #include "ImguiClass.h"
 #include "GridClass.h"
 #include "RenderTextureClass.h"
-#include "DepthShaderClass.h"
-#include "ShadowShaderClass.h"
 #include "ModelClass.h"
-#include "SkinnedDepthShaderClass.h"
-#include "SolidColorShader.h"
 #include "ArrowModel.h"
-#include "TextureShaderClass.h"
 #include "BitmapClass.h"
 #include "MeshClass.h"
 #include "AssetClass.h"
 #include "ModelListBrowser.h"
-#include "SkinnedBumpShader.h"
-#include"SimpleColorShader.h"
-#include"BoundModel.h"
+#include "Shader.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = false;
@@ -33,10 +23,6 @@ const float SCREEN_DEPTH = 10000.0f;
 const float SCREEN_NEAR = 1.0f;
 const int SHADOWMAP_WIDTH = 1024;
 const int SHADOWMAP_HEIGHT = 1024;
-
-//Camera* gMainCamera = nullptr;
-//Light* gMainLight = nullptr;
-//D3DClass* gDirect = nullptr;
 
 enum class PositionGizumoState
 {
@@ -50,7 +36,7 @@ class GraphicsClass
 {
 public:
 	GraphicsClass();
-	GraphicsClass(const GraphicsClass&);
+	GraphicsClass(const GraphicsClass&) = delete;
 	~GraphicsClass();
 
 	bool Initialize(int screenWidth, int screenHeight, HWND hwnd);
@@ -60,51 +46,39 @@ public:
 	bool RenderSceneToTexture();
 
 private:
-	void TestIntersection(int mouseX, int mouseY, XMFLOAT3 position);
-
-private:
     D3DClass* mDirect;
 	FBXLoader* mFbxLoader;
-	Mesh* mMesh;
 	Light* mLight;
 	Camera* mCamera;
 	GridClass* mGrid;
-	SkinnedMeshShader* mShader;
+	RenderTextureClass* mRenderTexture;
+
+	///쉐이더 클래스
+	SkinnedMeshShader* mSkinnedShader;
 	SpecularShaderClass* mSpecularShader;
 	ColorShader* mColorShader;
-	Texture* mTexture;
-	GameObject* mObject;
-	ImguiClass* mImgui;
-	RenderTextureClass* mRenderTexture;
 	DepthShaderClass* mDepthShader;
 	ShadowShaderClass* mShadowShader;
 	SkinnedDepthShaderClass* mSkinnedDepthShader;
-	ModelClass* mGroundModel = nullptr;
-	Mesh* mGroundMesh = nullptr;
-	Texture* mGroundTexture = nullptr;
 	SolidColorShader* mSolidShader;
-	ArrowModel* mForwardArrowModel;
-	ArrowModel* mRightArrowModel;
-	ArrowModel* mUpArrowModel;
-	BitmapClass* mMouseBitmap = nullptr;
-	TextureShaderClass* mTextureShader = nullptr;
-	SkinnedBumpShader* mSkinnedBumpShader = nullptr;
-	SimpleColorShader* mSimpleColorShader = nullptr;
-	BoundModel* mForwardArrowBound = nullptr;
+	TextureShaderClass* mTextureShader;
+	SkinnedBumpShader* mSkinnedBumpShader;
+	SimpleColorShader* mSimpleColorShader;
 
+	//2D
+	BitmapClass* mMouseBitmap;
+
+	//IMGUI
+	ImguiClass* mImgui;
 	ModelListBrowser modelListBrowser;
 	GameObjectBrowser* gameObjectBrowser;
 
-	Texture* mCharacterTexture = nullptr;
-	MeshClass* mCharacterMesh = nullptr;
-	GameObjectClass* mGameObject;
-	AnimationData* anim;
-	//TempMesh* mTempMesh = nullptr;
-	//vector<XMMATRIX> dummyBone;
+	//화살표 모델
+	ArrowModel* mForwardArrowModel;
+	ArrowModel* mRightArrowModel;
+	ArrowModel* mUpArrowModel;
 
 	XMMATRIX mBaseViewMatrix;
-
-	XMMATRIX floorWorld;
 
 	std::unordered_map<std::string,GameObject> meshMap;
 	std::string mCurrentRenderMesh;

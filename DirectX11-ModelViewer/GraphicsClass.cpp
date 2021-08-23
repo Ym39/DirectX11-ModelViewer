@@ -16,7 +16,7 @@ extern Light* gMainLight;
 extern D3DClass* gDirect;
 extern SimpleColorShader* gSimpleColorShader;
 
-bool VectorGetter2(void* list, int count, const char** outText)
+bool VectorItemGetter(void* list, int count, const char** outText)
 {
     std::vector<std::string>& vector = *static_cast<std::vector<std::string>*>(list);
     if (count < 0 || count > vector.size())
@@ -31,21 +31,29 @@ bool VectorGetter2(void* list, int count, const char** outText)
 GraphicsClass::GraphicsClass() :
     mDirect(nullptr),
     mFbxLoader(nullptr),
-    mMesh(nullptr),
-    mTexture(nullptr),
-    mCurrentRenderMesh(""),
-    mObject(nullptr),
+    mLight(nullptr),
+    mCamera(nullptr),
+    mGrid(nullptr),
     mRenderTexture(nullptr),
+    mSkinnedShader(nullptr),
+    mSpecularShader(nullptr),
+    mColorShader(nullptr),
     mDepthShader(nullptr),
     mShadowShader(nullptr),
-    mGroundModel(nullptr),
+    mSkinnedDepthShader(nullptr),
     mSolidShader(nullptr),
+    mTextureShader(nullptr),
+    mSkinnedBumpShader(nullptr),
+    mSimpleColorShader(nullptr),
+    mMouseBitmap(nullptr),
+    mImgui(nullptr),
+    gameObjectBrowser(nullptr),
     mForwardArrowModel(nullptr),
-    mGameObject(nullptr)
-{
-}
-
-GraphicsClass::GraphicsClass(const GraphicsClass&)
+    mRightArrowModel(nullptr),
+    mUpArrowModel(nullptr),
+    mCurrentGameObject(""),
+    mScreenWidth(0),
+    mScreenHeight(0)
 {
 }
 
@@ -82,15 +90,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
         return false;
     }
 
-    
-
-    /*Mesh* mesh = mFbxLoader->LoadFbx("Model\\character.fbx");
-    result = mesh->Initialize(mDirect->GetDevice());
-    if (result == false)
-    {
-        return false;
-    }*/
-
     mLight = new Light;
     if (mLight == nullptr)
     {
@@ -111,8 +110,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     mCamera->GetViewMatrix(mBaseViewMatrix);
     gMainCamera = mCamera;
 
-    mShader = new SkinnedMeshShader;
-    result = mShader->Initialize(mDirect->GetDevice(),hwnd);
+    mSkinnedShader = new SkinnedMeshShader;
+    result = mSkinnedShader->Initialize(mDirect->GetDevice(),hwnd);
     if (result == false)
     {
         return false;
@@ -138,34 +137,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     {
         return false;
     }
-
-    /*Texture* texture = new Texture;
-    result = texture->Initialize(mDirect->GetDevice(),mDirect->GetDeviceContext(),"Texture\\map.dds");
-    if (result == false)
-    {
-        return false;
-    }
-
-    mTexture = new Texture;
-    result = mTexture->Initialize(mDirect->GetDevice(), mDirect->GetDeviceContext(), "Texture\\map.dds");
-    if (result == false)
-    {
-        return false;
-    }*/
-
-    /*mObject = new GameObject;
-    mObject->SetMesh(mesh);
-    mObject->SetTexture(texture);*/
-    /*Mesh* mesh = mFbxLoader->LoadFbx("Model\\character.fbx");
-    mesh->Initialize(mDirect->GetDevice());
-    mObject->SetMesh(mesh);
-    Texture* texture = new Texture;
-    result = texture->Initialize(mDirect->GetDevice(), mDirect->GetDeviceContext(), "Texture\\CharacterTexture.dds");
-    if (result == false)
-    {
-        return false;
-    }
-    mObject->SetTexture(texture);*/
+ 
     mImgui = new ImguiClass;
     mImgui->Initialize(hwnd, mDirect->GetDevice(), mDirect->GetDeviceContext());
 
@@ -188,28 +160,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     if (result == false)
     {
         return false;
-    }
-    
-    /*mGroundModel = new ModelClass;
-    result = mGroundModel->Initialize(mDirect->GetDevice(), "Model\\plane01.txt");
-    if (result == false)
-    {
-        return false;
-    }
-    mGroundTexture = new Texture;
-    mGroundTexture->Initialize(mDirect->GetDevice(), mDirect->GetDeviceContext(), "Texture\\White.dds");
-    mGroundModel->SetTexture(mGroundTexture);
-    mGroundModel->SetPosition(0.f, 0.f, 0.f);*/
-
-    /*mGroundMesh = mFbxLoader->LoadFbx("Model\\floor.fbx");
-    result = mGroundMesh->Initialize(mDirect->GetDevice());
-    if (result == false)
-    {
-        return false;
-    }*/
-
-    mDirect->GetWorldMatrix(floorWorld);
-    floorWorld *= XMMatrixRotationRollPitchYaw(XMConvertToRadians(90.0f), 0.0f, 0.0f);
+    }    
 
     mSkinnedDepthShader = new SkinnedDepthShaderClass;
     result = mSkinnedDepthShader->Initialize(mDirect->GetDevice(), hwnd);
@@ -259,62 +210,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
         return false;
     gSimpleColorShader = mSimpleColorShader;
 
-    mForwardArrowBound = new BoundModel(mDirect->GetDevice(),mRightArrowModel->GetBounds());
-
-   /* mGameObject = GameObjectClass::Create();
-    mGameObject->InsertComponent(new TransformComponent);*/
-
-    //ifstream in; //읽기 스트림 생성
-    //SkinnedMeshData loadMesh; //받을 객체 생성
-    //in.open("Character.SM", ios_base::binary); //바이너리모드로 파일을 열었습니다.
-    //boost::archive::binary_iarchive in_archive(in); //연 스트림을 넘겨주어서 직렬화객체 초기화
-    //in_archive >> loadMesh; //읽기
-    //in.close();
-
-    //ifstream in2;
-    //SaveAnimationData loadAnim; //받을 객체 생성
-    //in2.open("Test.Animation", ios_base::binary); //바이너리모드로 파일을 열었습니다.
-    //boost::archive::binary_iarchive in_archive2(in2); //연 스트림을 넘겨주어서 직렬화객체 초기화
-    //in_archive2 >> loadAnim; //읽기
-    //in2.close();
-
-    //anim = new AnimationData;
-    //*anim = loadAnim;
-
-    /*mTempMesh = new TempMesh;
-    mTempMesh->SetMesh(loadMesh);
-
-    if (mTempMesh->InitializeBuffer(mDirect->GetDevice()) == false)
-        return false;*/
-
-    /*mCharacterTexture = new Texture;
-    if (mCharacterTexture->Initialize(mDirect->GetDevice(), mDirect->GetDeviceContext(), "Texture\\vanguard_diffuse.png") == false)
-        return false;
-
-    mCharacterMesh = new MeshClass;
-    mCharacterMesh->operator=(loadMesh);
-    mCharacterMesh->Initalize(mDirect->GetDevice());*/
-
-    /*MeshRenderComponent* rendercomp = new MeshRenderComponent();
-    rendercomp->Initalize(mCharacterMesh, mSpecularShader, mCharacterTexture);*/
-
-    /*SkinnedMeshRenderComponent* rendercomp = new SkinnedMeshRenderComponent();
-    rendercomp->Initalize(mCharacterMesh, mShader, mSkinnedDepthShader,mCharacterTexture);
-
-    mGameObject->InsertComponent(rendercomp);
-    
-    AnimatorComponent* animComp = new AnimatorComponent();
-    animComp->Play();
-    animComp->SetAnimation(anim);
-
-    mGameObject->InsertComponent(animComp);*/
-
-    /*dummyBone.resize(120);
-    for (auto& m : dummyBone)
-    {
-        m = XMMatrixTranspose(XMMatrixIdentity());
-    }*/
-
     gameObjectBrowser = new GameObjectBrowser;
 
     AssetClass::Initialize(mDirect->GetDevice(), mDirect->GetDeviceContext());
@@ -337,24 +232,17 @@ void GraphicsClass::Shutdown()
         mFbxLoader = nullptr;
     }
 
-    if (mMesh)
-    {
-        mMesh->Shutdown();
-        delete mMesh;
-        mMesh = nullptr;
-    }
-
     if (mCamera)
     {
         delete mCamera;
         mCamera = nullptr;
     }
 
-    if (mShader)
+    if (mSkinnedShader)
     {
-        mShader->Shutdown();
-        delete mShader;
-        mShader = nullptr;
+        mSkinnedShader->Shutdown();
+        delete mSkinnedShader;
+        mSkinnedShader = nullptr;
     }
 
     if (mSpecularShader)
@@ -362,20 +250,6 @@ void GraphicsClass::Shutdown()
         mSpecularShader->Shutdown();
         delete mSpecularShader;
         mSpecularShader = nullptr;
-    }
-
-    if (mTexture)
-    {
-        mTexture->Shutdown();
-        delete mTexture;
-        mTexture = nullptr;
-    }
-
-    if (mObject)
-    {
-        mObject->Shutdown();
-        delete mObject;
-        mObject = nullptr;
     }
 
     if (mGrid)
@@ -411,27 +285,6 @@ void GraphicsClass::Shutdown()
         mShadowShader->Shutdown();
         delete mShadowShader;
         mShadowShader = nullptr;
-    }
-
-    if (mGroundModel)
-    {
-        mGroundModel->Shutdown();
-        delete mGroundModel;
-        mGroundModel = nullptr;
-    }
-
-    if (mGroundMesh)
-    {
-        mGroundMesh->Shutdown();
-        delete mGroundMesh;
-        mGroundMesh = nullptr;
-    }
-
-    if (mGroundTexture)
-    {
-        mGroundTexture->Shutdown();
-        delete mGroundTexture;
-        mGroundTexture = nullptr;
     }
 
     if (mSkinnedDepthShader)
@@ -476,33 +329,6 @@ void GraphicsClass::Shutdown()
         mSkinnedBumpShader = nullptr;
     }
 
-    if (mCharacterTexture)
-    {
-        mCharacterTexture->Shutdown();
-        delete mCharacterTexture;
-        mCharacterTexture = nullptr;
-    }
-
-    if (mCharacterMesh)
-    {
-        mCharacterMesh->Shutdown();
-        delete mCharacterMesh;
-        mCharacterMesh = nullptr;
-    }
-
-    if (mGameObject)
-    {
-        mGameObject->Destroy();
-        delete mGameObject;
-        mGameObject = nullptr;
-    }
-
-    if (anim)
-    {
-        delete anim;
-        anim = nullptr;
-    }
-
     if (mSimpleColorShader)
     {
         mSimpleColorShader->Shutdown();
@@ -521,7 +347,6 @@ bool GraphicsClass::Frame()
 
     if (InputClass::GetInstance()->IsMouse1Pressed() == true)
     {
-        //mObject->Update(ApplicationHandle->DeltaTime());
         if (InputClass::GetInstance()->IsWPressed() == true)
         {
             XMVECTOR forward = XMLoadFloat3(&mCamera->GetTransform().Forward());
@@ -551,93 +376,9 @@ bool GraphicsClass::Frame()
             mCamera->GetTransform().Translate(delta);
         }
 
-        /*if (InputClass::GetInstance()->IsUpArrowPressed() == true)
-        {
-            mCamera->GetTransform().Rotate(-speed * ApplicationHandle->DeltaTime(), Axis::Xaxis);
-        }
-        if (InputClass::GetInstance()->IsDownArrowPressed() == true)
-        {
-            mCamera->GetTransform().Rotate(speed * ApplicationHandle->DeltaTime(), Axis::Xaxis);
-        }
-        if (InputClass::GetInstance()->IsRightArrowPressed() == true)
-        {
-            mCamera->GetTransform().Rotate(speed * ApplicationHandle->DeltaTime(), Axis::Yaxis);
-        }
-        if (InputClass::GetInstance()->IsLeftArrowPressed() == true)
-        {
-            mCamera->GetTransform().Rotate(-speed * ApplicationHandle->DeltaTime(), Axis::Yaxis);
-        }*/
-
         mCamera->GetTransform().Rotate(InputClass::GetInstance()->GetMouseX() * ApplicationHandle->DeltaTime(), Axis::Yaxis);
         mCamera->GetTransform().Rotate(InputClass::GetInstance()->GetMouseY() * ApplicationHandle->DeltaTime(), Axis::Xaxis);
-
     }
-
-    /*if (mCurrentRenderMesh != "")
-    {
-        meshMap[mCurrentRenderMesh].Update(ApplicationHandle->DeltaTime());
-
-        if (mCurrentPositionGizumoState == PositionGizumoState::NONE)
-        {
-            if (InputClass::GetInstance()->IsMouse0Pressed())
-            {
-                InputClass::GetInstance()->GetWMMouseLocation(mouseX, mouseY);
-                TestIntersection(mouseX, mouseY, meshMap[mCurrentRenderMesh].Transfrom().GetPosition());
-            }
-        }
-        else
-        {
-            XMVECTOR cameraForward;
-            XMVECTOR arrowDirection;
-            float yWeight = 0.0f;
-            float xWeight = 0.0f;
-
-            switch (mCurrentPositionGizumoState)
-            {
-            case PositionGizumoState::FORWARD:
-            {
-                cameraForward = XMLoadFloat3(&mCamera->GetTransform().Forward());
-                arrowDirection = XMVectorSet(0.f, 0.f, 1.f, 0.f);
-                XMVECTOR dot = XMVector3Dot(cameraForward, arrowDirection);
-                yWeight = XMVectorGetX(dot);
-                xWeight = 1.0f - abs(yWeight);
-                float deltaWeight = (ApplicationHandle->Input().GetMouseY() * yWeight) + (ApplicationHandle->Input().GetMouseX() * xWeight);
-                meshMap[mCurrentRenderMesh].Transfrom().Translate(XMFLOAT3(0.f, 0.f, 1.f * deltaWeight));
-            }
-
-                break;
-            case PositionGizumoState::RIGHT:
-            {
-                cameraForward = XMLoadFloat3(&mCamera->GetTransform().Forward());
-                arrowDirection = XMVectorSet(1.f, 0.f, 0.f, 0.f);
-                XMVECTOR dot = XMVector3Dot(cameraForward, arrowDirection);
-                yWeight = XMVectorGetX(dot);
-                xWeight = 1.0f - abs(yWeight);
-                float deltaWeight = (ApplicationHandle->Input().GetMouseY() * yWeight) + (ApplicationHandle->Input().GetMouseX() * xWeight);
-                meshMap[mCurrentRenderMesh].Transfrom().Translate(XMFLOAT3(1.f* deltaWeight, 0.f, 0.f));
-
-            }
-                break;
-            case PositionGizumoState::UP:
-            {
-                cameraForward = XMLoadFloat3(&mCamera->GetTransform().Forward());
-                arrowDirection = XMVectorSet(0.f, 1.f, 0.f, 0.f);
-                float deltaWeight = -(ApplicationHandle->Input().GetMouseY());
-                meshMap[mCurrentRenderMesh].Transfrom().Translate(XMFLOAT3(0.f, 1.f * deltaWeight, 0.f ));
-            }
-                break;
-            }
-
-            
-
-            if (InputClass::GetInstance()->IsMouse0Pressed() == false)
-            {
-                mCurrentPositionGizumoState = PositionGizumoState::NONE;
-            }
-        }
-    }*/
-
-    //mGameObject->LateUpdate(ApplicationHandle->DeltaTime());
 
     XMMATRIX worldMatrix, viewMarix, projectionMatrix;
     mDirect->GetWorldMatrix(worldMatrix);
@@ -775,61 +516,7 @@ bool GraphicsClass::Render()
     mGrid->Render(mDirect->GetDeviceContext());
     mColorShader->Render(mDirect->GetDeviceContext(), mGrid->GetIndexCount(), gridWorldMatrix, viewMatrix, projectionMatrix);
 
-    if (mCurrentRenderMesh != "")
-    {
-        GameObject& renderObject = meshMap[mCurrentRenderMesh];
-        renderObject.Render(mDirect->GetDeviceContext());
-        if (renderObject.IsHasAnimation())
-        {
-            mShader->Render(mDirect->GetDeviceContext(), renderObject.GetIndexCount(), renderObject.Transfrom().GetTransform(), viewMatrix, projectionMatrix, renderObject.GetTexture(), mLight->GetPosition(), mLight->GetDiffuseColor(), mLight->GetAmbientColor(), mCamera->GetPosition(), mLight->GetSpecularColor(), mLight->GetSpecularPower(), renderObject.GetBoneTransform());
-            //mShadowShader->Render(mDirect->GetDeviceContext(), renderObject.GetIndexCount(), renderObject.Transfrom().GetTransform(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, renderObject.GetTexture(), mRenderTexture->GetShaderResourceView(), mLight->GetPosition(), mLight->GetAmbientColor(), mLight->GetDiffuseColor());
-            //mDepthShader->Render(mDirect->GetDeviceContext(), renderObject.GetIndexCount(), renderObject.Transfrom().GetTransform(), viewMatrix, projectionMatrix);
-        }
-        else
-        {
-            mSpecularShader->Render(mDirect->GetDeviceContext(), renderObject.GetIndexCount(), renderObject.Transfrom().GetTransform(), viewMatrix, projectionMatrix, renderObject.GetTexture(), mLight->GetPosition(), mLight->GetDiffuseColor(), mLight->GetAmbientColor(), mCamera->GetPosition(), mLight->GetSpecularColor(), mLight->GetSpecularPower());
-        }
-
-        XMMATRIX transformMatrix;
-        XMFLOAT3 position = renderObject.Transfrom().GetPosition();
-        transformMatrix = XMMatrixTranslation(position.x, position.y, position.z);
-
-        mForwardArrowModel->Render(mDirect->GetDeviceContext());
-        mSolidShader->Render(mDirect->GetDeviceContext(), mForwardArrowModel->GetIndexCount(), transformMatrix  , viewMatrix, projectionMatrix, XMFLOAT4(0.0f, 0.0f, 1.f, 1.f));
-
-        mRightArrowModel->Render(mDirect->GetDeviceContext());
-        mSolidShader->Render(mDirect->GetDeviceContext(), mRightArrowModel->GetIndexCount(), transformMatrix , viewMatrix, projectionMatrix, XMFLOAT4(1.0f, 0.0f, 0.f, 1.f));
-
-        mUpArrowModel->Render(mDirect->GetDeviceContext());
-        mSolidShader->Render(mDirect->GetDeviceContext(), mUpArrowModel->GetIndexCount(), transformMatrix , viewMatrix, projectionMatrix, XMFLOAT4(0.0f, 1.f, 0.f, 1.f));
-    }
-   /* mObject->Render(mDirect->GetDeviceContext());
-    mShader->Render(mDirect->GetDeviceContext(), mObject->GetIndexCount(), mObject->Transfrom().GetTransform(), viewMatrix, projectionMatrix, mObject->GetTexture(), mLight->GetPosition(), mLight->GetDiffuseColor(), mLight->GetAmbientColor(), mCamera->GetPosition(), mLight->GetSpecularColor(), mLight->GetSpecularPower(), mObject->GetBoneTransform());*/
-
-    /*float posX, posY, posZ;
-    mDirect->GetWorldMatrix(worldMatrix);
-    mGroundModel->GetPosition(posX, posY, posZ);
-    worldMatrix = XMMatrixScaling(100.f, 0.0f, 100.f) * XMMatrixTranslation(posX, posY, posZ);
-
-    mGroundModel->Render(mDirect->GetDeviceContext());
-    mShadowShader->Render(mDirect->GetDeviceContext(), mGroundModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, mGroundModel->GetTexture(), mRenderTexture->GetShaderResourceView(), mLight->GetPosition(), mLight->GetAmbientColor(), mLight->GetDiffuseColor());*/
-    //mDepthShader->Render(mDirect->GetDeviceContext(), mGroundModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
-
- /*   mTempMesh->Render(mDirect->GetDeviceContext());
-    mShader->Render(mDirect->GetDeviceContext(), mTempMesh->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, mCharacterTexture->GetTexture(), mLight->GetPosition(), mLight->GetDiffuseColor(), mLight->GetAmbientColor(), mCamera->GetPosition(), mLight->GetSpecularColor(), mLight->GetSpecularPower(), dummyBone);*/
-
-    mDirect->GetWorldMatrix(worldMatrix);
-    /*mGroundMesh->Render(mDirect->GetDeviceContext());
-    mShadowShader->Render(mDirect->GetDeviceContext(), mGroundMesh->GetIndexCount(), floorWorld, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix,mGroundTexture->GetTexture(), mRenderTexture->GetShaderResourceView(), mLight->GetPosition(), mLight->GetAmbientColor(), mLight->GetDiffuseColor());*/
-
-    /*MeshRenderComponent* currentRenderer;
-    currentRenderer = mGameObject->GetComponent<MeshRenderComponent>();
-
-    if (currentRenderer != nullptr)
-    {
-        currentRenderer->Render(mDirect->GetDeviceContext());
-    }*/
-
+    //게임 오브젝트 렌더링
     for (const auto& gameObject : mGameObejcts)
     {
         MeshRenderComponent* renderComp = gameObject.second->GetComponent<MeshRenderComponent>();
@@ -846,9 +533,6 @@ bool GraphicsClass::Render()
 
         mForwardArrowModel->Render(mDirect->GetDeviceContext());
         mSolidShader->Render(mDirect->GetDeviceContext(), mForwardArrowModel->GetIndexCount(), positionMat, viewMatrix, projectionMatrix, XMFLOAT4(0.0f, 0.0f, 1.f, 1.f));
-
-        mForwardArrowBound->Render(mDirect->GetDeviceContext());
-        mSimpleColorShader->Render(mDirect->GetDeviceContext(), mForwardArrowBound->GetIndexCount(), positionMat, viewMatrix, projectionMatrix, XMFLOAT4(0.f, 1.f, 0.f, 1.f));
 
         mRightArrowModel->Render(mDirect->GetDeviceContext());
         mSolidShader->Render(mDirect->GetDeviceContext(), mRightArrowModel->GetIndexCount(), positionMat, viewMatrix, projectionMatrix, XMFLOAT4(1.0f, 0.0f, 0.f, 1.f));
@@ -891,45 +575,34 @@ bool GraphicsClass::Render()
     ImGui::NewFrame();
 
     //IMGUI 렌더링
-    mImgui->Render(&loadFbx,loadPath, meshMap[mCurrentRenderMesh].Transfrom(),meshMap,mCurrentRenderMesh,*mCamera,mLight,mCurrentRenderMesh == "" ? nullptr : &(meshMap[mCurrentRenderMesh]), wmX, wmY, &loadAnim, loadPath);
+    //mImgui->Render(&loadFbx,loadPath, meshMap[mCurrentRenderMesh].Transfrom(),meshMap,mCurrentRenderMesh,*mCamera,mLight,mCurrentRenderMesh == "" ? nullptr : &(meshMap[mCurrentRenderMesh]), wmX, wmY, &loadAnim, loadPath);
+    static bool activeModelBrowser = false;
+    static bool activeAnimBrowser = false;
+
+    modelListBrowser.RenderLoadFileWindow(&activeModelBrowser, &activeAnimBrowser);
+
+    modelListBrowser.RenderModelFileBrowser(&loadFbx, loadPath, &activeModelBrowser);
+    modelListBrowser.RenderModelAnimationBrowser(&loadAnim, loadPath, &activeAnimBrowser);
+
+    modelListBrowser.RenderCameraWindow(*mCamera);
+    modelListBrowser.RenderLightState(*mLight);
 
     if (loadFbx == true)
     {
-        /*std::string meshKey = loadPath.filename().string();
-        GameObject loadObject;
-        Mesh* loadMesh = mFbxLoader->LoadFbx(const_cast<char*>(loadPath.string().c_str()));
-        bool result = loadMesh->Initialize(mDirect->GetDevice());
-        if (result == false)
-        {
-            return false;
-        }
-        loadObject.SetMesh(loadMesh);
-        Texture* texture = new Texture;
-        result = texture->Initialize(mDirect->GetDevice(), mDirect->GetDeviceContext(), "Texture\\vanguard_diffuse.png");
-        if (result == false)
-        {
-            return false;
-        }
-        loadObject.SetTexture(texture);
-
-        meshMap.insert(std::pair<std::string, GameObject>(meshKey, loadObject));*/
         mFbxLoader->LoadFbxFile(loadPath);
     }
-
+    
     if (loadAnim == true)
     {
         mFbxLoader->LoadAnimation(loadPath);
     }
 
-    //modelListBrowser.Render();
     static std::vector<std::string> gameObejctNames;
     gameObejctNames.clear();
     for (const auto& go : mGameObejcts)
     {
         gameObejctNames.push_back(go.first);
     }
-
-    //gameObjectBrowser->Render(&addGameObject, gameObejctNames);
 
     static std::string currentGameObject;
     static std::string prevGameObject = "";
@@ -956,7 +629,7 @@ bool GraphicsClass::Render()
             case RendererType::ONLYSPECULAR:
             {
                 SkinnedMeshRenderComponent* rendercomp = new SkinnedMeshRenderComponent();
-                rendercomp->Initalize(AssetClass::mMeshMap[selectModelKey], mShader, mSkinnedDepthShader);
+                rendercomp->Initalize(AssetClass::mMeshMap[selectModelKey], mSkinnedShader, mSkinnedDepthShader);
                 newGameObejct->InsertComponent(rendercomp);
             }
                 break;
@@ -970,19 +643,14 @@ bool GraphicsClass::Render()
             }
 
             AnimatorComponent* animComp = new AnimatorComponent();
-            //animComp->SetAnimation(anim);
-
             newGameObejct->InsertComponent(animComp);
-
             mGameObejcts[selectModelKey] = newGameObejct;
         }
         else
         {
             MeshRenderComponent* renderComp = new MeshRenderComponent();
             renderComp->Initalize(AssetClass::mMeshMap[selectModelKey], mSpecularShader, mDepthShader);
-
             newGameObejct->InsertComponent(renderComp);
-
             mGameObejcts[selectModelKey] = newGameObejct;
         }
 
@@ -1087,7 +755,7 @@ bool GraphicsClass::Render()
                                         break;
                                     }
                                 }
-                                if (ImGui::Combo("Diffuse", &selectTextureCount, VectorGetter2,static_cast<void*>(&textureNames), textureNames.size(), 16))
+                                if (ImGui::Combo("Diffuse", &selectTextureCount, VectorItemGetter,static_cast<void*>(&textureNames), textureNames.size(), 16))
                                 {
                                     comp->SetMaterial(i,j, textureNames[selectTextureCount]);
                                 }
@@ -1129,7 +797,7 @@ bool GraphicsClass::Render()
                                         break;
                                     }
                                 }
-                                if (ImGui::Combo("Diffuse", &selectTextureCount, VectorGetter2, static_cast<void*>(&textureNames), textureNames.size(), 16))
+                                if (ImGui::Combo("Diffuse", &selectTextureCount, VectorItemGetter, static_cast<void*>(&textureNames), textureNames.size(), 16))
                                 {
                                     comp->SetMaterial(i, j, textureNames[selectTextureCount]);
                                 }
@@ -1180,15 +848,15 @@ bool GraphicsClass::Render()
                                         selectSpecularCount = textIdx;
                                     }
                                 }
-                                if (ImGui::Combo("Diffuse", &selectTextureCount, VectorGetter2, static_cast<void*>(&textureNames), textureNames.size(), 16))
+                                if (ImGui::Combo("Diffuse", &selectTextureCount, VectorItemGetter, static_cast<void*>(&textureNames), textureNames.size(), 16))
                                 {
                                     comp->SetMaterial(i, j, textureNames[selectTextureCount], subObjectMats[i][j].GetNormalKey(), subObjectMats[i][j].GetSpecularKey());
                                 }
-                                if (ImGui::Combo("Normal", &selectNormalCount, VectorGetter2, static_cast<void*>(&textureNames), textureNames.size(), 16))
+                                if (ImGui::Combo("Normal", &selectNormalCount, VectorItemGetter, static_cast<void*>(&textureNames), textureNames.size(), 16))
                                 {
                                     comp->SetMaterial(i, j, subObjectMats[i][j].GetTextureKey(), textureNames[selectNormalCount], subObjectMats[i][j].GetSpecularKey());
                                 }
-                                if (ImGui::Combo("Specular", &selectSpecularCount, VectorGetter2, static_cast<void*>(&textureNames), textureNames.size(), 16))
+                                if (ImGui::Combo("Specular", &selectSpecularCount, VectorItemGetter, static_cast<void*>(&textureNames), textureNames.size(), 16))
                                 {
                                     comp->SetMaterial(i, j, subObjectMats[i][j].GetTextureKey(), subObjectMats[i][j].GetNormalKey(), textureNames[selectSpecularCount]);
                                 }
@@ -1210,7 +878,7 @@ bool GraphicsClass::Render()
             {
                 if (currentSelectAbleAnimation.size() > 0)
                 {
-                    if (ImGui::Combo("SetAnimation", &currentAnimIndex, VectorGetter2, static_cast<void*>(&currentSelectAbleAnimation), currentSelectAbleAnimation.size(), 16))
+                    if (ImGui::Combo("SetAnimation", &currentAnimIndex, VectorItemGetter, static_cast<void*>(&currentSelectAbleAnimation), currentSelectAbleAnimation.size(), 16))
                     {
                         if (currentAnimIndex == 0)
                             animatorComp->SetAnimation(AssetClass::GetAnimation(nullptr));
@@ -1285,14 +953,6 @@ bool GraphicsClass::RenderSceneToTexture()
         }
     }
 
-    /*MeshRenderComponent* currentRenderer;
-    currentRenderer = mGameObject->GetComponent<MeshRenderComponent>();
-
-    if (currentRenderer != nullptr)
-    {
-        currentRenderer->RenderDepth(mDirect->GetDeviceContext());
-    }*/
-
     for (const auto& gameObject : mGameObejcts)
     {
         MeshRenderComponent* renderComp = gameObject.second->GetComponent<MeshRenderComponent>();
@@ -1300,24 +960,7 @@ bool GraphicsClass::RenderSceneToTexture()
     }
 
 
-    mDirect->GetWorldMatrix(worldMatrix);
-
-    /*mGroundModel->GetPosition(posX, posY, posZ);
-    worldMatrix = XMMatrixScaling(100.f, 0.0f, 100.f) * XMMatrixTranslation(posX, posY, posZ);
-
-    mGroundModel->Render(mDirect->GetDeviceContext());
-    result = mDepthShader->Render(mDirect->GetDeviceContext(), mGroundModel->GetIndexCount(), worldMatrix, lightViewMatrix, lightProjectionMatrix);
-    if (result == false)
-    {
-        return false;
-    }*/
-
- /*   mGroundMesh->Render(mDirect->GetDeviceContext());
-    result = mDepthShader->Render(mDirect->GetDeviceContext(), mGroundMesh->GetIndexCount(), floorWorld, lightViewMatrix, lightProjectionMatrix);
-    if (result == false)
-    {
-        return false;
-    }*/
+    mDirect->GetWorldMatrix(worldMatrix); 
 
     mDirect->SetBackBufferRenderTarget();
 
@@ -1326,59 +969,3 @@ bool GraphicsClass::RenderSceneToTexture()
     return true;
 }
 
-void GraphicsClass::TestIntersection(int mouseX, int mouseY, XMFLOAT3 position)
-{
-    XMMATRIX projectionMatrix, viewMatrix, inverseViewMatrix, inverseWorldMatrix , worldMatrix;
-    XMFLOAT3 direction, origin, rayOrigin, rayDirection;
-
-    float pointX = ((2.0f * (float)mouseX) / (float)mScreenWidth) - 1.0f;
-    float pointY = (((2.0f * (float)mouseY) / (float)mScreenHeight) - 1.0f) * -1.0f;
-
-    mDirect->GetProjectionMatrix(projectionMatrix);
-
-    XMFLOAT3X3 projectionMatrix4;
-    XMStoreFloat3x3(&projectionMatrix4, projectionMatrix);
-
-    pointX = pointX / projectionMatrix4._11;
-    pointY = pointY / projectionMatrix4._22;
-
-    mCamera->GetViewMatrix(viewMatrix);
-    inverseViewMatrix = XMMatrixInverse(nullptr, viewMatrix);
-
-    XMFLOAT3X3 inverseViewMatrix4;
-    XMStoreFloat3x3(&inverseViewMatrix4, inverseViewMatrix);
-
-    direction.x = (pointX * inverseViewMatrix4._11) + (pointY * inverseViewMatrix4._21) + inverseViewMatrix4._31;
-    direction.y = (pointX * inverseViewMatrix4._12) + (pointY * inverseViewMatrix4._22) + inverseViewMatrix4._32;
-    direction.z = (pointX * inverseViewMatrix4._13) + (pointY * inverseViewMatrix4._23) + inverseViewMatrix4._33;
-
-    origin = mCamera->GetPosition();
-
-    mDirect->GetWorldMatrix(worldMatrix);
-    XMMATRIX translateMatrix = XMMatrixTranslation(position.x, position.y, position.z);
-    worldMatrix = XMMatrixMultiply(worldMatrix,translateMatrix);
-
-    inverseWorldMatrix = XMMatrixInverse(nullptr, worldMatrix);
-
-    XMStoreFloat3(&rayOrigin, XMVector3TransformCoord(XMVectorSet(origin.x, origin.y, origin.z, 0.f),inverseWorldMatrix));
-    XMStoreFloat3(&direction, XMVector3TransformNormal(XMVectorSet(direction.x, direction.y, direction.z, 0.f), inverseWorldMatrix));
-
-    XMStoreFloat3(&rayDirection, XMVector3Normalize(XMVectorSet(direction.x, direction.y, direction.z, 0.f)));
-
-    if (mCurrentPositionGizumoState != PositionGizumoState::NONE)
-        return;
-
-
-    if (mForwardArrowModel->RayIntersect(rayOrigin, rayDirection, position, XMFLOAT3(20.0f, 20.0f, 100.0f)))
-    {
-        mCurrentPositionGizumoState = PositionGizumoState::FORWARD;
-    }
-    else if (mRightArrowModel->RayIntersect(rayOrigin, rayDirection, position, XMFLOAT3(100.0f, 20.0f, 20.0f)))
-    {
-        mCurrentPositionGizumoState = PositionGizumoState::RIGHT;
-    }
-    else if (mUpArrowModel->RayIntersect(rayOrigin, rayDirection, position, XMFLOAT3(20.0f, 100.0f, 20.0f)))
-    {
-        mCurrentPositionGizumoState = PositionGizumoState::UP;
-    }
-}
