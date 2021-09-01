@@ -402,11 +402,14 @@ bool GraphicsClass::Frame()
         if (mCurrentGameObject != "")
         {
             TransformComponent* transform = mGameObejcts[mCurrentGameObject]->GetComponent<TransformComponent>();
-            if (Physics::TestIntersectionBoundBox(mouseX, mouseY, mScreenWidth, mScreenHeight, mCamera->GetPosition(), worldMatrix, viewMarix, projectionMatrix, transform->GetTransform(), mForwardArrowModel->GetBounds()))
+            XMFLOAT3 position;
+            XMStoreFloat3(&position, transform->GetPosition());
+            XMMATRIX positionMatrix = XMMatrixTranslation(position.x, position.y, position.z);
+            if (Physics::TestIntersectionBoundBox(mouseX, mouseY, mScreenWidth, mScreenHeight, mCamera->GetPosition(), worldMatrix, viewMarix, projectionMatrix, positionMatrix, mForwardArrowModel->GetBounds()))
                 mCurrentPositionGizumoState = PositionGizumoState::FORWARD;
-            else if(Physics::TestIntersectionBoundBox(mouseX, mouseY, mScreenWidth, mScreenHeight, mCamera->GetPosition(), worldMatrix, viewMarix, projectionMatrix, transform->GetTransform(), mRightArrowModel->GetBounds()))               
+            else if(Physics::TestIntersectionBoundBox(mouseX, mouseY, mScreenWidth, mScreenHeight, mCamera->GetPosition(), worldMatrix, viewMarix, projectionMatrix, positionMatrix, mRightArrowModel->GetBounds()))
                 mCurrentPositionGizumoState = PositionGizumoState::RIGHT;
-            else if (Physics::TestIntersectionBoundBox(mouseX, mouseY, mScreenWidth, mScreenHeight, mCamera->GetPosition(), worldMatrix, viewMarix, projectionMatrix, transform->GetTransform(), mUpArrowModel->GetBounds()))       
+            else if (Physics::TestIntersectionBoundBox(mouseX, mouseY, mScreenWidth, mScreenHeight, mCamera->GetPosition(), worldMatrix, viewMarix, projectionMatrix, positionMatrix, mUpArrowModel->GetBounds()))
                 mCurrentPositionGizumoState = PositionGizumoState::UP;
         }
 
