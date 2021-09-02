@@ -16,6 +16,7 @@
 #include "AssetClass.h"
 #include "ModelListBrowser.h"
 #include "Shader.h"
+#include "FrustumClass.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = false;
@@ -52,6 +53,9 @@ private:
 	Camera* mCamera;
 	GridClass* mGrid;
 	RenderTextureClass* mRenderTexture;
+
+	//프러스텀 클래스
+	FrustumClass* mFrustum;
 
 	///쉐이더 클래스
 	SkinnedMeshShader* mSkinnedShader;

@@ -171,6 +171,7 @@
     <ClInclude Include="FBXLoader.h" />
     <ClInclude Include="FileBrowser.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="FrustumClass.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObjectBrowser.h" />
     <ClInclude Include="Getter.h" />
@@ -236,6 +237,7 @@
     <ClCompile Include="DepthShaderClass.cpp" />
     <ClCompile Include="FBXLoader.cpp" />
     <ClCompile Include="FileBrowser.cpp" />
+    <ClCompile Include="FrustumClass.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameObjectBrowser.cpp" />
     <ClCompile Include="GraphicsClass.cpp" />

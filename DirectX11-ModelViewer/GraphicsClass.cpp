@@ -96,6 +96,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
         return false;
     }
 
+    mFrustum = new FrustumClass;
+
     mLight->SetAmbientColor(0.1f,0.1f,0.1f,1.0f);
     mLight->SetDiffuseColor(1.0f,1.0f,1.0f,1.0f);
     mLight->SetPosition(-5.0f,10.0f,-200.0f);
@@ -238,6 +240,12 @@ void GraphicsClass::Shutdown()
     {
         delete mCamera;
         mCamera = nullptr;
+    }
+
+    if (mFrustum)
+    {
+        delete mFrustum;
+        mFrustum = nullptr;
     }
 
     if (mSkinnedShader)
@@ -521,11 +529,21 @@ bool GraphicsClass::Render()
     mGrid->Render(mDirect->GetDeviceContext());
     mColorShader->Render(mDirect->GetDeviceContext(), mGrid->GetIndexCount(), gridWorldMatrix, viewMatrix, projectionMatrix);
 
+    //프러스텀 계산
+    mFrustum->ConstructFrustum(SCREEN_DEPTH, projectionMatrix, viewMatrix);
+
+    int renderCount = 0;
     //게임 오브젝트 렌더링
     for (const auto& gameObject : mGameObejcts)
     {
+        TransformComponent* transformComp = gameObject.second->GetComponent<TransformComponent>();
         MeshRenderComponent* renderComp = gameObject.second->GetComponent<MeshRenderComponent>();
-        renderComp->Render(mDirect->GetDeviceContext());
+
+        if (mFrustum->CheckBoundBox(renderComp->GetMesh()->GetBounds(), transformComp->GetTransform()) == true)
+        {
+            renderComp->Render(mDirect->GetDeviceContext());
+            renderCount++;
+        }
     }
 
     auto gameobject = mGameObejcts.find(mCurrentGameObject);
@@ -919,6 +937,14 @@ bool GraphicsClass::Render()
 
         ImGui::End();
     }
+
+    bool debugWindowActive = true;
+    ImGui::Begin("Debug", &debugWindowActive, ImGuiWindowFlags_None);
+    string debugCountString = "Render Count : ";
+    string countString = to_string(renderCount);
+    debugCountString += countString;
+    ImGui::Text(debugCountString.c_str());
+    ImGui::End();
 
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
