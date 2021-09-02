@@ -212,6 +212,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
     gameObjectBrowser = new GameObjectBrowser;
 
+    mGameObjectNames.push_back("None");
+
     AssetClass::Initialize(mDirect->GetDevice(), mDirect->GetDeviceContext());
 
     return true;
@@ -648,6 +650,7 @@ bool GraphicsClass::Render()
             AnimatorComponent* animComp = new AnimatorComponent();
             newGameObejct->InsertComponent(animComp);
             mGameObejcts[selectModelKey] = newGameObejct;
+            mGameObjectNames.push_back(selectModelKey);
         }
         else
         {
@@ -655,6 +658,7 @@ bool GraphicsClass::Render()
             renderComp->Initalize(AssetClass::mMeshMap[selectModelKey], mSpecularShader, mDepthShader);
             newGameObejct->InsertComponent(renderComp);
             mGameObejcts[selectModelKey] = newGameObejct;
+            mGameObjectNames.push_back(selectModelKey);
         }
 
         addGameObject = false;
@@ -700,21 +704,33 @@ bool GraphicsClass::Render()
         {
             if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed))
             {
-                XMFLOAT3 pos; 
-                XMStoreFloat3(&pos,transformComp->GetPosition());
+                XMFLOAT3 pos = transformComp->GetLocalPosition();
+                //XMStoreFloat3(&pos,transformComp->GetLocalPosition());
                 float position[3] = {pos.x,pos.y,pos.z};
-                XMFLOAT3 rot = transformComp->GetRotation();
+                XMFLOAT3 rot = transformComp->GetLocalRotation();
                 float rotation[3] = { rot.x,rot.y ,rot.z };
-                XMFLOAT3 s = transformComp->GetScale();
+                XMFLOAT3 s = transformComp->GetLocalScale();
                 float scale[3] = { s.x,s.y,s.z };
 
                 ImGui::InputFloat3("Position", position);
                 ImGui::InputFloat3("Rotation", rotation);
                 ImGui::InputFloat3("Scale", scale);
 
-                transformComp->SetPosition(XMFLOAT3(position[0], position[1], position[2]));
-                transformComp->SetRotation(XMFLOAT3(rotation[0], rotation[1], rotation[2]));
-                transformComp->SetScale(XMFLOAT3(scale[0], scale[1], scale[2]));
+                transformComp->SetLocalPosition(XMFLOAT3(position[0], position[1], position[2]));
+                transformComp->SetLocalRotation(XMFLOAT3(rotation[0], rotation[1], rotation[2]));
+                transformComp->SetLocalScale(XMFLOAT3(scale[0], scale[1], scale[2]));
+
+                if (transformComp->GetParent() == nullptr)
+                    selectParentObject = 0;
+
+                if (ImGui::Combo("Parent", &selectParentObject, VectorItemGetter, static_cast<void*>(&mGameObjectNames), mGameObjectNames.size(), 16))
+                {
+                    if (selectParentObject != 0)
+                    {
+                        TransformComponent* parent = mGameObejcts[mGameObjectNames[selectParentObject]]->GetComponent<TransformComponent>();
+                        transformComp->SetParent(parent);
+                    }
+                }
             }
         }
 

@@ -84,6 +84,8 @@ private:
 	std::string mCurrentRenderMesh;
 
 	std::unordered_map<std::string, GameObjectClass*> mGameObejcts;
+	std::vector<std::string> mGameObjectNames;
+	int selectParentObject = 0;
 	std::string mCurrentGameObject;
 	std::string mPrevGameObject = "";
 
