@@ -667,16 +667,19 @@ bool GraphicsClass::Render()
 
             AnimatorComponent* animComp = new AnimatorComponent();
             newGameObejct->InsertComponent(animComp);
-            mGameObejcts[selectModelKey] = newGameObejct;
-            mGameObjectNames.push_back(selectModelKey);
+            //mGameObejcts[selectModelKey] = newGameObejct;
+            //mGameObjectNames.push_back(selectModelKey);
+            AddGameObject(selectModelKey, newGameObejct);
         }
         else
         {
             MeshRenderComponent* renderComp = new MeshRenderComponent();
             renderComp->Initalize(AssetClass::mMeshMap[selectModelKey], mSpecularShader, mDepthShader);
             newGameObejct->InsertComponent(renderComp);
-            mGameObejcts[selectModelKey] = newGameObejct;
-            mGameObjectNames.push_back(selectModelKey);
+            AddGameObject(selectModelKey, newGameObejct);
+
+            //mGameObejcts[selectModelKey] = newGameObejct;
+            //mGameObjectNames.push_back(selectModelKey);
         }
 
         addGameObject = false;
@@ -1012,5 +1015,22 @@ bool GraphicsClass::RenderSceneToTexture()
     mDirect->ResetViewport();
 
     return true;
+}
+
+void GraphicsClass::AddGameObject(string key, GameObjectClass* gameObject)
+{
+    auto it = mGameObejcts.find(key);
+    int count = 1;
+
+    while (it != mGameObejcts.end())
+    {
+        string countStr = to_string(count);
+        key += countStr;
+        it = mGameObejcts.find(key);
+        count++;
+    }
+
+    mGameObejcts[key] = gameObject;
+    mGameObjectNames.push_back(key);
 }
 

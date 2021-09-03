@@ -47,6 +47,9 @@ public:
 	bool RenderSceneToTexture();
 
 private:
+	void AddGameObject(string key, GameObjectClass* gameObject);
+
+private:
     D3DClass* mDirect;
 	FBXLoader* mFbxLoader;
 	Light* mLight;
