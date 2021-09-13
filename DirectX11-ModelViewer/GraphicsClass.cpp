@@ -3,6 +3,7 @@
 #include "Component.h"
 #include "TransformComponent.h"
 #include "MeshRenderComponent.h"
+#include "ReceiveShadowRenderComponent.h"
 #include "SkinnedMeshRenderComponent.h"
 #include "SkinnedMeshBumpRenderComponent.h"
 #include "AnimatorComponent.h"
@@ -15,6 +16,7 @@ extern Camera* gMainCamera;
 extern Light* gMainLight;
 extern D3DClass* gDirect;
 extern SimpleColorShader* gSimpleColorShader;
+extern RenderTextureClass* gDepthTexture;
 
 bool VectorItemGetter(void* list, int count, const char** outText)
 {
@@ -149,6 +151,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     {
         return false;
     }
+
+    gDepthTexture = mRenderTexture;
 
     mDepthShader = new DepthShaderClass;
     result = mDepthShader->Initialize(mDirect->GetDevice(), hwnd);
@@ -673,10 +677,26 @@ bool GraphicsClass::Render()
         }
         else
         {
-            MeshRenderComponent* renderComp = new MeshRenderComponent();
-            renderComp->Initalize(AssetClass::mMeshMap[selectModelKey], mSpecularShader, mDepthShader);
-            newGameObejct->InsertComponent(renderComp);
-            AddGameObject(selectModelKey, newGameObejct);
+            switch (renderType)
+            {
+            case RendererType::ReceiveShadow:
+            {
+                ReceiveShadowRenderComponent* renderComp = new ReceiveShadowRenderComponent();
+                renderComp->Initalize(AssetClass::mMeshMap[selectModelKey], mShadowShader, mDepthShader);
+                newGameObejct->InsertComponent(renderComp);
+                AddGameObject(selectModelKey, newGameObejct);
+            }
+            break;
+            default:
+            {
+                MeshRenderComponent* renderComp = new MeshRenderComponent();
+                renderComp->Initalize(AssetClass::mMeshMap[selectModelKey], mSpecularShader, mDepthShader);
+                newGameObejct->InsertComponent(renderComp);
+                AddGameObject(selectModelKey, newGameObejct);
+            }
+                break;
+            }
+
 
             //mGameObejcts[selectModelKey] = newGameObejct;
             //mGameObjectNames.push_back(selectModelKey);
@@ -908,6 +928,48 @@ bool GraphicsClass::Render()
                 if (ImGui::Checkbox("Visible Bounds", &visible))
                     comp->SetVisibleBoundsBox(visible);
             }
+        }
+        else if (search->second->GetComponent<MeshRenderComponent>() != nullptr && search->second->GetComponent<MeshRenderComponent>()->GetRenderType() == eRendererType::ReceiveShadowRenderer)
+        {
+        MeshRenderComponent* comp = search->second->GetComponent<MeshRenderComponent>();
+        if (ImGui::CollapsingHeader("MeshRender", ImGuiTreeNodeFlags_Framed))
+        {
+            auto& subObjectMats = comp->GetObjectMaterials();
+            for (int i = 0; i < subObjectMats.size(); i++)
+            {
+                string meshGroupLabel = "MeshGroup";
+                string num = to_string(i);
+                meshGroupLabel += num;
+                if (ImGui::CollapsingHeader(meshGroupLabel.c_str(), ImGuiTreeNodeFlags_Framed))
+                {
+                    for (int j = 0; j < subObjectMats[i].size(); j++)
+                    {
+                        string subMeshLabel = "Material";
+                        string num = to_string(j);
+                        subMeshLabel += num;
+                        if (ImGui::CollapsingHeader(subMeshLabel.c_str(), ImGuiTreeNodeFlags_Framed))
+                        {
+                            int selectTextureCount = 0;
+                            for (int textIdx = 0; textIdx < textureNames.size(); textIdx++)
+                            {
+                                if (subObjectMats[i][j].GetTextureKey() == textureNames[textIdx])
+                                {
+                                    selectTextureCount = textIdx;
+                                    break;
+                                }
+                            }
+                            if (ImGui::Combo("Diffuse", &selectTextureCount, VectorItemGetter, static_cast<void*>(&textureNames), textureNames.size(), 16))
+                            {
+                                comp->SetMaterial(i, j, textureNames[selectTextureCount]);
+                            }
+                        }
+                    }
+                }
+            }
+            bool visible = comp->IsVisibleBoundsBox();
+            if (ImGui::Checkbox("Visible Bounds", &visible))
+                comp->SetVisibleBoundsBox(visible);
+        }
         }
         
 

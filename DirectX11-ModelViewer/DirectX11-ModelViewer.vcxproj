@@ -198,6 +198,7 @@
     <ClInclude Include="ModelClass.h" />
     <ClInclude Include="ModelListBrowser.h" />
     <ClInclude Include="Physics.h" />
+    <ClInclude Include="ReceiveShadowRenderComponent.h" />
     <ClInclude Include="RenderTextureClass.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Shader.h" />

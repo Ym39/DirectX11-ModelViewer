@@ -22,7 +22,7 @@ void ModelListBrowser::RenderAddGameObejctUI(bool* outAddGameObject, std::string
 {
 	ImGui::Begin("AddGameObject", &mActiveAddGameObject, ImGuiWindowFlags_None);
 
-	static const char* rendererItems[] = { "OnlySpecular", "Bump" };
+	static const char* rendererItems[] = { "OnlySpecular", "Bump","ReceiveShadow"};
 	static int currentRendererItem = 0;
 	static int itemSize = IM_ARRAYSIZE(rendererItems);
 
@@ -92,6 +92,8 @@ void ModelListBrowser::RenderAddGameObejctUI(bool* outAddGameObject, std::string
 			case 1:
 				rendererType = RendererType::BUMP;
 				break;
+			case 2:
+				rendererType = RendererType::ReceiveShadow;
 			}
 		}
 		mActiveAddGameObject = false;

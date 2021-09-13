@@ -1,52 +1,44 @@
 #pragma once
 #include"Component.h"
+#include"MeshRenderComponent.h"
 #include"D3DClass.h"
 #include"MeshClass.h"
-#include"SpecularShaderClass.h"
-#include"DepthShaderClass.h"
 #include"TransformComponent.h"
 #include"Texture.h"
 #include"Camera.h"
 #include"Light.h"
 #include"Material.h"
 #include"BoundModel.h"
-#include"SimpleColorShader.h"
+#include"ShadowShaderClass.h"
+#include"AssetClass.h"
+#include"RenderTextureClass.h"
 #include <d3d11.h>
 
 extern Camera* gMainCamera;
 extern Light* gMainLight;
 extern D3DClass* gDirect;
-extern SimpleColorShader* gSimpleColorShader;
+extern RenderTextureClass* gDepthTexture;
 
-enum class eRendererType
-{
-	MeshRenderer,
-	SkinnedMeshRenderer,
-	SkinnedBumpRenderer,
-	ReceiveShadowRenderer
-};
-
-class MeshRenderComponent : public BaseComponent
+class ReceiveShadowRenderComponent : public MeshRenderComponent
 {
 public:
-	DEFINE_COMPONENT(MeshRenderComponent, BaseComponent, true);
+	DEFINE_COMPONENT(ReceiveShadowRenderComponent, MeshRenderComponent, false);
 
 public:
-	MeshRenderComponent() :
-		mMesh(nullptr),
+	ReceiveShadowRenderComponent() :
+		MeshRenderComponent(),
 		mShader(nullptr),
-		mDepthShader(nullptr),
-		mVisibleBoundBox(false)
+		mDepthShader(nullptr)
 	{
-		mRendererType = eRendererType::MeshRenderer;
+		mRendererType = eRendererType::ReceiveShadowRenderer;
 	}
-	~MeshRenderComponent() = default;
+	~ReceiveShadowRenderComponent() = default;
 
 public:
 	virtual void Start() override {};
 	virtual void Update(float deltaTime) override {};
 	virtual void LateUpdate(float deltaTime) override {};
-	virtual void Destroy() override 
+	virtual void Destroy() override
 	{
 		if (mBoundModel)
 		{
@@ -70,8 +62,8 @@ public:
 		{
 			for (int j = 0; j < mMesh->GetSubMeshCount(i); j++)
 			{
-				mMesh->Render(deviceContext, i , j);
-				mDepthShader->Render(deviceContext, mMesh->GetSubMeshIndexCount(i,j), objectTransform->GetTransform(), lightViewMatrix, lightProjectionMatrix);
+				mMesh->Render(deviceContext, i, j);
+				mDepthShader->Render(deviceContext, mMesh->GetSubMeshIndexCount(i, j), objectTransform->GetTransform(), lightViewMatrix, lightProjectionMatrix);
 			}
 		}
 	}
@@ -81,10 +73,11 @@ public:
 		if (mMesh == nullptr)
 			return;
 
-		XMMATRIX viewMatrix, projectionMatrix;
+		XMMATRIX viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix;
 		gMainCamera->GetViewMatrix(viewMatrix);
 		gDirect->GetProjectionMatrix(projectionMatrix);
-
+		gMainLight->GetViewMatrix(lightViewMatrix);
+		gMainLight->GetProjectionMatrix(lightProjectionMatrix);
 
 		TransformComponent* objectTransform = mOwnerGameObject->GetComponent<TransformComponent>();
 
@@ -92,20 +85,20 @@ public:
 		{
 			for (int j = 0; j < mMesh->GetSubMeshCount(i); j++)
 			{
-				mMesh->Render(deviceContext, i,j);
+				mMesh->Render(deviceContext, i, j);
 
 				SpcularMaterial& mat = mSubObjectMats[i][j];
 
-				mShader->Render(deviceContext, mMesh->GetSubMeshIndexCount(i,j), objectTransform->GetTransform(), viewMatrix, projectionMatrix, AssetClass::mTextureMap[mat.GetTextureKey()]->GetTexture(), gMainLight->GetPosition(), gMainLight->GetDiffuseColor(), gMainLight->GetAmbientColor(), gMainCamera->GetPosition(), gMainLight->GetSpecularColor(), gMainLight->GetSpecularPower());
+				mShader->Render(deviceContext, mMesh->GetSubMeshIndexCount(i, j), objectTransform->GetTransform(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, AssetClass::mTextureMap[mat.GetTextureKey()]->GetTexture(), gDepthTexture->GetShaderResourceView(), gMainLight->GetPosition(), gMainLight->GetAmbientColor(), gMainLight->GetDiffuseColor());
 			}
 		}
 
-		if(mVisibleBoundBox == true)
-		   RenderBoundBox(deviceContext, objectTransform->GetTransform(), viewMatrix, projectionMatrix);
+		if (mVisibleBoundBox == true)
+			RenderBoundBox(deviceContext, objectTransform->GetTransform(), viewMatrix, projectionMatrix);
 	}
 
 public:
-	bool Initalize(MeshClass* mesh, SpecularShaderClass* shader, DepthShaderClass* depthShader)
+	bool Initalize(MeshClass* mesh, ShadowShaderClass* shader, DepthShaderClass* depthShader)
 	{
 		if (mesh == nullptr || shader == nullptr || depthShader == nullptr)
 			return false;
@@ -129,7 +122,7 @@ public:
 	}
 
 	const auto& GetObjectMaterials() const { return mSubObjectMats; }
-	void SetMaterial(int groupIndex,int submeshIndex, string textureKey)
+	void SetMaterial(int groupIndex, int submeshIndex, string textureKey)
 	{
 		mSubObjectMats[groupIndex][submeshIndex].SetTextureKey(textureKey);
 	}
@@ -140,24 +133,19 @@ public:
 	void SetVisibleBoundsBox(bool visible) { mVisibleBoundBox = visible; }
 	bool IsVisibleBoundsBox()const { return mVisibleBoundBox; }
 protected:
-	void RenderBoundBox(ID3D11DeviceContext* deviceContext,XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
+	void RenderBoundBox(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
 	{
 		mBoundModel->Render(deviceContext);
 		gSimpleColorShader->Render(deviceContext, mBoundModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, XMFLOAT4(0.f, 1.f, 0.f, 1.f));
 	}
 
 protected:
-	MeshClass* mMesh;
-	eRendererType mRendererType;
-	BoundModel* mBoundModel;
 
-	bool mVisibleBoundBox;
 private:
-	SpecularShaderClass* mShader;
+	ShadowShaderClass* mShader;
 	DepthShaderClass* mDepthShader;
 
 	vector<vector<SpcularMaterial>> mSubObjectMats;
 };
 
-DECLARE_COMPONENT(MeshRenderComponent);
-
+DECLARE_COMPONENT(ReceiveShadowRenderComponent);

@@ -13,6 +13,8 @@ void MeshClass::SetMeshData(const SkinnedMeshData& skinnedMeshData)
 		mSubmeshGroups.push_back(current);
 	}
 
+	ComputeBounds();
+
 	if (skinnedMeshData.bones.empty())
 		return;
 
@@ -22,8 +24,6 @@ void MeshClass::SetMeshData(const SkinnedMeshData& skinnedMeshData)
 	{
 		bones[i] = skinnedMeshData.bones[i];
 	}
-
-	ComputeBounds();
 }
 
 

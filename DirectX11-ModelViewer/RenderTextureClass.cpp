@@ -1,5 +1,7 @@
 #include "RenderTextureClass.h"
 
+RenderTextureClass* gDepthTexture;
+
 RenderTextureClass::RenderTextureClass():
 	m_renderTargetTexture(nullptr),
 	m_renderTargetView(nullptr),

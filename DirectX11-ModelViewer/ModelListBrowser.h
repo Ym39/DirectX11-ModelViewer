@@ -11,7 +11,8 @@
 enum class RendererType
 {
 	ONLYSPECULAR,
-	BUMP
+	BUMP,
+	ReceiveShadow
 };
 
 class ModelListBrowser
