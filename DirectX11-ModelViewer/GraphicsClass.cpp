@@ -349,7 +349,12 @@ void GraphicsClass::Shutdown()
         delete mSimpleColorShader;
         mSimpleColorShader = nullptr;
     }
-        
+     
+    for (const auto& gameObject : mGameObejcts)
+    {
+        gameObject.second->Destroy();
+        delete gameObject.second;
+    }
 }
 
 bool GraphicsClass::Frame()

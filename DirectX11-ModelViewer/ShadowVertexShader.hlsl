@@ -11,6 +11,8 @@ cbuffer LightBuffer2
 {
 	float3 lightPosition;
 	float padding;
+	float3 cameraPosition;
+	float padding2;
 };
 
 struct VertexInputType
@@ -31,6 +33,8 @@ struct PixelInputType
 	float3 normal : NORMAL;
 	float4 lightViewPosition : TEXCOORD1;
 	float3 lightDir : TEXCOORD2;
+	float4 viewDir : TEXCOORD3;
+	float3 positionVS : TEXCOORD4;
 };
 
 PixelInputType VS(VertexInputType input)
@@ -42,6 +46,7 @@ PixelInputType VS(VertexInputType input)
 
 	output.position = mul(input.position, worldMatrix);
 	output.position = mul(output.position, viewMatrix);
+	output.positionVS = output.position;
 	output.position = mul(output.position, projectionMatrix);
 
 	output.lightViewPosition = mul(input.position, worldMatrix);
@@ -59,5 +64,7 @@ PixelInputType VS(VertexInputType input)
 
 	output.lightDir = normalize(output.lightDir);
 
+	output.viewDir = float4(worldPosition.xyz - cameraPosition.xyz, 0.0f);
+	output.viewDir = normalize(output.viewDir);
 	return output;
 }

@@ -89,7 +89,7 @@ public:
 
 				SpcularMaterial& mat = mSubObjectMats[i][j];
 
-				mShader->Render(deviceContext, mMesh->GetSubMeshIndexCount(i, j), objectTransform->GetTransform(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, AssetClass::mTextureMap[mat.GetTextureKey()]->GetTexture(), gDepthTexture->GetShaderResourceView(), gMainLight->GetPosition(), gMainLight->GetAmbientColor(), gMainLight->GetDiffuseColor());
+				mShader->Render(deviceContext, mMesh->GetSubMeshIndexCount(i, j), objectTransform->GetTransform(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, AssetClass::mTextureMap[mat.GetTextureKey()]->GetTexture(), gDepthTexture->GetShaderResourceView(), gMainLight->GetPosition(), gMainLight->GetAmbientColor(), gMainLight->GetDiffuseColor(), gMainCamera->GetPosition());
 			}
 		}
 
