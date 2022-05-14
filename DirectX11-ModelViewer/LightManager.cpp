@@ -1,15 +1,15 @@
 #include "LightManager.h"
+LightManager* LightManager::mInstance = nullptr;
 
-Light& LightManager::GetDirectionalLight()
+LightSturct& LightManager::GetDirectionalLight()
 {
 	return mLight[0];
 }
 
-Light& LightManager::GetLight(int index)
+LightSturct* LightManager::GetLight(int index)
 {
-	if (index < 1)
-		index = 1;
-	if (index > 7)
-		index = 7;
-	return mLight[index];
+	if (index < 0 || index > NUM_OF_LIGHTS - 1)
+		return nullptr;
+
+	return &mLight[index];
 }

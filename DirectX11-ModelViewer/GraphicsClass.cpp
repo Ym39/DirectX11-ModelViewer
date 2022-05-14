@@ -10,6 +10,7 @@
 #include "GameObjectBrowser.h"
 #include <typeinfo>
 #include "Physics.h"
+#include "LightManager.h"
 
 extern SystemClass* ApplicationHandle;
 extern Camera* gMainCamera;
@@ -91,6 +92,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     {
         return false;
     }
+
+    LightManager::Instance();
 
     mLight = new Light;
     if (mLight == nullptr)
@@ -610,6 +613,8 @@ bool GraphicsClass::Render()
     //mImgui->Render(&loadFbx,loadPath, meshMap[mCurrentRenderMesh].Transfrom(),meshMap,mCurrentRenderMesh,*mCamera,mLight,mCurrentRenderMesh == "" ? nullptr : &(meshMap[mCurrentRenderMesh]), wmX, wmY, &loadAnim, loadPath);
     static bool activeModelBrowser = false;
     static bool activeAnimBrowser = false;
+
+    ManagerInspector::RenderRightManagerInspector();
 
     modelListBrowser.RenderLoadFileWindow(&activeModelBrowser, &activeAnimBrowser);
 

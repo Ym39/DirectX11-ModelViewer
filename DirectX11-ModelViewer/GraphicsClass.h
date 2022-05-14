@@ -17,6 +17,7 @@
 #include "ModelListBrowser.h"
 #include "Shader.h"
 #include "FrustumClass.h"
+#include "ManagerInspector.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = false;
