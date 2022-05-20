@@ -56,7 +56,8 @@ GraphicsClass::GraphicsClass() :
     mUpArrowModel(nullptr),
     mCurrentGameObject(""),
     mScreenWidth(0),
-    mScreenHeight(0)
+    mScreenHeight(0),
+    mLightMeshShader(nullptr)
 {
 }
 
@@ -218,6 +219,11 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     if (result == false)
         return false;
     gSimpleColorShader = mSimpleColorShader;
+
+    mLightMeshShader = new LightMeshShader;
+    result = mLightMeshShader->Initialize(mDirect->GetDevice(), hwnd);
+    if (result == false)
+        return false;
 
     gameObjectBrowser = new GameObjectBrowser;
 

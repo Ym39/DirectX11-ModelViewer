@@ -17,6 +17,10 @@ public:
 	void Shutdown();
 
 	inline ID3D11ShaderResourceView* GetTexture() const {return mTextureView;}
+	inline ID3D11ShaderResourceView* const* GetTexturePP() const
+	{
+		return &mTextureView; 
+	}
 private:
 	ScratchImage LoadTextureFromFile(LPCSTR filename);
 private:

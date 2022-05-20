@@ -1,6 +1,8 @@
 #pragma once
 #include<string>
 #include <d3d11.h>
+#include <directxmath.h>
+using namespace DirectX;
 
 class Material
 {
@@ -51,4 +53,146 @@ private:
 	std::string mTextureKey;
 	std::string mNormalKey;
 	std::string mSpecularKey;
+};
+
+struct ShaderUploadMaterial
+{
+	XMFLOAT4 globalAmbient;
+	XMFLOAT4 ambientColor;
+	XMFLOAT4 emissiveColor;
+	XMFLOAT4 diffuseColor;
+	XMFLOAT4 specularColor;
+	XMFLOAT4 reflectance;
+	float opacity;
+	float specularPower;
+	float indexOfRefraction;
+	bool hasAmbientTexture;
+	bool hasEmissiveTexture;
+	bool hasDiffuseTexture;
+	bool hasSpecularTexture;
+	bool hasSpecularPowerTexture;
+	bool hasNormalTexture;
+	bool hasBumpTexture;
+	bool hasOpacityTexture;
+	float bumpIntensity;
+	float specularScale;
+	float alphaThreshold;
+	XMFLOAT2 padding;
+};
+
+class WideMaterial : public Material
+{
+public:
+	WideMaterial() :
+		mAmbientKey(DEFAULT_TEXTURE_KEY),
+		mEmissiveKey(DEFAULT_TEXTURE_KEY),
+		mDiffuseKey(DEFAULT_TEXTURE_KEY),
+		mSpecularKey(DEFAULT_TEXTURE_KEY),
+		mSpecularPower(DEFAULT_TEXTURE_KEY),
+		mNormalKey(DEFAULT_TEXTURE_KEY),
+		mBumpKey(DEFAULT_TEXTURE_KEY),
+		mOpacityKey(DEFAULT_TEXTURE_KEY)
+	{
+		shaderUploadMaterial.globalAmbient = XMFLOAT4();
+		shaderUploadMaterial.ambientColor = XMFLOAT4();
+		shaderUploadMaterial.emissiveColor = XMFLOAT4();
+		shaderUploadMaterial.diffuseColor = XMFLOAT4();
+		shaderUploadMaterial.specularColor = XMFLOAT4();
+		shaderUploadMaterial.reflectance = XMFLOAT4();
+		shaderUploadMaterial.opacity = 1.0f;
+		shaderUploadMaterial.specularPower = 1.0f;
+		shaderUploadMaterial.indexOfRefraction = 1.0f;
+
+		shaderUploadMaterial.hasAmbientTexture = false;
+		shaderUploadMaterial.hasEmissiveTexture = false;
+		shaderUploadMaterial.hasDiffuseTexture = false;
+		shaderUploadMaterial.hasSpecularTexture = false;
+		shaderUploadMaterial.hasSpecularPowerTexture = false;
+		shaderUploadMaterial.hasNormalTexture = false;
+		shaderUploadMaterial.hasBumpTexture = false;
+		shaderUploadMaterial.hasOpacityTexture = false;
+
+		shaderUploadMaterial.bumpIntensity = 0.0f;
+		shaderUploadMaterial.specularScale = 0.0f;
+		shaderUploadMaterial.alphaThreshold = 0.0f;
+	}
+	~WideMaterial() = default;
+
+	void SetAmbientKey(std::string key) { mAmbientKey = key; shaderUploadMaterial.hasAmbientTexture = true; }
+	void SetEmissiveKey(std::string key) { mEmissiveKey = key; shaderUploadMaterial.hasEmissiveTexture = true; }
+	void SetDiffuseKey(std::string key) { mDiffuseKey = key; shaderUploadMaterial.hasDiffuseTexture = true; }
+	void SetSpecularKey(std::string key) { mSpecularKey = key; shaderUploadMaterial.hasSpecularTexture = true; }
+	void SetSpecularPowerKey(std::string key) { mSpecularPower = key; shaderUploadMaterial.hasSpecularPowerTexture = true; }
+	void SetNormalKey(std::string key) { mNormalKey = key; shaderUploadMaterial.hasNormalTexture = true; }
+	void SetBumpKey(std::string key) { mBumpKey = key; shaderUploadMaterial.hasBumpTexture = true; }
+	void SetOpacityKey(std::string key) { mOpacityKey = key; shaderUploadMaterial.hasOpacityTexture = true; }
+
+	std::string GetAmbientKey() { return mAmbientKey; }
+	std::string GetEmissiveKey() { return mEmissiveKey; }
+	std::string GetDiffuseKey() { return mDiffuseKey; }
+	std::string GetSpecularKey() { return mSpecularKey; }
+	std::string GetSpecularPowerKey() { return mSpecularPower; }
+	std::string GetNormalKey() { return mNormalKey; }
+	std::string GetBumpKey() { return mBumpKey; }
+	std::string GetOpacityKey() { return mOpacityKey; }
+
+	void SetGlobalAmbient(float x, float y, float z, float w) 
+	{
+		shaderUploadMaterial.globalAmbient.x = x;
+		shaderUploadMaterial.globalAmbient.y = y;
+		shaderUploadMaterial.globalAmbient.z = z;
+		shaderUploadMaterial.globalAmbient.w = w;
+	}
+
+	void SetAmbientColor(float x, float y, float z, float w)
+	{
+		shaderUploadMaterial.ambientColor.x = x;
+		shaderUploadMaterial.ambientColor.y = y;
+		shaderUploadMaterial.ambientColor.z = z;
+		shaderUploadMaterial.ambientColor.w = w;
+	}
+
+	void SetEmissiveColor(float x, float y, float z, float w)
+	{
+		shaderUploadMaterial.emissiveColor.x = x;
+		shaderUploadMaterial.emissiveColor.y = y;
+		shaderUploadMaterial.emissiveColor.z = z;
+		shaderUploadMaterial.emissiveColor.w = w;
+	}
+
+	void SetDiffuseColor(float x, float y, float z, float w)
+	{
+		shaderUploadMaterial.diffuseColor.x = x;
+		shaderUploadMaterial.diffuseColor.y = y;
+		shaderUploadMaterial.diffuseColor.z = z;
+		shaderUploadMaterial.diffuseColor.w = w;
+	}
+
+	void SetSpecularColor(float x, float y, float z, float w)
+	{
+		shaderUploadMaterial.specularColor.x = x;
+		shaderUploadMaterial.specularColor.y = y;
+		shaderUploadMaterial.specularColor.z = z;
+		shaderUploadMaterial.specularColor.w = w;
+	}
+
+	void Setreflectance(float x, float y, float z, float w)
+	{
+		shaderUploadMaterial.reflectance.x = x;
+		shaderUploadMaterial.reflectance.y = y;
+		shaderUploadMaterial.reflectance.z = z;
+		shaderUploadMaterial.reflectance.w = w;
+	}
+public:
+	ShaderUploadMaterial shaderUploadMaterial;
+
+private:
+	std::string mAmbientKey;
+	std::string mEmissiveKey;
+	std::string mDiffuseKey;
+	std::string mSpecularKey;
+	std::string mSpecularPower;
+	std::string mNormalKey;
+	std::string mBumpKey;
+	std::string mOpacityKey;
 };

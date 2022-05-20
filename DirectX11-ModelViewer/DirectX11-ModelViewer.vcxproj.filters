@@ -261,6 +261,12 @@
     <ClInclude Include="ManagerInspector.h">
       <Filter>헤더 파일\UI</Filter>
     </ClInclude>
+    <ClInclude Include="LightMeshRenderComponent.h">
+      <Filter>헤더 파일\컴포넌트</Filter>
+    </ClInclude>
+    <ClInclude Include="LightMeshShader.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX11-ModelViewer.rc">
@@ -441,6 +447,9 @@
     <ClCompile Include="ManagerInspector.cpp">
       <Filter>소스 파일\UI</Filter>
     </ClCompile>
+    <ClCompile Include="LightMeshShader.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="DirectXTex\DirectXTex.inl">
@@ -493,6 +502,15 @@
       <Filter>셰이더</Filter>
     </None>
     <None Include="SimpleColorShader.hlsl">
+      <Filter>셰이더</Filter>
+    </None>
+    <None Include="Common.hlsl">
+      <Filter>셰이더</Filter>
+    </None>
+    <None Include="LightMeshPixelShader.hlsl">
+      <Filter>셰이더</Filter>
+    </None>
+    <None Include="LightMeshVertexShader.hlsl">
       <Filter>셰이더</Filter>
     </None>
   </ItemGroup>

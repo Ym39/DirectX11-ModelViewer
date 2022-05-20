@@ -9,6 +9,8 @@
 #include "MeshClass.h"
 using namespace std;
 
+#define DEFAULT_TEXTURE "White"
+
 class AssetClass
 {
 public:

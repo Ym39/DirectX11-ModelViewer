@@ -18,6 +18,7 @@
 #include "Shader.h"
 #include "FrustumClass.h"
 #include "ManagerInspector.h"
+#include "LightMeshShader.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = false;
@@ -72,6 +73,7 @@ private:
 	TextureShaderClass* mTextureShader;
 	SkinnedBumpShader* mSkinnedBumpShader;
 	SimpleColorShader* mSimpleColorShader;
+	LightMeshShader* mLightMeshShader;
 
 	//2D
 	BitmapClass* mMouseBitmap;

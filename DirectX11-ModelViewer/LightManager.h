@@ -53,6 +53,8 @@ public:
 
 	LightSturct* GetLight(int index);
 
+	LightSturct* GetAllLight() { return mLight; }
+
 private:
 	// 0번 인덱스 : 디렉셔널 라이트
 	// 1~7번 인덱스 : 포인트, 스포트 라이트

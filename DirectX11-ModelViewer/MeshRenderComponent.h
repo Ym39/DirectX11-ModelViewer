@@ -23,7 +23,8 @@ enum class eRendererType
 	MeshRenderer,
 	SkinnedMeshRenderer,
 	SkinnedBumpRenderer,
-	ReceiveShadowRenderer
+	ReceiveShadowRenderer,
+	LightMeshRenderer
 };
 
 class MeshRenderComponent : public BaseComponent
