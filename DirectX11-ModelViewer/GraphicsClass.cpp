@@ -11,6 +11,7 @@
 #include <typeinfo>
 #include "Physics.h"
 #include "LightManager.h"
+#include "MaterialManager.h"
 
 extern SystemClass* ApplicationHandle;
 extern Camera* gMainCamera;
@@ -95,6 +96,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     }
 
     LightManager::Instance();
+    MaterialManager::Instance();
 
     mLight = new Light;
     if (mLight == nullptr)
@@ -621,6 +623,8 @@ bool GraphicsClass::Render()
     static bool activeAnimBrowser = false;
 
     ManagerInspector::RenderRightManagerInspector();
+    ManagerInspector::RenderMaterialEdit();
+    ManagerInspector::RenderMaterialList();
 
     modelListBrowser.RenderLoadFileWindow(&activeModelBrowser, &activeAnimBrowser);
 

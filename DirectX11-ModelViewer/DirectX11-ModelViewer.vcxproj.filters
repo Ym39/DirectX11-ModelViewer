@@ -43,6 +43,12 @@
     <Filter Include="소스 파일\컴포넌트">
       <UniqueIdentifier>{b5726a72-5b48-4bf2-a985-ee58eec43ddc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="헤더 파일\Manager">
+      <UniqueIdentifier>{651d3c8f-b0aa-4ff4-ab4d-d6a071ae0cc1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Manager">
+      <UniqueIdentifier>{874338d7-aeef-466f-9924-8a6cf79498b5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -255,9 +261,6 @@
     <ClInclude Include="ReceiveShadowRenderComponent.h">
       <Filter>헤더 파일\컴포넌트</Filter>
     </ClInclude>
-    <ClInclude Include="LightManager.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="ManagerInspector.h">
       <Filter>헤더 파일\UI</Filter>
     </ClInclude>
@@ -266,6 +269,18 @@
     </ClInclude>
     <ClInclude Include="LightMeshShader.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialEditUI.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="LightManager.h">
+      <Filter>헤더 파일\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialManager.h">
+      <Filter>헤더 파일\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Singleton.h">
+      <Filter>소스 파일\Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -441,14 +456,20 @@
     <ClCompile Include="FrustumClass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="LightManager.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="ManagerInspector.cpp">
       <Filter>소스 파일\UI</Filter>
     </ClCompile>
     <ClCompile Include="LightMeshShader.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialEditUI.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="LightManager.cpp">
+      <Filter>소스 파일\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialManager.cpp">
+      <Filter>소스 파일\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

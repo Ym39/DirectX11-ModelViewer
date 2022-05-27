@@ -195,6 +195,8 @@
     <ClInclude Include="MainInspector.h" />
     <ClInclude Include="ManagerInspector.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="MaterialEditUI.h" />
+    <ClInclude Include="MaterialManager.h" />
     <ClInclude Include="MathHelper.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshClass.h" />
@@ -208,6 +210,7 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShadowShaderClass.h" />
     <ClInclude Include="SimpleColorShader.h" />
+    <ClInclude Include="Singleton.h" />
     <ClInclude Include="SkinnedBumpShader.h" />
     <ClInclude Include="SkinnedDepthShaderClass.h" />
     <ClInclude Include="SkinnedMeshBumpRenderComponent.h" />
@@ -263,6 +266,8 @@
     <ClCompile Include="MainInspector.cpp" />
     <ClCompile Include="ManagerInspector.cpp" />
     <ClCompile Include="Material.cpp" />
+    <ClCompile Include="MaterialEditUI.cpp" />
+    <ClCompile Include="MaterialManager.cpp" />
     <ClCompile Include="MathHelper.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshClass.cpp" />
