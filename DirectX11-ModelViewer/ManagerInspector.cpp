@@ -1,10 +1,28 @@
 #include "ManagerInspector.h"
 #include "AssetClass.h"
 #include "Material.h"
+#include "TransformComponent.h"
+#include "LightMeshRenderComponent.h"
+#include "ShaderManager.h"
 
 bool ManagerInspector::activeMaterialEdit = false;
 string ManagerInspector::currentEditMateriaKey = "";
+int ManagerInspector::currentGameObjectNumber = 0;
+bool ManagerInspector::addGameObject = false;
+string ManagerInspector::currentEditGameObjectKey = "";
+bool ManagerInspector::activeEditGameObject = false;
 
+bool VectorGetterManager(void* list, int count, const char** outText)
+{
+	std::vector<std::string>& vector = *static_cast<std::vector<std::string>*>(list);
+	if (count < 0 || count > vector.size())
+	{
+		return false;
+	}
+	*outText = vector[count].c_str();
+
+	return true;
+}
 
 void ManagerInspector::RenderRightManagerInspector()
 {
@@ -91,7 +109,7 @@ void ManagerInspector::RenderRightManagerInspector()
 
 void ManagerInspector::RenderMaterialEdit()
 {
-	WideMaterial* curMat = MaterialManager::Instance().GetTexture(currentEditMateriaKey);
+	WideMaterial* curMat = MaterialManager::Instance().GetMaterial(currentEditMateriaKey);
 
 	if (curMat == nullptr || activeMaterialEdit == false)
 	{
@@ -125,7 +143,7 @@ void ManagerInspector::RenderMaterialEdit()
 
 		std::string selected = "";
 
-		if (MaterialCombo("Ambient Texture", curMat->GetAmbientKey(), &selected) == true)
+		if (TextureCombo("Ambient Texture", curMat->GetAmbientKey(), &selected) == true)
 		{
 			curMat->SetAmbientKey(selected);
 		}
@@ -141,7 +159,7 @@ void ManagerInspector::RenderMaterialEdit()
 
 		std::string selected = "";
 
-		if (MaterialCombo("Emissive Texture", curMat->GetEmissiveKey(), &selected) == true)
+		if (TextureCombo("Emissive Texture", curMat->GetEmissiveKey(), &selected) == true)
 		{
 			curMat->SetEmissiveKey(selected);
 		}
@@ -157,7 +175,7 @@ void ManagerInspector::RenderMaterialEdit()
 
 		std::string selected = "";
 
-		if (MaterialCombo("Diffuse Texture", curMat->GetDiffuseKey(), &selected) == true)
+		if (TextureCombo("Diffuse Texture", curMat->GetDiffuseKey(), &selected) == true)
 		{
 			curMat->SetDiffuseKey(selected);
 		}
@@ -173,7 +191,7 @@ void ManagerInspector::RenderMaterialEdit()
 
 		std::string selected = "";
 
-		if (MaterialCombo("Specular Texture", curMat->GetSpecularKey(), &selected) == true)
+		if (TextureCombo("Specular Texture", curMat->GetSpecularKey(), &selected) == true)
 		{
 			curMat->SetSpecularKey(selected);
 		}
@@ -184,7 +202,7 @@ void ManagerInspector::RenderMaterialEdit()
 
 		std::string selected2 = "";
 
-		if (MaterialCombo("Specular Power Texture", curMat->GetSpecularPowerKey(), &selected2) == true)
+		if (TextureCombo("Specular Power Texture", curMat->GetSpecularPowerKey(), &selected2) == true)
 		{
 			curMat->SetSpecularPowerKey(selected);
 		}
@@ -197,7 +215,7 @@ void ManagerInspector::RenderMaterialEdit()
 
 		std::string selected = "";
 
-		if (MaterialCombo("Normal Texture", curMat->GetNormalKey(), &selected) == true)
+		if (TextureCombo("Normal Texture", curMat->GetNormalKey(), &selected) == true)
 		{
 			curMat->SetNormalKey(selected);
 		}
@@ -211,7 +229,7 @@ void ManagerInspector::RenderMaterialEdit()
 
 		std::string selected = "";
 
-		if (MaterialCombo("Bump Texture", curMat->GetBumpKey(), &selected) == true)
+		if (TextureCombo("Bump Texture", curMat->GetBumpKey(), &selected) == true)
 		{
 			curMat->SetBumpKey(selected);
 		}
@@ -225,7 +243,7 @@ void ManagerInspector::RenderMaterialEdit()
 
 		std::string selected = "";
 
-		if (MaterialCombo("Opacity Texture", curMat->GetOpacityKey(), &selected) == true)
+		if (TextureCombo("Opacity Texture", curMat->GetOpacityKey(), &selected) == true)
 		{
 			curMat->SetOpacityKey(selected);
 		}
@@ -242,7 +260,7 @@ void ManagerInspector::RenderMaterialList()
 	ImGui::Begin("Material Manager", &active, ImGuiWindowFlags_None);
 
 	ImGui::ListBoxHeader("Material List");
-	for (const auto& item : MaterialManager::Instance().GetTextureKeyList())
+	for (const auto& item : MaterialManager::Instance().GetMaterialKeyList())
 	{
 		bool isSelected = false;
 		if (ImGui::Selectable(item.c_str(), &isSelected))
@@ -261,7 +279,7 @@ void ManagerInspector::RenderMaterialList()
 	ImGui::InputText("New Material", buffer, IM_ARRAYSIZE(buffer));
 	if (ImGui::Button("Add Material") == true)
 	{
-		MaterialManager::Instance().AddNewTexture(buffer);
+		MaterialManager::Instance().AddNewMaterial(buffer);
 	}
 
 	ImGui::End();
@@ -273,7 +291,134 @@ void ManagerInspector::ActiveMaterialEdit(std::string key)
 	currentEditMateriaKey = key;
 }
 
-bool ManagerInspector::MaterialCombo(std::string name, std::string current, std::string* selected)
+void ManagerInspector::RenderGameObjectList()
+{
+	bool active;
+	ImGui::Begin("GameObject List", &active, ImGuiWindowFlags_MenuBar);
+	ImGui::NewLine();
+	ImGui::PushItemWidth(-1);
+
+	vector<string>& gameObjectNames = GameObjectManager::Instance().GetAllGameObjectName();
+
+	bool select = ImGui::ListBox("##listbox434", &currentGameObjectNumber, VectorGetterManager, static_cast<void*>(&gameObjectNames),(int)gameObjectNames.size(), 16);
+
+	if (ImGui::Button("Add GameObject #"))
+	{
+		addGameObject = true;
+	}
+
+	ImGui::End();
+}
+
+void ManagerInspector::AddGameObjectUI()
+{
+	if (addGameObject == false)
+	{
+		return;
+	}
+
+	ImGui::Begin("AddGameObject Browser", &addGameObject, ImGuiWindowFlags_None);
+
+	static char buffer[32] = { 0 };
+
+	ImGui::InputText("GameObjectName", buffer, IM_ARRAYSIZE(buffer));
+
+	ImGui::NewLine();
+	ImGui::PushItemWidth(-1);
+
+	vector<string> modelFileNames;
+
+	for (const auto& mesh : AssetClass::GetMeshs())
+	{
+		modelFileNames.push_back(mesh.first);
+	}
+
+	static int currentSelectedModleNumber;
+	bool selectModel = ImGui::Combo("ModelCombo", &currentSelectedModleNumber, VectorGetterManager, static_cast<void*>(&modelFileNames), modelFileNames.size(), 16);
+	string selectedModelKey = modelFileNames[currentSelectedModleNumber];
+
+	ImGui::NewLine();
+
+	if (ImGui::Button("Confirm Add GameObject"))
+	{
+		GameObjectClass* newGameObejct = GameObjectClass::Create();
+		newGameObejct->InsertComponent(new TransformComponent());
+		
+		LightMeshRenderComponenet* renderComp = new LightMeshRenderComponenet();
+		renderComp->Initalize(AssetClass::mMeshMap[selectedModelKey], ShaderManager::Instance().GetLighatMeshShader());
+
+		newGameObejct->InsertComponent(renderComp);
+
+		GameObjectManager::Instance().AddGameObject(buffer, newGameObejct);
+
+		addGameObject = false;
+	}
+
+	ImGui::End();
+}
+
+void ManagerInspector::RenderGameObejctEdit()
+{
+	if (activeEditGameObject == false)
+	{
+		return;
+	}
+
+	ImGui::Begin("Edit GameObject", &activeEditGameObject, ImGuiWindowFlags_None);
+
+	GameObjectClass* gameObject = GameObjectManager::Instance().GetGameObjcet(currentEditGameObjectKey);
+
+	if (gameObject == nullptr)
+	{
+		ImGui::End();
+		return;
+	}
+
+	LightMeshRenderComponenet* render = gameObject->GetComponent<LightMeshRenderComponenet>();
+
+	auto& matNames = MaterialManager::Instance().GetMaterialKeyList();
+
+	if (ImGui::CollapsingHeader("Material_EditGameObject", ImGuiTreeNodeFlags_Framed))
+	{
+		auto& subObjectMats = render->GetObjectMaterialKeys();
+		for (int i = 0; i < subObjectMats.size(); i++)
+		{
+			string meshGroupLabel = "MeshGroup_";
+			string num = to_string(i);
+			meshGroupLabel += num;
+
+			if (ImGui::CollapsingHeader(meshGroupLabel.c_str(), ImGuiTreeNodeFlags_Framed))
+			{
+				for (int j = 0; j < subObjectMats[i].size(); j++)
+				{
+					string subMeshLabel = "Material_";
+					string num = to_string(j);
+					subMeshLabel += num;
+					if (ImGui::CollapsingHeader(subMeshLabel.c_str(), ImGuiTreeNodeFlags_Framed))
+					{
+						int selectTextureCount = 0;
+						for (int textIdx = 0; textIdx < matNames.size(); textIdx++)
+						{
+							if (subObjectMats[i][j] == matNames[textIdx])
+							{
+								selectTextureCount = textIdx;
+								break;
+							}
+						}
+						if (ImGui::Combo("Material Name", &selectTextureCount, VectorGetterManager, static_cast<void*>(&matNames), matNames.size(), 16))
+						{
+							render->SetMaterialKey(i, j, matNames[selectTextureCount]);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	ImGui::End();
+}
+
+bool ManagerInspector::TextureCombo(std::string name, std::string current, std::string* selected)
 {
 	static vector<std::string> textureNames;
 
@@ -297,6 +442,41 @@ bool ManagerInspector::MaterialCombo(std::string name, std::string current, std:
 			{
 				isChanged = true;
 				current = textureNames[n];
+				*selected = current;
+			}
+			if (isSeleted == true)
+				ImGui::SetItemDefaultFocus();
+		}
+		ImGui::EndCombo();
+	}
+
+	return isChanged;
+}
+
+bool ManagerInspector::MaterialCombo(std::string name, std::string current, std::string* selected)
+{
+	static vector<std::string> materialsNames;
+
+	if (materialsNames.size() != MaterialManager::Instance().GetMaterialKeyList().size())
+	{
+		for (const auto& matNames : MaterialManager::Instance().GetMaterialKeyList())
+		{
+			materialsNames.push_back(matNames);
+		}
+	}
+
+	bool isSeleted = false;
+	bool isChanged = false;
+
+	if (ImGui::BeginCombo(name.c_str(), current.c_str(), ImGuiComboFlags_NoArrowButton))
+	{
+		for (int n = 0; n < materialsNames.size(); n++)
+		{
+			isSeleted = (current == materialsNames[n]);
+			if (ImGui::Selectable(materialsNames[n].c_str(), isSeleted))
+			{
+				isChanged = true;
+				current = materialsNames[n];
 				*selected = current;
 			}
 			if (isSeleted == true)

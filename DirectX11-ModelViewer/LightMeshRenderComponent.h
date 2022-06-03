@@ -5,6 +5,8 @@
 #include"D3DClass.h"
 #include"RenderTextureClass.h"
 #include"LightManager.h"
+#include "LightMeshShader.h"
+#include "MaterialManager.h"
 
 extern Camera* gMainCamera;
 extern D3DClass* gDirect;
@@ -51,7 +53,7 @@ public:
 			for (int j = 0; j < mMesh->GetSubMeshCount(i); j++)
 			{
 				mMesh->Render(deviceContext, i, j);
-				mDepthShader->Render(deviceContext, mMesh->GetSubMeshIndexCount(i, j), objectTransform->GetTransform(), lightViewMatrix, lightProjectionMatrix);
+				//mDepthShader->Render(deviceContext, mMesh->GetSubMeshIndexCount(i, j), objectTransform->GetTransform(), lightViewMatrix, lightProjectionMatrix);
 			}
 		}
 	}
@@ -75,9 +77,9 @@ public:
 			{
 				mMesh->Render(deviceContext, i, j);
 
-				SpcularMaterial& mat = mSubObjectMats[i][j];
+				WideMaterial* mat = MaterialManager::Instance().GetMaterial(mSubObjectMats[i][j]);
 
-				mShader->Render(deviceContext, mMesh->GetSubMeshIndexCount(i, j), objectTransform->GetTransform(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, AssetClass::mTextureMap[mat.GetTextureKey()]->GetTexture(), gDepthTexture->GetShaderResourceView(), gMainLight->GetPosition(), gMainLight->GetAmbientColor(), gMainLight->GetDiffuseColor(), gMainCamera->GetPosition());
+				mShader->Render(deviceContext, mMesh->GetSubMeshIndexCount(i, j), objectTransform->GetTransform(), viewMatrix, projectionMatrix, mat);
 			}
 		}
 
@@ -86,9 +88,9 @@ public:
 	}
 
 public:
-	bool Initalize(MeshClass* mesh, ShadowShaderClass* shader, DepthShaderClass* depthShader)
+	bool Initalize(MeshClass* mesh, LightMeshShader* shader)
 	{
-		if (mesh == nullptr || shader == nullptr || depthShader == nullptr)
+		if (mesh == nullptr || shader == nullptr)
 			return false;
 
 		if (mesh->IsInitalized() == false)
@@ -96,12 +98,12 @@ public:
 
 		mMesh = mesh;
 		mShader = shader;
-		mDepthShader = depthShader;
 
 		mSubObjectMats.resize(mMesh->GetSubMeshGroupCount());
 		for (int i = 0; i < mSubObjectMats.size(); i++)
 		{
 			mSubObjectMats[i].resize(mMesh->GetSubMeshCount(i));
+			mSubObjectMats[i].assign(mMesh->GetSubMeshCount(i), DEFAULT_MATRIAL_KEY);
 		}
 
 		mBoundModel = new BoundModel(gDirect->GetDevice(), mMesh->GetBounds());
@@ -109,10 +111,20 @@ public:
 		return true;
 	}
 
+	const auto& GetObjectMaterialKeys() const { return mSubObjectMats; }
+	void SetMaterialKey(int groupIndex, int submeshIndex, string materialKey)
+	{
+		mSubObjectMats[groupIndex][submeshIndex] = materialKey;
+	}
+
 	MeshClass* GetMesh() { return mMesh; }
 
 	eRendererType GetRenderType() const { return mRendererType; }
 
 private:
-	vector<vector<SpcularMaterial>> mSubObjectMats;
+	LightMeshShader* mShader;
+
+	vector<vector<string>> mSubObjectMats;
 };
+
+DECLARE_COMPONENT(LightMeshRenderComponenet);

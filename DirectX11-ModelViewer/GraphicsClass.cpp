@@ -12,6 +12,7 @@
 #include "Physics.h"
 #include "LightManager.h"
 #include "MaterialManager.h"
+#include "ShaderManager.h"
 
 extern SystemClass* ApplicationHandle;
 extern Camera* gMainCamera;
@@ -57,8 +58,7 @@ GraphicsClass::GraphicsClass() :
     mUpArrowModel(nullptr),
     mCurrentGameObject(""),
     mScreenWidth(0),
-    mScreenHeight(0),
-    mLightMeshShader(nullptr)
+    mScreenHeight(0)
 {
 }
 
@@ -96,7 +96,12 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     }
 
     LightManager::Instance();
-    MaterialManager::Instance();
+    MaterialManager::Instance().Initialize();
+    
+    if (ShaderManager::Instance().Initialize(mDirect->GetDevice(), hwnd) == false)
+    {
+        return false;
+    }
 
     mLight = new Light;
     if (mLight == nullptr)
@@ -221,11 +226,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     if (result == false)
         return false;
     gSimpleColorShader = mSimpleColorShader;
-
-    mLightMeshShader = new LightMeshShader;
-    result = mLightMeshShader->Initialize(mDirect->GetDevice(), hwnd);
-    if (result == false)
-        return false;
 
     gameObjectBrowser = new GameObjectBrowser;
 

@@ -28,7 +28,7 @@ void LightMeshShader::Shutdown()
 	ShutdownShader();
 }
 
-bool LightMeshShader::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, Material* material)
+bool LightMeshShader::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, WideMaterial* material)
 {
 	bool result;
 
@@ -323,7 +323,7 @@ void LightMeshShader::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hw
 	return;
 }
 
-bool LightMeshShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, Material* material)
+bool LightMeshShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, WideMaterial* material)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -350,19 +350,16 @@ bool LightMeshShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, XM
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &mMatrixBuffer);
 
 	//텍스쳐 셋팅
-	WideMaterial* wideMat = static_cast<WideMaterial*>(material);
-
 	int textureNum = 0;
 
-	ID3D11ShaderResourceView* tt = AssetClass::mTextureMap[wideMat->GetAmbientKey()]->GetTexture();
-	deviceContext->PSSetShaderResources(textureNum++, 1, AssetClass::mTextureMap[wideMat->GetAmbientKey()]->GetTexturePP());
-	deviceContext->PSSetShaderResources(textureNum++, 1, AssetClass::mTextureMap[wideMat->GetEmissiveKey()]->GetTexturePP());
-	deviceContext->PSSetShaderResources(textureNum++, 1, AssetClass::mTextureMap[wideMat->GetDiffuseKey()]->GetTexturePP());
-	deviceContext->PSSetShaderResources(textureNum++, 1, AssetClass::mTextureMap[wideMat->GetSpecularKey()]->GetTexturePP());
-	deviceContext->PSSetShaderResources(textureNum++, 1, AssetClass::mTextureMap[wideMat->GetSpecularPowerKey()]->GetTexturePP());
-	deviceContext->PSSetShaderResources(textureNum++, 1, AssetClass::mTextureMap[wideMat->GetNormalKey()]->GetTexturePP());
-	deviceContext->PSSetShaderResources(textureNum++, 1, AssetClass::mTextureMap[wideMat->GetBumpKey()]->GetTexturePP());
-	deviceContext->PSSetShaderResources(textureNum++, 1, AssetClass::mTextureMap[wideMat->GetOpacityKey()]->GetTexturePP());
+	deviceContext->PSSetShaderResources(textureNum++, 1, AssetClass::mTextureMap[material->GetAmbientKey()]->GetTexturePP());
+	deviceContext->PSSetShaderResources(textureNum++, 1, AssetClass::mTextureMap[material->GetEmissiveKey()]->GetTexturePP());
+	deviceContext->PSSetShaderResources(textureNum++, 1, AssetClass::mTextureMap[material->GetDiffuseKey()]->GetTexturePP());
+	deviceContext->PSSetShaderResources(textureNum++, 1, AssetClass::mTextureMap[material->GetSpecularKey()]->GetTexturePP());
+	deviceContext->PSSetShaderResources(textureNum++, 1, AssetClass::mTextureMap[material->GetSpecularPowerKey()]->GetTexturePP());
+	deviceContext->PSSetShaderResources(textureNum++, 1, AssetClass::mTextureMap[material->GetNormalKey()]->GetTexturePP());
+	deviceContext->PSSetShaderResources(textureNum++, 1, AssetClass::mTextureMap[material->GetBumpKey()]->GetTexturePP());
+	deviceContext->PSSetShaderResources(textureNum++, 1, AssetClass::mTextureMap[material->GetOpacityKey()]->GetTexturePP());
 
 	result = deviceContext->Map(mMaterialBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
@@ -372,7 +369,7 @@ bool LightMeshShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, XM
 
 	MaterialBuffer* dataPtr2 = (MaterialBuffer*)mappedResource.pData;
 
-	dataPtr2->mat = wideMat->shaderUploadMaterial;
+	dataPtr2->mat = material->shaderUploadMaterial;
 
 	deviceContext->Unmap(mMaterialBuffer, 0);
 

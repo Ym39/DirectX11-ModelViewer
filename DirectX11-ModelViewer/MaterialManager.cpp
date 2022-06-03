@@ -1,37 +1,37 @@
 #include "MaterialManager.h"
 
-WideMaterial* MaterialManager::GetTexture(string key)
+WideMaterial* MaterialManager::GetMaterial(string key)
 {
-    if (mTextures.find(key) == mTextures.end())
+    if (mMaterials.find(key) == mMaterials.end())
         return nullptr;
 
-    return mTextures[key];
+    return mMaterials[key];
 }
 
-bool MaterialManager::SetTexture(string key, WideMaterial* mat)
+bool MaterialManager::SetMaterial(string key, WideMaterial* mat)
 {
-    if (mTextures.find(key) != mTextures.end())
+    if (mMaterials.find(key) != mMaterials.end())
         return false;
 
-    mTextures[key] = mat;
-    mTextureKeyNames.push_back(key);
+    mMaterials[key] = mat;
+    mMaterialKeyNames.push_back(key);
 
     return true;
 }
 
-bool MaterialManager::AddNewTexture(string key)
+bool MaterialManager::AddNewMaterial(string key)
 {
-    if (mTextures.find(key) != mTextures.end())
+    if (mMaterials.find(key) != mMaterials.end())
         return false;
 
-    mTextures[key] = new WideMaterial;
-    mTextureKeyNames.push_back(key);
+    mMaterials[key] = new WideMaterial;
+    mMaterialKeyNames.push_back(key);
 
     return true;
 }
 
-const std::vector<string>& MaterialManager::GetTextureKeyList()
+std::vector<string>& MaterialManager::GetMaterialKeyList()
 {
-    return mTextureKeyNames;
+    return mMaterialKeyNames;
 }
 

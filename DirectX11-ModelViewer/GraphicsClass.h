@@ -73,7 +73,6 @@ private:
 	TextureShaderClass* mTextureShader;
 	SkinnedBumpShader* mSkinnedBumpShader;
 	SimpleColorShader* mSimpleColorShader;
-	LightMeshShader* mLightMeshShader;
 
 	//2D
 	BitmapClass* mMouseBitmap;
