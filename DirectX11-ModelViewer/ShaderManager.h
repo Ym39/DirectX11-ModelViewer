@@ -9,6 +9,8 @@ public:
 
 	LightMeshShader* GetLighatMeshShader() const;
 
+	void Shutdown();
+
 private:
 	LightMeshShader* mLightMeshShader;
 };

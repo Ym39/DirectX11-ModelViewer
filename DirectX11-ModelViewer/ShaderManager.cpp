@@ -18,3 +18,13 @@ LightMeshShader* ShaderManager::GetLighatMeshShader() const
 {
     return mLightMeshShader;
 }
+
+void ShaderManager::Shutdown()
+{
+    if (mLightMeshShader != nullptr)
+    {
+        mLightMeshShader->Shutdown();
+        delete mLightMeshShader;
+        mLightMeshShader = nullptr;
+    }
+}

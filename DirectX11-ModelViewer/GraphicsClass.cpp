@@ -1,18 +1,19 @@
 #include "GraphicsClass.h"
-#include"SystemClass.h"
-#include "Component.h"
-#include "TransformComponent.h"
-#include "MeshRenderComponent.h"
-#include "ReceiveShadowRenderComponent.h"
-#include "SkinnedMeshRenderComponent.h"
-#include "SkinnedMeshBumpRenderComponent.h"
-#include "AnimatorComponent.h"
+#include "SystemClass.h"
 #include "GameObjectBrowser.h"
 #include <typeinfo>
 #include "Physics.h"
 #include "LightManager.h"
 #include "MaterialManager.h"
 #include "ShaderManager.h"
+#include "Component.h"
+#include "TransformComponent.h"
+#include "MeshRenderComponent.h"
+#include "AnimatorComponent.h"
+#include "SkinnedMeshBumpRenderComponent.h"
+#include "SkinnedMeshRenderComponent.h"
+#include "ReceiveShadowRenderComponent.h"
+#include "ManagerInspector.h"
 
 extern SystemClass* ApplicationHandle;
 extern Camera* gMainCamera;
@@ -97,6 +98,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
     LightManager::Instance();
     MaterialManager::Instance().Initialize();
+    GameObjectManager::Instance();
     
     if (ShaderManager::Instance().Initialize(mDirect->GetDevice(), hwnd) == false)
     {
@@ -366,6 +368,9 @@ void GraphicsClass::Shutdown()
         gameObject.second->Destroy();
         delete gameObject.second;
     }
+
+    ShaderManager::Instance().Shutdown();
+    GameObjectManager::Instance().Shutdown();
 }
 
 bool GraphicsClass::Frame()
@@ -566,6 +571,20 @@ bool GraphicsClass::Render()
         }
     }
 
+    GameObjectManager& gameObjectManager = GameObjectManager::Instance();
+
+    for(auto& go : gameObjectManager.GetGetAllGameObject())
+    {
+        TransformComponent* transformComp = go.second->GetComponent<TransformComponent>();
+        LightMeshRenderComponenet* renderComp = go.second->GetComponent<LightMeshRenderComponenet>();
+
+        if (mFrustum->CheckBoundBox(renderComp->GetMesh()->GetBounds(), transformComp->GetTransform()) == true)
+        {
+            renderComp->Render(mDirect->GetDeviceContext());
+            renderCount++;
+        }
+    }
+
     auto gameobject = mGameObejcts.find(mCurrentGameObject);
     if (gameobject != mGameObejcts.end())
     {
@@ -625,6 +644,9 @@ bool GraphicsClass::Render()
     ManagerInspector::RenderRightManagerInspector();
     ManagerInspector::RenderMaterialEdit();
     ManagerInspector::RenderMaterialList();
+    ManagerInspector::RenderGameObjectList();
+    ManagerInspector::AddGameObjectUI();
+    ManagerInspector::RenderGameObejctEdit();
 
     modelListBrowser.RenderLoadFileWindow(&activeModelBrowser, &activeAnimBrowser);
 

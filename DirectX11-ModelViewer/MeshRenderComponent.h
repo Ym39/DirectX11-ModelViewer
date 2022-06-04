@@ -4,13 +4,13 @@
 #include"MeshClass.h"
 #include"SpecularShaderClass.h"
 #include"DepthShaderClass.h"
-#include"TransformComponent.h"
 #include"Texture.h"
 #include"Camera.h"
 #include"Light.h"
 #include"Material.h"
 #include"BoundModel.h"
 #include"SimpleColorShader.h"
+#include "AssetClass.h"
 #include <d3d11.h>
 
 extern Camera* gMainCamera;

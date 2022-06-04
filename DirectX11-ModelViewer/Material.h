@@ -66,14 +66,14 @@ struct ShaderUploadMaterial
 	float opacity;
 	float specularPower;
 	float indexOfRefraction;
-	bool hasAmbientTexture;
-	bool hasEmissiveTexture;
-	bool hasDiffuseTexture;
-	bool hasSpecularTexture;
-	bool hasSpecularPowerTexture;
-	bool hasNormalTexture;
-	bool hasBumpTexture;
-	bool hasOpacityTexture;
+	UINT32 hasAmbientTexture;
+	UINT32 hasEmissiveTexture;
+	UINT32 hasDiffuseTexture;
+	UINT32 hasSpecularTexture;
+	UINT32 hasSpecularPowerTexture;
+	UINT32 hasNormalTexture;
+	UINT32 hasBumpTexture;
+	UINT32 hasOpacityTexture;
 	float bumpIntensity;
 	float specularScale;
 	float alphaThreshold;
@@ -103,14 +103,14 @@ public:
 		shaderUploadMaterial.specularPower = 1.0f;
 		shaderUploadMaterial.indexOfRefraction = 1.0f;
 
-		shaderUploadMaterial.hasAmbientTexture = false;
-		shaderUploadMaterial.hasEmissiveTexture = false;
-		shaderUploadMaterial.hasDiffuseTexture = false;
-		shaderUploadMaterial.hasSpecularTexture = false;
-		shaderUploadMaterial.hasSpecularPowerTexture = false;
-		shaderUploadMaterial.hasNormalTexture = false;
-		shaderUploadMaterial.hasBumpTexture = false;
-		shaderUploadMaterial.hasOpacityTexture = false;
+		shaderUploadMaterial.hasAmbientTexture = 0;
+		shaderUploadMaterial.hasEmissiveTexture = 0;
+		shaderUploadMaterial.hasDiffuseTexture = 0;
+		shaderUploadMaterial.hasSpecularTexture = 0;
+		shaderUploadMaterial.hasSpecularPowerTexture = 0;
+		shaderUploadMaterial.hasNormalTexture = 0;
+		shaderUploadMaterial.hasBumpTexture = 0;
+		shaderUploadMaterial.hasOpacityTexture = 0;
 
 		shaderUploadMaterial.bumpIntensity = 0.0f;
 		shaderUploadMaterial.specularScale = 0.0f;
@@ -118,14 +118,14 @@ public:
 	}
 	~WideMaterial() = default;
 
-	void SetAmbientKey(std::string key) { mAmbientKey = key; shaderUploadMaterial.hasAmbientTexture = true; }
-	void SetEmissiveKey(std::string key) { mEmissiveKey = key; shaderUploadMaterial.hasEmissiveTexture = true; }
-	void SetDiffuseKey(std::string key) { mDiffuseKey = key; shaderUploadMaterial.hasDiffuseTexture = true; }
-	void SetSpecularKey(std::string key) { mSpecularKey = key; shaderUploadMaterial.hasSpecularTexture = true; }
-	void SetSpecularPowerKey(std::string key) { mSpecularPower = key; shaderUploadMaterial.hasSpecularPowerTexture = true; }
-	void SetNormalKey(std::string key) { mNormalKey = key; shaderUploadMaterial.hasNormalTexture = true; }
-	void SetBumpKey(std::string key) { mBumpKey = key; shaderUploadMaterial.hasBumpTexture = true; }
-	void SetOpacityKey(std::string key) { mOpacityKey = key; shaderUploadMaterial.hasOpacityTexture = true; }
+	void SetAmbientKey(std::string key) { mAmbientKey = key; shaderUploadMaterial.hasAmbientTexture = 1; }
+	void SetEmissiveKey(std::string key) { mEmissiveKey = key; shaderUploadMaterial.hasEmissiveTexture = 1; }
+	void SetDiffuseKey(std::string key) { mDiffuseKey = key; shaderUploadMaterial.hasDiffuseTexture = 1; }
+	void SetSpecularKey(std::string key) { mSpecularKey = key; shaderUploadMaterial.hasSpecularTexture = 1; }
+	void SetSpecularPowerKey(std::string key) { mSpecularPower = key; shaderUploadMaterial.hasSpecularPowerTexture = 1; }
+	void SetNormalKey(std::string key) { mNormalKey = key; shaderUploadMaterial.hasNormalTexture = 1; }
+	void SetBumpKey(std::string key) { mBumpKey = key; shaderUploadMaterial.hasBumpTexture = 1; }
+	void SetOpacityKey(std::string key) { mOpacityKey = key; shaderUploadMaterial.hasOpacityTexture = 1; }
 
 	std::string GetAmbientKey() { return mAmbientKey; }
 	std::string GetEmissiveKey() { return mEmissiveKey; }

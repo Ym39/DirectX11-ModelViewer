@@ -1,8 +1,6 @@
 #pragma once
 #include<unordered_map>
 #include <directxmath.h>
-#include"MeshClass.h"
-#include"SpecularShaderClass.h"
 using namespace DirectX;
 
 struct null_t {};

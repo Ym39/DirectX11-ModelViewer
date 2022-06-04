@@ -19,8 +19,8 @@ public:
 	XMFLOAT4 direction;
 	XMFLOAT4 color;
 	float intensity;
-	bool enabled;
-	bool selected;
+	UINT32 enabled;
+	UINT32 selected;
 	LightType lightType;
 
 public:

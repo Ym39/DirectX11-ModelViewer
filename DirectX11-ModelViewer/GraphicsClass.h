@@ -13,12 +13,11 @@
 #include "ArrowModel.h"
 #include "BitmapClass.h"
 #include "MeshClass.h"
-#include "AssetClass.h"
 #include "ModelListBrowser.h"
 #include "Shader.h"
 #include "FrustumClass.h"
-#include "ManagerInspector.h"
 #include "LightMeshShader.h"
+#include "AssetClass.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = false;

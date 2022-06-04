@@ -33,8 +33,8 @@ private:
 		float spotlightAngle;
 		float range;
 		float intensity;
-		bool enabled;
-		bool selected;
+		UINT32 enabled;
+		UINT32 selected;
 		int type;
 		XMFLOAT2 padding;
 	};
