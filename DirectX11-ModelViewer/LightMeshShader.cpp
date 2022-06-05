@@ -345,6 +345,7 @@ bool LightMeshShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, XM
 	//worldMatrix = XMMatrixTranspose(worldMatrix);
 	//viewMatrix = XMMatrixTranspose(viewMatrix);
 	//projectionMatrix = XMMatrixTranspose(projectionMatrix);
+	XMMATRIX modelViewMatrix = XMMatrixMultiply(worldMatrix, viewMatrix);
 	
 	result = deviceContext->Map(mMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
@@ -354,7 +355,7 @@ bool LightMeshShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, XM
 
 	PerObejct* dataPtr = (PerObejct*)mappedResource.pData;
 
-	dataPtr->modelView = XMMatrixMultiply(worldMatrix, viewMatrix);
+	dataPtr->modelView = modelViewMatrix;
 	dataPtr->modelViewProjection = XMMatrixMultiply(dataPtr->modelView, projectionMatrix);
 
 	deviceContext->Unmap(mMatrixBuffer, 0);
@@ -399,8 +400,28 @@ bool LightMeshShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, XM
 	LightBuffer *dataPtr3 = (LightBuffer*)mappedResource.pData;
 	LightBuffer dummyLight;
 
+	LightBuffer lights[NUM_OF_LIGHTS];
+	LightSturct* lightStructs = LightManager::Instance().GetAllLight();
+
+	for (int i = 0; i < NUM_OF_LIGHTS; i++)
+	{
+		XMVECTOR positionWSVector = XMLoadFloat4(&lightStructs[i].position);
+		XMVECTOR directionWSVector = XMLoadFloat4(&lightStructs[i].direction);
+		lights[i].positionWS = lightStructs[i].position;
+		XMStoreFloat4(&lights[i].positionVS,XMVector4Transform(positionWSVector, modelViewMatrix));
+		lights[i].directionWS = lightStructs[i].direction;
+		XMStoreFloat4(&lights[i].directionVS, XMVector4Transform(directionWSVector, modelViewMatrix));
+		lights[i].color = lightStructs[i].color;
+		lights[i].spotlightAngle = lightStructs[i].spotlightAngle;
+		lights[i].range = lightStructs[i].range;
+		lights[i].intensity = lightStructs[i].intensity;
+		lights[i].enabled = lightStructs[i].enabled;
+		lights[i].selected = lightStructs[i].selected;
+		lights[i].type = (int)lightStructs[i].lightType;
+	}
+
 	size_t sizeInBytes = NUM_OF_LIGHTS * sizeof(LightBuffer);
-	memcpy_s(mappedResource.pData, sizeInBytes, LightManager::Instance().GetAllLight(), sizeInBytes);
+	memcpy_s(mappedResource.pData, sizeInBytes, lights, sizeInBytes);
 
 	deviceContext->Unmap(mLightBuffer, 0);
 	deviceContext->PSSetShaderResources(8, 1, &mSrv);

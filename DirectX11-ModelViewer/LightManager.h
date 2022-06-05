@@ -18,6 +18,8 @@ public:
 	XMFLOAT4 position;
 	XMFLOAT4 direction;
 	XMFLOAT4 color;
+	float spotlightAngle;
+	float range;
 	float intensity;
 	UINT32 enabled;
 	UINT32 selected;

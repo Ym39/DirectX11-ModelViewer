@@ -641,7 +641,7 @@ bool GraphicsClass::Render()
     static bool activeModelBrowser = false;
     static bool activeAnimBrowser = false;
 
-    ManagerInspector::RenderRightManagerInspector();
+    ManagerInspector::RenderLightManagerInspector();
     ManagerInspector::RenderMaterialEdit();
     ManagerInspector::RenderMaterialList();
     ManagerInspector::RenderGameObjectList();

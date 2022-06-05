@@ -21,7 +21,7 @@ using namespace std;
 class ManagerInspector
 {
 public:
-	static void RenderRightManagerInspector();
+	static void RenderLightManagerInspector();
 	static void RenderMaterialEdit();
 
 	static void RenderMaterialList();
@@ -70,7 +70,7 @@ bool VectorGetterManager(void* list, int count, const char** outText)
 	return true;
 }
 
-void ManagerInspector::RenderRightManagerInspector()
+void ManagerInspector::RenderLightManagerInspector()
 {
 	bool active = true;
 	ImGui::Begin("LightInspector", &active, ImGuiWindowFlags_None);
@@ -146,6 +146,18 @@ void ManagerInspector::RenderRightManagerInspector()
 				if (i == 0) selectedLightType = 2;
 
 				currentLight->lightType = (LightType)selectedLightType;
+
+				ImGui::InputFloat("Intensity", &currentLight->intensity);
+
+				switch (currentLight->lightType)
+				{
+				case LightType::Point:
+					ImGui::InputFloat("Range", &currentLight->range);
+					break;
+				case LightType::Spot:
+					ImGui::InputFloat("Spot", &currentLight->spotlightAngle);
+					break;
+				}
 			}
 		}
 	}

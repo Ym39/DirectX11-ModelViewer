@@ -221,6 +221,6 @@ LightingResult DoLighting(StructuredBuffer<Light> lights, Material mat, float4 e
         totalResult.Diffuse += result.Diffuse;
         totalResult.Specular += result.Specular;
     }
-
+    totalResult.Diffuse = float4(1.0f, 1.0f, 1.0f, 1.0f);
     return totalResult;
 }
