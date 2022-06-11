@@ -7,6 +7,7 @@
 #include"LightManager.h"
 #include "LightMeshShader.h"
 #include "MaterialManager.h"
+#include "ShaderManager.h"
 
 extern Camera* gMainCamera;
 extern D3DClass* gDirect;
@@ -66,8 +67,6 @@ public:
 		XMMATRIX viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix;
 		gMainCamera->GetViewMatrix(viewMatrix);
 		gDirect->GetProjectionMatrix(projectionMatrix);
-		gMainLight->GetViewMatrix(lightViewMatrix);
-		gMainLight->GetProjectionMatrix(lightProjectionMatrix);
 
 		TransformComponent* objectTransform = mOwnerGameObject->GetComponent<TransformComponent>();
 
@@ -85,6 +84,37 @@ public:
 
 		if (mVisibleBoundBox == true)
 			RenderBoundBox(deviceContext, objectTransform->GetTransform(), viewMatrix, projectionMatrix);
+	}
+
+	void HdrRender(ID3D11DeviceContext* deviceContext)
+	{
+		if (mMesh == nullptr)
+			return;
+
+		XMMATRIX viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix;
+		gMainCamera->GetViewMatrix(viewMatrix);
+		gDirect->GetProjectionMatrix(projectionMatrix);
+
+		TransformComponent* objectTransform = mOwnerGameObject->GetComponent<TransformComponent>();
+
+		for (int i = 0; i < mMesh->GetSubMeshGroupCount(); i++)
+		{
+			for (int j = 0; j < mMesh->GetSubMeshCount(i); j++)
+			{
+				WideMaterial* mat = MaterialManager::Instance().GetMaterial(mSubObjectMats[i][j]);
+
+				if (mat->shaderUploadMaterial.hasEmissiveTexture == false)
+				{
+					continue;
+				}
+
+				mMesh->Render(deviceContext, i, j);
+
+				HdrShader* hdrShader = ShaderManager::Instance().GetHdrShader();
+
+				hdrShader->Render(deviceContext, mMesh->GetSubMeshIndexCount(i, j), objectTransform->GetTransform(), viewMatrix, projectionMatrix, mat);
+			}
+		}
 	}
 
 public:

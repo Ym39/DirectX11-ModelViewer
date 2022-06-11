@@ -97,7 +97,7 @@ void ManagerInspector::RenderLightManagerInspector()
 
 				if (currentLight->lightType != LightType::Directional)
 				{
-					ImGui::InputFloat3("Position", position);
+					ImGui::DragFloat3("Position", position);
 					currentLight->position.x = position[0];
 					currentLight->position.y = position[1];
 					currentLight->position.z = position[2];
@@ -105,7 +105,7 @@ void ManagerInspector::RenderLightManagerInspector()
 				}
 				else
 				{
-					ImGui::InputFloat3("Direction", direction);
+					ImGui::DragFloat3("Direction", direction);
 					currentLight->direction.x = direction[0];
 					currentLight->direction.y = direction[1];
 					currentLight->direction.z = direction[2];
@@ -147,15 +147,16 @@ void ManagerInspector::RenderLightManagerInspector()
 
 				currentLight->lightType = (LightType)selectedLightType;
 
-				ImGui::InputFloat("Intensity", &currentLight->intensity);
+				ImGui::DragFloat("Intensity", &currentLight->intensity);
 
 				switch (currentLight->lightType)
 				{
 				case LightType::Point:
-					ImGui::InputFloat("Range", &currentLight->range);
+					ImGui::DragFloat("Range", &currentLight->range);
 					break;
 				case LightType::Spot:
-					ImGui::InputFloat("Spot", &currentLight->spotlightAngle);
+					ImGui::DragFloat("Range", &currentLight->range);
+					ImGui::DragFloat("Spot", &currentLight->spotlightAngle, 1.0f, 0.0f, 360.0f);
 					break;
 				}
 			}
@@ -240,7 +241,7 @@ void ManagerInspector::RenderMaterialEdit()
 
 		ImGui::Image((void*)AssetClass::mTextureMap[curMat->GetDiffuseKey()]->GetTexture(), ImVec2(128.0f, 128.0f));
 
-		MaterialColorEdit("Diffuse Color", &curMat->shaderUploadMaterial.emissiveColor);
+		MaterialColorEdit("Diffuse Color", &curMat->shaderUploadMaterial.diffuseColor);
 	}
 
 	if (ImGui::CollapsingHeader("Specular", ImGuiTreeNodeFlags_Framed))
@@ -256,7 +257,7 @@ void ManagerInspector::RenderMaterialEdit()
 
 		ImGui::Image((void*)AssetClass::mTextureMap[curMat->GetSpecularKey()]->GetTexture(), ImVec2(128.0f, 128.0f));
 
-		MaterialColorEdit("Specular Color", &curMat->shaderUploadMaterial.emissiveColor);
+		MaterialColorEdit("Specular Color", &curMat->shaderUploadMaterial.specularColor);
 
 		std::string selected2 = "";
 
@@ -307,6 +308,11 @@ void ManagerInspector::RenderMaterialEdit()
 		}
 
 		ImGui::Image((void*)AssetClass::mTextureMap[curMat->GetOpacityKey()]->GetTexture(), ImVec2(128.0f, 128.0f));
+	}
+
+	if (ImGui::CollapsingHeader("HDR", ImGuiTreeNodeFlags_Framed))
+	{
+		ImGui::DragFloat("HDR Brightness", &curMat->shaderUploadMaterial.hdrBrightness, 0.0f, 100.0f);
 	}
 
 	ImGui::End();
@@ -449,9 +455,9 @@ void ManagerInspector::RenderGameObejctEdit()
 			XMFLOAT3 s = transform->GetLocalScale();
 			float scale[3] = { s.x,s.y,s.z };
 
-			ImGui::InputFloat3("Position", position);
-			ImGui::InputFloat3("Rotation", rotation);
-			ImGui::InputFloat3("Scale", scale);
+			ImGui::DragFloat3("Position", position);
+			ImGui::DragFloat3("Rotation", rotation);
+			ImGui::DragFloat3("Scale", scale);
 
 			transform->SetLocalPosition(XMFLOAT3(position[0], position[1], position[2]));
 			transform->SetLocalRotation(XMFLOAT3(rotation[0], rotation[1], rotation[2]));

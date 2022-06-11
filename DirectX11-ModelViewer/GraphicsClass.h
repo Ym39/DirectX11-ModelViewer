@@ -18,6 +18,7 @@
 #include "FrustumClass.h"
 #include "LightMeshShader.h"
 #include "AssetClass.h"
+#include "OrthowindowClass.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = false;
@@ -56,7 +57,17 @@ private:
 	Light* mLight;
 	Camera* mCamera;
 	GridClass* mGrid;
-	RenderTextureClass* mRenderTexture;
+	RenderTextureClass* mRenderDepthTexture;
+
+	RenderTextureClass* mScreenTexture;
+	RenderTextureClass* mHdrTexture;
+	RenderTextureClass* mHorizontalBlurTexture;
+	RenderTextureClass* mVerticalBlurTexture;
+	RenderTextureClass* mDownSampleTexture;
+	RenderTextureClass* mUpSampleTexture;
+
+	OrthowindowClass* mFullScreenWindow;
+	OrthowindowClass* mSmallScreenWindow;
 
 	//프러스텀 클래스
 	FrustumClass* mFrustum;

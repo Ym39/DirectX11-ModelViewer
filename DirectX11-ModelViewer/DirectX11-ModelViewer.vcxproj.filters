@@ -288,6 +288,24 @@
     <ClInclude Include="ShaderManager.h">
       <Filter>헤더 파일\컴포넌트</Filter>
     </ClInclude>
+    <ClInclude Include="OrthowindowClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Common.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="HdrShader.h">
+      <Filter>헤더 파일\셰이더 클래스</Filter>
+    </ClInclude>
+    <ClInclude Include="HorizontalBlurShaderClass.h">
+      <Filter>헤더 파일\셰이더 클래스</Filter>
+    </ClInclude>
+    <ClInclude Include="VerticalBlurShaderClass.h">
+      <Filter>헤더 파일\셰이더 클래스</Filter>
+    </ClInclude>
+    <ClInclude Include="BloomResultShaderClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX11-ModelViewer.rc">
@@ -483,6 +501,21 @@
     <ClCompile Include="ShaderManager.cpp">
       <Filter>소스 파일\Manager</Filter>
     </ClCompile>
+    <ClCompile Include="OrthowindowClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="HdrShader.cpp">
+      <Filter>소스 파일\셰이더 클래스</Filter>
+    </ClCompile>
+    <ClCompile Include="HorizontalBlurShaderClass.cpp">
+      <Filter>소스 파일\셰이더 클래스</Filter>
+    </ClCompile>
+    <ClCompile Include="VerticalBlurShaderClass.cpp">
+      <Filter>소스 파일\셰이더 클래스</Filter>
+    </ClCompile>
+    <ClCompile Include="BloomResultShaderClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="DirectXTex\DirectXTex.inl">
@@ -544,6 +577,24 @@
       <Filter>셰이더</Filter>
     </None>
     <None Include="LightMeshVertexShader.hlsl">
+      <Filter>셰이더</Filter>
+    </None>
+    <None Include="HdrPixelShader.hlsl">
+      <Filter>셰이더</Filter>
+    </None>
+    <None Include="HdrVertexShader.hlsl">
+      <Filter>셰이더</Filter>
+    </None>
+    <None Include="HorizontalBlurVertexShader.hlsl">
+      <Filter>셰이더</Filter>
+    </None>
+    <None Include="BlurPixelShader.hlsl">
+      <Filter>셰이더</Filter>
+    </None>
+    <None Include="VerticalBlurVertexShader.hlsl">
+      <Filter>셰이더</Filter>
+    </None>
+    <None Include="BloomResultPixelShader.hlsl">
       <Filter>셰이더</Filter>
     </None>
   </ItemGroup>

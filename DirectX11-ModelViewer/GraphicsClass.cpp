@@ -40,7 +40,7 @@ GraphicsClass::GraphicsClass() :
     mLight(nullptr),
     mCamera(nullptr),
     mGrid(nullptr),
-    mRenderTexture(nullptr),
+    mRenderDepthTexture(nullptr),
     mSkinnedShader(nullptr),
     mSpecularShader(nullptr),
     mColorShader(nullptr),
@@ -59,7 +59,8 @@ GraphicsClass::GraphicsClass() :
     mUpArrowModel(nullptr),
     mCurrentGameObject(""),
     mScreenWidth(0),
-    mScreenHeight(0)
+    mScreenHeight(0),
+    mFullScreenWindow(nullptr)
 {
 }
 
@@ -158,14 +159,70 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     mImgui = new ImguiClass;
     mImgui->Initialize(hwnd, mDirect->GetDevice(), mDirect->GetDeviceContext());
 
-    mRenderTexture = new RenderTextureClass;
-    result = mRenderTexture->Initialize(mDirect->GetDevice(), SHADOWMAP_WIDTH, SHADOWMAP_HEIGHT, SCREEN_DEPTH, SCREEN_NEAR);
+    mRenderDepthTexture = new RenderTextureClass;
+    result = mRenderDepthTexture->Initialize(mDirect->GetDevice(), SHADOWMAP_WIDTH, SHADOWMAP_HEIGHT, SCREEN_DEPTH, SCREEN_NEAR);
     if (result == false)
     {
         return false;
     }
 
-    gDepthTexture = mRenderTexture;
+    mScreenTexture = new RenderTextureClass;
+    result = mScreenTexture->Initialize(mDirect->GetDevice(), screenWidth, screenHeight, SCREEN_DEPTH, SCREEN_NEAR);
+    if (result == false)
+    {
+        return false;
+    }
+
+    mHdrTexture = new RenderTextureClass;
+    result = mHdrTexture->Initialize(mDirect->GetDevice(), screenWidth, screenHeight, SCREEN_DEPTH, SCREEN_NEAR);
+    if (result == false)
+    {
+        return false;
+    }
+
+    mHorizontalBlurTexture = new RenderTextureClass;
+    result = mHorizontalBlurTexture->Initialize(mDirect->GetDevice(), screenWidth / 2, screenHeight / 2, SCREEN_DEPTH, SCREEN_NEAR);
+    if (result == false)
+    {
+        return false;
+    }
+
+    mVerticalBlurTexture = new RenderTextureClass;
+    result = mVerticalBlurTexture->Initialize(mDirect->GetDevice(), screenWidth / 2, screenHeight / 2, SCREEN_DEPTH, SCREEN_NEAR);
+    if (result == false)
+    {
+        return false;
+    }
+
+    mDownSampleTexture = new RenderTextureClass;
+    result = mDownSampleTexture->Initialize(mDirect->GetDevice(), screenWidth / 2, screenHeight / 2, SCREEN_DEPTH, SCREEN_NEAR);
+    if (result == false)
+    {
+        return false;
+    }
+
+    mUpSampleTexture = new RenderTextureClass;
+    result = mUpSampleTexture->Initialize(mDirect->GetDevice(), screenWidth, screenHeight, SCREEN_DEPTH, SCREEN_NEAR);
+    if (result == false)
+    {
+        return false;
+    }
+
+    mFullScreenWindow = new OrthowindowClass;
+    result = mFullScreenWindow->Initialize(mDirect->GetDevice(), screenWidth, screenHeight);
+    if (result == false)
+    {
+        return false;
+    }
+
+    mSmallScreenWindow = new OrthowindowClass;
+    result = mSmallScreenWindow->Initialize(mDirect->GetDevice(), screenWidth / 2, screenHeight / 2);
+    if (result == false)
+    {
+        return false;
+    }
+
+    gDepthTexture = mRenderDepthTexture;
 
     mDepthShader = new DepthShaderClass;
     result = mDepthShader->Initialize(mDirect->GetDevice(), hwnd);
@@ -293,11 +350,68 @@ void GraphicsClass::Shutdown()
         mColorShader = nullptr;
     }
 
-    if (mRenderTexture)
+    if (mRenderDepthTexture)
     {
-        mRenderTexture->Shutdown();
-        delete mRenderTexture;
-        mRenderTexture = nullptr;
+        mRenderDepthTexture->Shutdown();
+        delete mRenderDepthTexture;
+        mRenderDepthTexture = nullptr;
+    }
+
+    if (mHdrTexture)
+    {
+        mHdrTexture->Shutdown();
+        delete mHdrTexture;
+        mHdrTexture = nullptr;
+    }
+
+    if (mHorizontalBlurTexture)
+    {
+        mHorizontalBlurTexture->Shutdown();
+        delete mHorizontalBlurTexture;
+        mHorizontalBlurTexture = nullptr;
+    }
+
+    if (mVerticalBlurTexture)
+    {
+        mVerticalBlurTexture->Shutdown();
+        delete mVerticalBlurTexture;
+        mVerticalBlurTexture = nullptr;
+    }
+
+    if (mDownSampleTexture)
+    {
+        mDownSampleTexture->Shutdown();
+        delete mDownSampleTexture;
+        mDownSampleTexture = nullptr;
+    }
+
+    if (mUpSampleTexture)
+    {
+        mUpSampleTexture->Shutdown();
+        delete mUpSampleTexture;
+        mUpSampleTexture = nullptr;
+    }
+
+
+    if (mScreenTexture)
+    {
+        mScreenTexture->Shutdown();
+        delete mScreenTexture;
+        mScreenTexture = nullptr;
+    }
+
+    if (mFullScreenWindow)
+    {
+        mFullScreenWindow->Shutdown();
+        delete mFullScreenWindow;
+        mFullScreenWindow = nullptr;
+    }
+
+    if (mSmallScreenWindow)
+    {
+        mSmallScreenWindow->Shutdown();
+        delete mSmallScreenWindow;
+        mSmallScreenWindow = nullptr;
     }
 
     if (mDepthShader)
@@ -533,7 +647,11 @@ bool GraphicsClass::Render()
         return false;
     }
 
-    mDirect->BeginScene(0.0f,0.0f,0.0f,1.0f);
+    //mDirect->BeginScene(0.0f,0.0f,0.0f,1.0f);
+#pragma region Àü¹Ý ·»´õ¸µ
+
+    mScreenTexture->SetRenderTarget(mDirect->GetDeviceContext());
+    mScreenTexture->ClearRenderTarget(mDirect->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 0.0f);
 
 	mCamera->Render();
 
@@ -603,8 +721,110 @@ bool GraphicsClass::Render()
         mSolidShader->Render(mDirect->GetDeviceContext(), mUpArrowModel->GetIndexCount(), positionMat, viewMatrix, projectionMatrix, XMFLOAT4(0.0f, 1.f, 0.f, 1.f));
     }
 
+    mDirect->SetBackBufferRenderTarget();
+    mDirect->ResetViewport();
+
+#pragma endregion
+
+#pragma region HDR ·»´õ¸µ
+
+    mHdrTexture->SetRenderTarget(mDirect->GetDeviceContext());
+    mHdrTexture->ClearRenderTarget(mDirect->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 0.0f);
+
+    for (auto& go : gameObjectManager.GetGetAllGameObject())
+    {
+        TransformComponent* transformComp = go.second->GetComponent<TransformComponent>();
+        LightMeshRenderComponenet* renderComp = go.second->GetComponent<LightMeshRenderComponenet>();
+
+        if (mFrustum->CheckBoundBox(renderComp->GetMesh()->GetBounds(), transformComp->GetTransform()) == true)
+        {
+            renderComp->HdrRender(mDirect->GetDeviceContext());
+            renderCount++;
+        }
+    }
+
+    mDirect->SetBackBufferRenderTarget();
+    mDirect->ResetViewport();
+
+#pragma endregion
+
+#pragma region ºí·¯ ·»´õ¸µ
+
+    mDownSampleTexture->SetRenderTarget(mDirect->GetDeviceContext());
+    mDownSampleTexture->ClearRenderTarget(mDirect->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
+
+    XMMATRIX downOrthoMatrix;
+
+    mDownSampleTexture->GetOrthoMatrix(downOrthoMatrix);
+
+    mDirect->TurnZBufferOff();
+
+    mSmallScreenWindow->Render(mDirect->GetDeviceContext());
+
+    result = mTextureShader->Render(mDirect->GetDeviceContext(), mSmallScreenWindow->GetIndexCount(), worldMatrix, mBaseViewMatrix, downOrthoMatrix, mHdrTexture->GetShaderResourceView());
+    if (result == false)
+    {
+        return false;
+    }
+
+    mHorizontalBlurTexture->SetRenderTarget(mDirect->GetDeviceContext());
+    mHorizontalBlurTexture->ClearRenderTarget(mDirect->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
+
+    mHorizontalBlurTexture->GetOrthoMatrix(downOrthoMatrix);
+
+    mSmallScreenWindow->Render(mDirect->GetDeviceContext());
+
+    HorizontalBlurShaderClass* horizontalBlurShader = ShaderManager::Instance().GetHorizonBlurShader();
+    result = horizontalBlurShader->Render(mDirect->GetDeviceContext(), mSmallScreenWindow->GetIndexCount(), worldMatrix, mBaseViewMatrix, downOrthoMatrix, mDownSampleTexture->GetShaderResourceView(), mScreenWidth / 2);
+    if (result == false)
+    {
+        return false;
+    }
+
+    mVerticalBlurTexture->SetRenderTarget(mDirect->GetDeviceContext());
+    mVerticalBlurTexture->ClearRenderTarget(mDirect->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
+
+    mVerticalBlurTexture->GetOrthoMatrix(downOrthoMatrix);
+
+    mSmallScreenWindow->Render(mDirect->GetDeviceContext());
+
+    VerticalBlurShaderClass* verticalBlurShader = ShaderManager::Instance().GetVerticalBlurShader();
+    result = verticalBlurShader->Render(mDirect->GetDeviceContext(), mSmallScreenWindow->GetIndexCount(), worldMatrix, mBaseViewMatrix, downOrthoMatrix, mHorizontalBlurTexture->GetShaderResourceView(), mScreenHeight / 2);
+    if (result == false)
+    {
+        return false;
+    }
+
+    mUpSampleTexture->SetRenderTarget(mDirect->GetDeviceContext());
+    mUpSampleTexture->ClearRenderTarget(mDirect->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
+
+    mUpSampleTexture->GetOrthoMatrix(downOrthoMatrix);
+
+    mFullScreenWindow->Render(mDirect->GetDeviceContext());
+
+    result = mTextureShader->Render(mDirect->GetDeviceContext(), mFullScreenWindow->GetIndexCount(), worldMatrix, mBaseViewMatrix, downOrthoMatrix, mVerticalBlurTexture->GetShaderResourceView());
+    if (result == false)
+    {
+        return false;
+    }
+
+    mDirect->SetBackBufferRenderTarget();
+    mDirect->ResetViewport();
+
+#pragma endregion
+
+    mDirect->BeginScene(0.0f, 0.0f, 0.0f, 0.0f);
+
     //2D ·»´õ¸µ
     mDirect->TurnZBufferOff();
+
+    mFullScreenWindow->Render(mDirect->GetDeviceContext());
+    BloomResultShaderClass* bloomResultShader = ShaderManager::Instance().GetBloomResultShader();
+    if (bloomResultShader->Render(mDirect->GetDeviceContext(), mFullScreenWindow->GetIndexCount(), worldMatrix, mBaseViewMatrix, orthoMatrix, mScreenTexture->GetShaderResourceView(), mUpSampleTexture->GetShaderResourceView()) == false)
+    {
+        return false;
+    }
+
     mDirect->TurnOnAlphaBlending();
 
     int mouseX = 0;
@@ -1070,9 +1290,9 @@ bool GraphicsClass::RenderSceneToTexture()
     float posY = 0.f;
     float posZ = 0.f;
 
-    mRenderTexture->SetRenderTarget(mDirect->GetDeviceContext());
+    mRenderDepthTexture->SetRenderTarget(mDirect->GetDeviceContext());
 
-    mRenderTexture->ClearRenderTarget(mDirect->GetDeviceContext(), 0.0f, 0.f, 0.f, 1.f);
+    mRenderDepthTexture->ClearRenderTarget(mDirect->GetDeviceContext(), 0.0f, 0.f, 0.f, 1.f);
 
     mLight->GenerateViewMatrix();
 

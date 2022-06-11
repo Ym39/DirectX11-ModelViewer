@@ -1,20 +1,15 @@
 #pragma once
 #include <d3d11.h>
 #include <d3dcompiler.h>
-#include <directxmath.h>
 #include <fstream>
-#include "Material.h"
-#include "LightManager.h"
 #include "Common.h"
+#include "AssetClass.h"
 
-using namespace DirectX;
-using namespace std;
-
-class LightMeshShader
+class HdrShader
 {
 public:
-	LightMeshShader();
-	~LightMeshShader();
+	HdrShader();
+	~HdrShader();
 
 	bool Initialize(ID3D11Device* device, HWND hwnd);
 	void Shutdown();
@@ -35,10 +30,7 @@ private:
 
 	ID3D11Buffer* mMatrixBuffer;
 	ID3D11Buffer* mMaterialBuffer;
-	ID3D11Buffer* mLightBuffer;
-	ID3D11ShaderResourceView* mSrv;
 
 	ID3D11SamplerState* mSampleStateWarp;
-	ID3D11SamplerState* mSampleStateClamp;
 };
 

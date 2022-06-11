@@ -38,7 +38,8 @@ struct Material
     //-------------------------- ( 16 bytes )
     float   SpecularScale;
     float   AlphaThreshold;
-    float2  Padding;
+    float   HdrBrightness;
+    float   Padding;
     //--------------------------- ( 16 bytes )
 };
 
@@ -194,8 +195,10 @@ LightingResult DoLighting(StructuredBuffer<Light> lights, Material mat, float4 e
     {
         LightingResult result = (LightingResult)0;
 
+        Light lll = lights[i];
+
         // Skip lights that are not enabled.
-        if (!lights[i].Enabled) continue;
+        if (lights[i].Enabled == 0) continue;
         // Skip point and spot lights that are out of range of the point being shaded.
         if (lights[i].Type != DIRECTIONAL_LIGHT &&
             length(lights[i].PositionVS - P) > lights[i].Range) continue;
@@ -221,6 +224,6 @@ LightingResult DoLighting(StructuredBuffer<Light> lights, Material mat, float4 e
         totalResult.Diffuse += result.Diffuse;
         totalResult.Specular += result.Specular;
     }
-    totalResult.Diffuse = float4(1.0f, 1.0f, 1.0f, 1.0f);
+
     return totalResult;
 }

@@ -1,34 +1,30 @@
-#include "LightMeshShader.h"
-#include "AssetClass.h"
+#include "HdrShader.h"
 
-LightMeshShader::LightMeshShader() :
+HdrShader::HdrShader() :
 	mVertexShader(nullptr),
 	mPixelShader(nullptr),
 	mLayout(nullptr),
 	mMaterialBuffer(nullptr),
-	mLightBuffer(nullptr),
 	mMatrixBuffer(nullptr),
-	mSrv(nullptr),
-	mSampleStateWarp(nullptr),
-	mSampleStateClamp(nullptr)
+	mSampleStateWarp(nullptr)
 {
 }
 
-LightMeshShader::~LightMeshShader()
+HdrShader::~HdrShader()
 {
 }
 
-bool LightMeshShader::Initialize(ID3D11Device* device, HWND hwnd)
+bool HdrShader::Initialize(ID3D11Device* device, HWND hwnd)
 {
-	return InitializeShader(device, hwnd, L"LightMeshVertexShader.hlsl", L"LightMeshPixelShader.hlsl");
+	return InitializeShader(device, hwnd, L"HdrVertexShader.hlsl", L"HdrPixelShader.hlsl");
 }
 
-void LightMeshShader::Shutdown()
+void HdrShader::Shutdown()
 {
 	ShutdownShader();
 }
 
-bool LightMeshShader::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, WideMaterial* material)
+bool HdrShader::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, WideMaterial* material)
 {
 	bool result;
 
@@ -43,7 +39,7 @@ bool LightMeshShader::Render(ID3D11DeviceContext* deviceContext, int indexCount,
 	return true;
 }
 
-bool LightMeshShader::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
+bool HdrShader::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
 {
 	HRESULT result;
 	ID3D10Blob* errorMessage;
@@ -180,16 +176,6 @@ bool LightMeshShader::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* v
 		return false;
 	}
 
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-
-	result = device->CreateSamplerState(&samplerDesc, &mSampleStateClamp);
-	if (FAILED(result))
-	{
-		return false;
-	}
-
 	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	matrixBufferDesc.ByteWidth = sizeof(PerObejct);
 	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -216,41 +202,10 @@ bool LightMeshShader::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* v
 		return false;
 	}
 
-	D3D11_BUFFER_DESC lightBufferDesc;
-	lightBufferDesc.ByteWidth = sizeof(LightBuffer) * NUM_OF_LIGHTS;
-	lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	lightBufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	lightBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-	lightBufferDesc.StructureByteStride = sizeof(LightBuffer);
-
-	D3D11_SUBRESOURCE_DATA subResourceData;
-	subResourceData.pSysMem = 0;
-	subResourceData.SysMemPitch = 0;
-	subResourceData.SysMemSlicePitch = 0;
-
-	result = device->CreateBuffer(&lightBufferDesc, NULL, &mLightBuffer);
-	if (FAILED(result))
-	{
-		return false;
-	}
-
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-	srvDesc.Format = DXGI_FORMAT_UNKNOWN;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-	srvDesc.Buffer.FirstElement = 0;
-	srvDesc.Buffer.NumElements = NUM_OF_LIGHTS;
-
-	result = device->CreateShaderResourceView(mLightBuffer, &srvDesc, &mSrv);
-	if (FAILED(result))
-	{
-		return false;
-	}
-
 	return true;
 }
 
-void LightMeshShader::ShutdownShader()
+void HdrShader::ShutdownShader()
 {
 	if (mVertexShader)
 	{
@@ -265,7 +220,7 @@ void LightMeshShader::ShutdownShader()
 	}
 
 	if (mLayout)
-	{	
+	{
 		mLayout->Release();
 		mLayout = nullptr;
 	}
@@ -282,32 +237,14 @@ void LightMeshShader::ShutdownShader()
 		mMaterialBuffer = nullptr;
 	}
 
-	if (mLightBuffer)
-	{
-		mLightBuffer->Release();
-		mLightBuffer = nullptr;
-	}
-
-	if (mSrv)
-	{
-		mSrv->Release();
-		mSrv = nullptr;
-	}
-
 	if (mSampleStateWarp)
 	{
 		mSampleStateWarp->Release();
 		mSampleStateWarp = nullptr;
 	}
-
-	if (mSampleStateClamp)
-	{
-		mSampleStateClamp->Release();
-		mSampleStateClamp = nullptr;
-	}
 }
 
-void LightMeshShader::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, WCHAR* shaderFilename)
+void HdrShader::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, WCHAR* shaderFilename)
 {
 	char* compileErrors;
 	unsigned long long bufferSize, i;
@@ -340,14 +277,14 @@ void LightMeshShader::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hw
 	return;
 }
 
-bool LightMeshShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, WideMaterial* material)
+bool HdrShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, WideMaterial* material)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	unsigned int bufferNumber;
 
 	XMMATRIX modelViewMatrix = XMMatrixMultiply(worldMatrix, viewMatrix);
-	
+
 	result = deviceContext->Map(mMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
@@ -360,21 +297,11 @@ bool LightMeshShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, XM
 	dataPtr->modelViewProjection = XMMatrixMultiply(dataPtr->modelView, projectionMatrix);
 
 	deviceContext->Unmap(mMatrixBuffer, 0);
-	bufferNumber = 0;
 
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &mMatrixBuffer);
+	deviceContext->VSSetConstantBuffers(0, 1, &mMatrixBuffer);
 
 	//텍스쳐 셋팅
-	int textureNum = 0;
-
-	deviceContext->PSSetShaderResources(0, 1, AssetClass::mTextureMap[material->GetAmbientKey()]->GetTexturePP());
-	deviceContext->PSSetShaderResources(1, 1, AssetClass::mTextureMap[material->GetEmissiveKey()]->GetTexturePP());
-	deviceContext->PSSetShaderResources(2, 1, AssetClass::mTextureMap[material->GetDiffuseKey()]->GetTexturePP());
-	deviceContext->PSSetShaderResources(3, 1, AssetClass::mTextureMap[material->GetSpecularKey()]->GetTexturePP());
-	deviceContext->PSSetShaderResources(4, 1, AssetClass::mTextureMap[material->GetSpecularPowerKey()]->GetTexturePP());
-	deviceContext->PSSetShaderResources(5, 1, AssetClass::mTextureMap[material->GetNormalKey()]->GetTexturePP());
-	deviceContext->PSSetShaderResources(6, 1, AssetClass::mTextureMap[material->GetBumpKey()]->GetTexturePP());
-	deviceContext->PSSetShaderResources(7, 1, AssetClass::mTextureMap[material->GetOpacityKey()]->GetTexturePP());
+	deviceContext->PSSetShaderResources(0, 1, AssetClass::mTextureMap[material->GetEmissiveKey()]->GetTexturePP());
 
 	result = deviceContext->Map(mMaterialBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
@@ -388,59 +315,19 @@ bool LightMeshShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, XM
 
 	deviceContext->Unmap(mMaterialBuffer, 0);
 
-	++bufferNumber;
-
-	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &mMaterialBuffer);
-
-	result = deviceContext->Map(mLightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if (FAILED(result))
-	{
-		return false;
-	}
-
-	LightBuffer *dataPtr3 = (LightBuffer*)mappedResource.pData;
-	LightBuffer dummyLight;
-
-	LightBuffer lights[NUM_OF_LIGHTS];
-	LightSturct* lightStructs = LightManager::Instance().GetAllLight();
-
-	for (int i = 0; i < NUM_OF_LIGHTS; i++)
-	{
-		XMVECTOR positionWSVector = XMLoadFloat4(&lightStructs[i].position);
-		XMVECTOR directionWSVector = XMLoadFloat4(&lightStructs[i].direction);
-		lights[i].positionWS = lightStructs[i].position;
-		XMStoreFloat4(&lights[i].positionVS,XMVector4Transform(positionWSVector, modelViewMatrix));
-		lights[i].directionWS = lightStructs[i].direction;
-		XMStoreFloat4(&lights[i].directionVS, XMVector4Transform(directionWSVector, modelViewMatrix));
-		lights[i].color = lightStructs[i].color;
-		lights[i].spotlightAngle = lightStructs[i].spotlightAngle;
-		lights[i].range = lightStructs[i].range;
-		lights[i].intensity = lightStructs[i].intensity;
-		lights[i].enabled = lightStructs[i].enabled;
-		lights[i].selected = lightStructs[i].selected;
-		lights[i].type = (int)lightStructs[i].lightType;
-	}
-
-	size_t sizeInBytes = NUM_OF_LIGHTS * sizeof(LightBuffer);
-	memcpy_s(mappedResource.pData, sizeInBytes, lights, sizeInBytes);
-
-	deviceContext->Unmap(mLightBuffer, 0);
-	deviceContext->PSSetShaderResources(8, 1, &mSrv);
+	deviceContext->PSSetConstantBuffers(1, 1, &mMaterialBuffer);
 
 	return true;
 }
 
-void LightMeshShader::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
+void HdrShader::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
 {
 	deviceContext->IASetInputLayout(mLayout);
 
 	deviceContext->VSSetShader(mVertexShader, NULL, 0);
 	deviceContext->PSSetShader(mPixelShader, NULL, 0);
 
-	deviceContext->PSSetSamplers(0, 1, &mSampleStateClamp);
-	deviceContext->PSSetSamplers(1, 1, &mSampleStateWarp);
+	deviceContext->PSSetSamplers(0, 1, &mSampleStateWarp);
 
 	deviceContext->DrawIndexed(indexCount, 0, 0);
-
-	return;
 }

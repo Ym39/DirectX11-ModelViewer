@@ -77,7 +77,8 @@ struct ShaderUploadMaterial
 	float bumpIntensity;
 	float specularScale;
 	float alphaThreshold;
-	XMFLOAT2 padding;
+	float hdrBrightness;
+	float padding;
 };
 
 class WideMaterial : public Material

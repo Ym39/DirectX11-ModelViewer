@@ -157,12 +157,14 @@
     <ClInclude Include="ArrowModel.h" />
     <ClInclude Include="AssetClass.h" />
     <ClInclude Include="BitmapClass.h" />
+    <ClInclude Include="BloomResultShaderClass.h" />
     <ClInclude Include="BoneTransformInspector.h" />
     <ClInclude Include="BoundModel.h" />
     <ClInclude Include="Bounds.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraTransform.h" />
     <ClInclude Include="ColorShader.h" />
+    <ClInclude Include="Common.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="D3DClass.h" />
     <ClInclude Include="DepthShaderClass.h" />
@@ -178,6 +180,8 @@
     <ClInclude Include="Getter.h" />
     <ClInclude Include="GraphicsClass.h" />
     <ClInclude Include="GridClass.h" />
+    <ClInclude Include="HdrShader.h" />
+    <ClInclude Include="HorizontalBlurShaderClass.h" />
     <ClInclude Include="ImguiClass.h" />
     <ClInclude Include="IMGUI\imconfig.h" />
     <ClInclude Include="IMGUI\imgui.h" />
@@ -204,6 +208,7 @@
     <ClInclude Include="MeshRenderComponent.h" />
     <ClInclude Include="ModelClass.h" />
     <ClInclude Include="ModelListBrowser.h" />
+    <ClInclude Include="OrthowindowClass.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="ReceiveShadowRenderComponent.h" />
     <ClInclude Include="RenderTextureClass.h" />
@@ -231,12 +236,14 @@
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="TransformInspector.h" />
     <ClInclude Include="Utility.h" />
+    <ClInclude Include="VerticalBlurShaderClass.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationFileBrowser.cpp" />
     <ClCompile Include="ArrowModel.cpp" />
     <ClCompile Include="AssetClass.cpp" />
     <ClCompile Include="BitmapClass.cpp" />
+    <ClCompile Include="BloomResultShaderClass.cpp" />
     <ClCompile Include="BoneTransformInspector.cpp" />
     <ClCompile Include="BoundModel.cpp" />
     <ClCompile Include="Bounds.cpp" />
@@ -253,6 +260,8 @@
     <ClCompile Include="GameObjectManager.cpp" />
     <ClCompile Include="GraphicsClass.cpp" />
     <ClCompile Include="GridClass.cpp" />
+    <ClCompile Include="HdrShader.cpp" />
+    <ClCompile Include="HorizontalBlurShaderClass.cpp" />
     <ClCompile Include="ImguiClass.cpp" />
     <ClCompile Include="IMGUI\imgui.cpp" />
     <ClCompile Include="IMGUI\imgui_draw.cpp" />
@@ -274,9 +283,11 @@
     <ClCompile Include="MathHelper.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshClass.cpp" />
+    <ClCompile Include="VerticalBlurShaderClass.cpp" />
     <None Include="cpp.hint" />
     <ClCompile Include="ModelClass.cpp" />
     <ClCompile Include="ModelListBrowser.cpp" />
+    <ClCompile Include="OrthowindowClass.cpp" />
     <ClCompile Include="RenderTextureClass.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="ShadowShaderClass.cpp" />
@@ -453,6 +464,58 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="HdrPixelShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+    <None Include="HdrVertexShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="HorizontalBlurVertexShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="BlurPixelShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="VerticalBlurVertexShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="BloomResultPixelShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <FileType>Document</FileType>
     </None>
   </ItemGroup>
